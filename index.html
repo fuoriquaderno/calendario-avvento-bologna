@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avvento a Bologna - D&D</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Importiamo la libreria di Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Schermata di Accesso / Creazione -->
+    <div id="schermata-login" class="container">
+        <h1>L'Ombra sui Portici</h1>
+        <p>Inserisci il tuo Nome in Codice per accedere o iniziare l'avventura.</p>
+        <input type="text" id="codice-accesso" placeholder="Es. GuerrieroDelNettuno">
+        <button id="btn-login">Entra nella Città</button>
+        <p id="messaggio-errore" style="color: red; display: none;"></p>
+    </div>
+
+    <!-- Schermata di Gioco Principale (Nascosta all'avvio) -->
+    <div id="schermata-gioco" class="container" style="display: none;">
+        <!-- Barra di Navigazione Superiore -->
+        <header id="barra-stato">
+            <span id="nome-personaggio">Nome: ---</span>
+            <span id="hp-personaggio">HP: ---</span>
+            <span id="oro-personaggio">Oro: ---</span>
+            <button id="btn-inventario">Borsa Conservante</button>
+        </header>
+
+        <!-- Area della Storia e degli Enigmi -->
+        <main id="area-storia">
+            <h2 id="titolo-giorno">Giorno --</h2>
+            <p id="testo-storia">Caricamento della storia in corso...</p>
+            
+            <div id="area-interazione">
+                <!-- Qui appariranno input o bottoni in base al giorno -->
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
