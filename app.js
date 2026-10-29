@@ -6,73 +6,95 @@ const SUPABASE_KEY = 'sb_publishable_xGe5aZMIXxd3_v9zY1bVJQ__89AO9Ae';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // 2. Riferimenti al DOM
+const inputCodice = document.getElementById('codice-accesso');
+const selectClasse = document.getElementById('scelta-classe');
+const btnLogin = document.getElementById('btn-login');
+const msgErrore = document.getElementById('messaggio-errore');
+const msgSuccesso = document.getElementById('messaggio-successo');
+
 const schermataLogin = document.getElementById('schermata-login');
 const schermataGioco = document.getElementById('schermata-gioco');
-const inputCodice = document.getElementById('codice-accesso');
-const btnLogin = document.getElementById('btn-login');
-const messaggioErrore = document.getElementById('messaggio-errore');
-
-// Elementi della scheda personaggio
 const uiNome = document.getElementById('nome-personaggio');
 const uiHp = document.getElementById('hp-personaggio');
 const uiOro = document.getElementById('oro-personaggio');
 
-// Variabile globale per memorizzare il personaggio caricato
-let personaggioCorrente = null;
-
-// 3. Logica di Login
+// 3. Logica di Login e Creazione
 btnLogin.addEventListener('click', async () => {
+    msgErrore.style.display = 'none';
+    msgSuccesso.style.display = 'none';
+    
     const codice = inputCodice.value.trim();
+    const classe = selectClasse.value;
+
     if (!codice) {
-        mostraErrore("Inserisci un nome in codice.");
+        mostraErrore("Devi inserire un nome in codice.");
         return;
     }
 
     try {
-        // Cerca il personaggio nel database
-        const { data, error } = await supabase
+        // Tentativo di ricerca personaggio esistente
+        const { data: personaggioEsistente, error: erroreRicerca } = await supabase
             .from('personaggi')
             .select('*')
             .eq('codice_accesso', codice)
             .single();
 
-        if (error && error.code === 'PGRST116') {
-            // Se non trova il personaggio, per ora mostriamo un errore. 
-            // In futuro qui potremo inserire la logica per la "Creazione del Personaggio" del Giorno 1.
-            mostraErrore("Personaggio non trovato. La magia non riconosce questo nome.");
-        } else if (data) {
-            // Personaggio trovato, carichiamo i dati
-            personaggioCorrente = data;
-            avviaGioco();
+        if (personaggioEsistente) {
+            // Login effettuato con successo
+            avviaGioco(personaggioEsistente);
+        } else {
+            // Se non esiste, lo creiamo (Giorno 1)
+            creaPersonaggio(codice, classe);
         }
     } catch (err) {
-        console.error("Errore di connessione:", err);
-        mostraErrore("Errore di comunicazione con le linee temporali (Database).");
+        console.error(err);
+        mostraErrore("Errore di comunicazione col database.");
     }
 });
 
-// 4. Funzioni di Supporto
-function mostraErrore(testo) {
-    messaggioErrore.textContent = testo;
-    messaggioErrore.style.display = 'block';
+async function creaPersonaggio(codice, classe) {
+    // Definiamo i bonus in base alla classe
+    let hpIniziali = (classe === 'Guerriero') ? 5 : 3;
+    let inventarioBase = [];
+    
+    if (classe === 'Mago') inventarioBase.push("pergamena_chiarezza");
+    if (classe === 'Ladro') inventarioBase.push("grimaldello");
+
+    // Inseriamo i dati su Supabase
+    const { data, error } = await supabase
+        .from('personaggi')
+        .insert([
+            {
+                codice_accesso: codice,
+                classe: classe,
+                hp_attuali: hpIniziali,
+                oro_rimanente: 50,
+                inventario: inventarioBase,
+                giorni_sbloccati: [1]
+            }
+        ])
+        .select()
+        .single(); // Restituisce il personaggio appena creato
+
+    if (error) {
+        mostraErrore("Errore durante la creazione: " + error.message);
+    } else {
+        msgSuccesso.textContent = "Personaggio forgiato con successo!";
+        msgSuccesso.style.display = 'block';
+        setTimeout(() => avviaGioco(data), 1500); // Avvia il gioco dopo 1.5 secondi
+    }
 }
 
-function avviaGioco() {
-    // Nascondi login, mostra gioco
+function mostraErrore(testo) {
+    msgErrore.textContent = testo;
+    msgErrore.style.display = 'block';
+}
+
+function avviaGioco(datiPersonaggio) {
     schermataLogin.style.display = 'none';
     schermataGioco.style.display = 'block';
-
-    // Aggiorna l'interfaccia con i dati di Supabase
-    uiNome.textContent = `Nome: ${personaggioCorrente.codice_accesso}`;
-    uiHp.textContent = `HP: ${personaggioCorrente.hp_attuali}`;
-    uiOro.textContent = `Oro: ${personaggioCorrente.oro_rimanente}`;
-
-    // Qui in futuro chiameremo la funzione per caricare il file JSON con la storia del giorno attuale
-    caricaGiornoOdierno();
-}
-
-function caricaGiornoOdierno() {
-    // Placeholder per la logica che determinerà in automatico che giorno è 
-    // e leggerà i testi da storia.json
-    console.log("Pronto per caricare i testi narrativi.");
+    
+    uiNome.textContent = `Nome: ${datiPersonaggio.codice_accesso} (${datiPersonaggio.classe})`;
+    uiHp.textContent = `HP: ${datiPersonaggio.hp_attuali}`;
+    uiOro.textContent = `Oro: ${datiPersonaggio.oro_rimanente}`;
 }
