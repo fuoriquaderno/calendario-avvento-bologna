@@ -1,0 +1,230 @@
+/* 1. CARICAMENTO DEI FONT LOCALI */
+
+@font-face {
+    font-family: 'Cinzel';
+    src: url('./fonts/EagleLake-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lora';
+    src: url('./fonts/Macondo-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MedievalSharp';
+    src: url('./fonts/MedievalSharp.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 2. ASSEGNAZIONE ALLE VARIABILI GLOBALI */
+
+:root {
+    --background: #ebdcb9; 
+    --surface: #f4ead5; 
+    --text: #2c251d; 
+    --muted: #5e5141; 
+    --accent: #8b261b; 
+    --line: #c4b08f; 
+    
+    /* Richiamiamo i font appena forgiati */
+    --serif: 'Cinzel', serif; 
+    --sans: 'Lora', serif;    
+    --gothic: 'MedievalSharp', serif; /* Variabile extra per titoli molto antichi */
+}
+
+/* Posizionamento delle Due Torri sul lato sinistro del Main */
+.container { 
+    position: relative; 
+}
+
+.container::before {
+    content: "";
+    position: absolute;
+    top: 10%; 
+    bottom: 10%; 
+    left: -320px; 
+    width: 280px; 
+    
+    /* Assicurati che il nome e l'estensione (.png o .jpg) siano esatti */
+    background-image: url('./images/torri.jpg');
+    background-size: contain;
+    background-position: center left;
+    background-repeat: no-repeat;
+    
+    opacity: 0.35; 
+    z-index: -1; 
+    pointer-events: none; 
+}
+
+/* Illustrazione Lato Destro (Palazzo della Mercanzia) */
+.site-main::after {
+    content: "";
+    position: absolute;
+    bottom: 20px; /* Allineata in basso come le torri */
+    right: 50px;  /* Ancorata al bordo destro */
+    width: 250px; 
+    height: 600px; 
+    
+    background-image: url('./images/mercanzia2.png');
+    background-size: contain;
+    background-position: bottom right; /* Schiacciata verso l'angolo in basso a destra */
+    background-repeat: no-repeat;
+    
+    opacity: 0.35; 
+    z-index: -1; 
+    pointer-events: none; 
+}
+
+/* Nasconde le torri sui dispositivi mobili per evitare che coprano il testo */
+@media (max-width: 1100px) {
+    .site-main::before,
+    .site-main::after {
+        display: none;
+    }
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+
+
+/* SFONDO GENERALE - PERGAMENA INFINITA */
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    font-family: var(--sans);
+    line-height: 1.65;
+    color: var(--text);
+
+    background-color: var(--background);
+    /* L'immagine deve essere un pattern "seamless" (ripetibile) */
+    background-image: url('./images/sfondo.jpg');
+    background-repeat: repeat; 
+    background-position: top left;
+    background-size: 400px; /* Regola la dimensione in base alla grana dell'immagine */
+}
+
+a { color: inherit; text-underline-offset: 5px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+img { max-width: 100%; height: auto; display: block; }
+
+/* STRUTTURA A TUTTA PAGINA */
+/* Rimosso il limite calc() e var(--content-width) per occupare tutto lo schermo */
+.site-header, .site-main, .site-footer { 
+    width: 100%; 
+    padding-inline: 5vw; /* Margine laterale fluido in percentuale */
+}
+
+.site-header { 
+    padding-block: 25px; 
+    border-bottom: 1px solid var(--line); 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    gap: 24px;
+    
+    /* Rimossa l'ombreggiatura scura dell'Archivio Vincenzi */
+    background: transparent; 
+    box-shadow: none;
+    clip-path: none;
+}
+
+.site-footer { 
+    border-top: 1px solid var(--line); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: end; 
+    gap: 30px; 
+    padding-block: 28px;
+    
+    background: transparent;
+    box-shadow: none;
+    clip-path: none;
+}
+
+/* HEADER E FOOTER - Fasce scure semitrasparenti */
+.site-header { 
+    padding-block: 20px; 
+    border-bottom: 1px solid var(--line); 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    gap: 24px;
+    
+    /* Il "vetro" oscurato */
+    background: rgba(44, 37, 29, 0.15); /* Marrone scuro molto trasparente */
+    backdrop-filter: blur(2px); /* Leggera sfocatura della pergamena dietro */
+    -webkit-backdrop-filter: blur(2px);
+    
+    /* Ombreggiatura per staccarlo dalla pagina */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.site-footer { 
+    border-top: 1px solid var(--line); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: end; 
+    gap: 30px; 
+    padding-block: 28px;
+    
+    background: rgba(44, 37, 29, 0.15);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    
+    /* Ombreggiatura verso l'alto */
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Sistemiamo il titolo e i link nell'header per farli risaltare */
+.site-brand { 
+    text-decoration: none; 
+    font-family: var(--serif); 
+    font-size: 24px; 
+    color: var(--accent); /* Usiamo il rosso mattone per il titolo del gioco */
+    font-weight: bold;
+}
+.site-brand span { 
+    font-style: italic; 
+    color: var(--text); /* "sui Portici" in inchiostro scuro */
+}
+
+.site-header nav { 
+    display: flex; 
+    gap: 28px; 
+    font-size: 14px; 
+    font-weight: 500;
+    text-transform: uppercase; /* Scritte in maiuscoletto per un look più solenne */
+    letter-spacing: 0.05em;
+}
+.site-header nav a { 
+    text-decoration: none; 
+    color: var(--muted); 
+    transition: color 0.2s ease;
+}
+.site-header nav a:hover { 
+    color: var(--accent); /* Diventano rosse al passaggio del mouse */
+}
+
+/* Le fasce coprono tutto lo schermo in larghezza */
+.site-header, .site-footer { 
+    width: 100%; 
+    padding-inline: 5vw; 
+}
+
+/* L'area di gioco principale resta un po' più stretta e centrata per facilitare la lettura */
+.site-main { 
+    flex: 1; 
+    width: 100%;
+    max-width: 1500px;
+    margin-inline: auto;
+    padding-inline: 20px;
+}

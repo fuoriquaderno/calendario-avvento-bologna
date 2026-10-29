@@ -1,0 +1,18 @@
+title: L'Ombra sui Portici - Calendario dell'Avvento D&D
+url: "https://fuoriquaderno.github.io"
+baseurl: "/calendario-avvento-bologna"
+
+# Invece di personaggi statici, definiamo la collection per i giorni di gioco
+collections:
+  giorni:
+    output: true
+    permalink: /giorno/:name/
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - gemfile
+  - gemfile.lock
+  - README.md
+  - supabase
+  - privato

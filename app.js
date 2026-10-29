@@ -98,3 +98,68 @@ function avviaGioco(datiPersonaggio) {
     uiHp.textContent = `HP: ${datiPersonaggio.hp_attuali}`;
     uiOro.textContent = `Oro: ${datiPersonaggio.oro_rimanente}`;
 }
+
+// Riferimenti per l'enigma iniziale
+const inputEnigma = document.getElementById('input-enigma');
+const btnEnigma = document.getElementById('btn-enigma');
+const enigmaPergamena = document.getElementById('enigma-pergamena');
+const msgErroreEnigma = document.getElementById('errore-enigma');
+const formRegistrazione = document.getElementById('form-registrazione');
+
+// Logica dell'enigma
+btnEnigma.addEventListener('click', () => {
+    // Trasforma la risposta in minuscolo e toglie gli spazi per facilitare il controllo
+    const risposta = inputEnigma.value.toLowerCase().trim();
+    
+    // Controlla se la parola digitata contiene "richieste"
+    if (risposta.includes('richieste') || risposta.includes('stanza delle richieste')) {
+        msgErroreEnigma.style.display = 'none';
+        enigmaPergamena.style.display = 'none';
+        formRegistrazione.style.display = 'block'; // Mostra il form del nome
+    } else {
+        msgErroreEnigma.style.display = 'block';
+    }
+});
+
+
+// --- LOGICA DELLE SCELTE DI GALEAZZO (GIORNO 1) ---
+
+const btnPaga = document.getElementById('scelta-paga');
+const btnFavore = document.getElementById('scelta-favore');
+const btnReale = document.getElementById('scelta-reale');
+const contenitoreScelte = document.getElementById('scelte-storia');
+const enigmaReale = document.getElementById('enigma-reale');
+const btnConfermaReale = document.getElementById('btn-conferma-reale');
+
+// Variabile temporanea per le monete (poi la collegheremo a Supabase)
+let argentoGiocatore = 50;
+
+btnPaga.addEventListener('click', () => {
+    argentoGiocatore -= 25;
+    document.getElementById('argento-personaggio').innerText = `Argento: ${argentoGiocatore}`;
+    alert("Galeazzo intasca le monete con un sorriso avido. «Il posto per domani mattina è tuo. Ci vediamo oltre la Porta.»\n\n[Hai sbloccato il Giorno 2!]");
+    // In futuro qui nasconderemo il Giorno 1 e mostreremo il Giorno 2
+});
+
+btnFavore.addEventListener('click', () => {
+    alert("Galeazzo annuisce, tirando fuori un patto magico. «Dovrai recuperarmi un vecchio grimorio al Mercato di Mezzo. Ti aspetto domani.»\n\n[Hai ottenuto la Quest: Il Grimorio di Galeazzo! Sbloccato Giorno 2!]");
+    // In futuro salveremo su Supabase che il giocatore ha il "Debito di Galeazzo"
+});
+
+btnReale.addEventListener('click', () => {
+    // Nascondiamo i bottoni e mostriamo l'indovinello fisico
+    contenitoreScelte.style.display = 'none';
+    enigmaReale.style.display = 'block';
+});
+
+btnConfermaReale.addEventListener('click', () => {
+    const risposta = document.getElementById('risposta-reale').value.trim().toLowerCase();
+    
+    // La vera Porta Maggiore (Mazzini) ha due fori per il ponte levatoio.
+    if(risposta === "2" || risposta === "due") {
+        document.getElementById('errore-reale').style.display = 'none';
+        alert("Galeazzo sbuffa, impressionato. «E va bene, forestiero. Hai fegato e vista buona. Il posto è tuo.»\n\n[Hai sbloccato il Giorno 2 mantenendo tutto il tuo argento!]");
+    } else {
+        document.getElementById('errore-reale').style.display = 'block';
+    }
+});
