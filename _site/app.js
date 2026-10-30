@@ -73,8 +73,38 @@ let occupato = false;
 function leggiMemoria(chiave) { try { return localStorage.getItem(chiave); } catch { return null; } }
 function scriviMemoria(chiave, valore) { try { localStorage.setItem(chiave, valore); return true; } catch { return false; } }
 function rimuoviMemoria(chiave) { try { localStorage.removeItem(chiave); } catch {} }
-function normalizzaCodice(codice) { return codice.trim().toLowerCase(); }
-function codiceValido(codice) { return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(codice); }
+function normalizzaCodice(codice) { return codice.trim(); }
+function codiceValido(codice) { return typeof codice==='string' && Array.from(codice.trim()).length>=1 && Array.from(codice.trim()).length<=128; }
+
+// Informazione sul funzionamento, non una richiesta di consenso privacy.
+const avvisoStile = document.createElement('style');
+avvisoStile.textContent = `
+dialog.avviso-codice{width:min(560px,calc(100% - 24px));max-height:90vh;max-height:90dvh;padding:0;border:0;background:transparent;color:var(--text);font:18px/1.6 var(--sans);overflow:auto;filter:drop-shadow(0 5px 16px #0006)}
+dialog.avviso-codice::backdrop{background:#0009}
+dialog.avviso-codice .scroll-middle{padding:0 10%;overflow-wrap:anywhere}
+dialog.avviso-codice h2{margin:0;font:clamp(20px,4vw,26px)/1.4 var(--serif);color:var(--accent)}
+dialog.avviso-codice button{width:100%;padding:12px;background:var(--accent);color:var(--surface);border:0;border-radius:3px;font:inherit;cursor:pointer}
+`;
+document.head.append(avvisoStile);
+const avvisoCodice = document.createElement('dialog');
+avvisoCodice.className='avviso-codice';
+avvisoCodice.setAttribute('aria-labelledby','titolo-avviso-codice');
+avvisoCodice.innerHTML = '<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-avviso-codice">La tua partita, il tuo codice</h2><p>Abbiamo scelto di non richiedere la registrazione: per giocare non devi fornire un nome reale, un’email o una password. Il salvataggio viene comunque conservato su Supabase; il servizio può trattare dati tecnici di connessione.</p><p>Per proteggere la partita puoi usare il codice segreto generato automaticamente oppure sceglierne uno tuo. Se lo scegli tu, preferisci un codice lungo e poco prevedibile, anche con numeri e simboli: aggiungere qualche carattere speciale a un nome comune non basta a renderlo difficile da indovinare.</p><p>Chi conosce o indovina il codice può giocare la tua partita, modificare il salvataggio e cambiare il codice.</p><p>Conservalo: ti servirà per riprendere la partita anche su un altro dispositivo. Se lo perdi e il browser non lo ricorda più, non potremo recuperarla.</p><button type="button" id="chiudi-avviso-codice">Ho capito</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
+document.body.append(avvisoCodice);
+$('chiudi-avviso-codice').addEventListener('click',()=>{
+    scriviMemoria('ombra-sui-portici.avviso-codice.v1','letto');
+    avvisoCodice.close();
+});
+function apriAvvisoCodice() {
+    if(!avvisoCodice.open) avvisoCodice.showModal();
+}
+function pulsanteInformazioni(contenitore) {
+    const button=document.createElement('button');
+    button.type='button';button.textContent='Come funziona il codice della partita';
+    button.style.cssText='display:block;margin-block:12px;padding:8px;cursor:pointer';
+    button.addEventListener('click',apriAvvisoCodice);
+    contenitore.append(button);
+}
 
 const messaggio = document.createElement('p');
 messaggio.setAttribute('role', 'status');
@@ -96,7 +126,13 @@ async function esegui(azione) {
 }
 async function rpc(nome, parametri) {
     const {data,error} = await supabaseClient.rpc(nome,parametri);
-    if (error) throw new Error('Non è stato possibile leggere o salvare la partita. Controlla la connessione e riprova.');
+    if (error) {
+        if(error.message==='Codice non disponibile') {
+            rimuoviMemoria(IN_SOSPESO);
+            throw new Error('Codice già occupato. Scegline un altro. Se è la tua partita, usa Riprendi la partita con quel codice.');
+        }
+        throw new Error('Operazione non riuscita. Controlla la connessione. Se la creazione o il cambio codice potrebbero essere riusciti, prova Riprendi la partita con il codice scelto.');
+    }
     return data;
 }
 
@@ -105,26 +141,49 @@ const accesso = document.createElement('section');
 accesso.style.cssText = 'margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line)';
 accesso.innerHTML = '<h2>Hai già una partita?</h2><label for="codice-ripresa">Codice segreto della partita</label><input id="codice-ripresa" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" style="width:100%;padding:10px"><button type="button" id="riprendi-partita" style="margin-top:12px;padding:10px 16px">Riprendi la partita</button><p>Chi conosce il codice può accedere al salvataggio. Conservalo per giocare anche su un altro dispositivo. Senza il codice non possiamo recuperare la partita.</p>';
 $('schermata-login').prepend(accesso);
+pulsanteInformazioni(accesso);
 $('riprendi-partita').addEventListener('click', () => esegui(() => riprendi($('codice-ripresa').value)));
 $('codice-ripresa').addEventListener('keydown', event => {
     if(event.key==='Enter'){event.preventDefault();$('riprendi-partita').click();}
 });
 
-// Il nome precedente non viene più usato come segreto scelto dall'utente.
+// Codice scelto liberamente; il generatore casuale resta facoltativo.
 const vecchioInput = $('codice-accesso');
-document.querySelector('label[for="codice-accesso"]')?.remove();
-vecchioInput.hidden = true;
-vecchioInput.style.display = 'none';
+const etichettaCodice = document.querySelector('label[for="codice-accesso"]');
+if(etichettaCodice) etichettaCodice.textContent='Scegli il codice della partita';
+vecchioInput.hidden = false;
+vecchioInput.style.display = 'block';
+vecchioInput.placeholder = 'Scrivi un codice a tua scelta';
+vecchioInput.autocomplete = 'off';
+vecchioInput.setAttribute('autocapitalize','none');
+vecchioInput.spellcheck = false;
+const generaCodice = document.createElement('button');
+generaCodice.type='button';generaCodice.textContent='Genera un codice casuale';
+generaCodice.style.cssText='margin-bottom:16px;padding:8px';
+vecchioInput.after(generaCodice);
+generaCodice.addEventListener('click',()=>{vecchioInput.value=crypto.randomUUID();});
 $('btn-login').type = 'button';
-$('btn-login').textContent = 'Crea partita e genera codice';
+$('btn-login').textContent = 'Crea partita';
 const spiegazione = document.createElement('p');
-spiegazione.textContent = 'Il gioco genera un codice segreto casuale. Copialo e conservalo: è l’unico modo per recuperare la partita su un altro dispositivo.';
+spiegazione.textContent = 'Puoi scegliere un codice da 1 a 128 caratteri, anche con simboli. Maiuscole e minuscole contano; gli spazi iniziali e finali vengono rimossi. Chi lo conosce o lo indovina può accedere e modificarlo, incluso cambiare il codice. I codici semplici sono a tuo rischio. Senza il codice non possiamo recuperare la partita.';
 $('btn-login').before(spiegazione);
 
 const gestione = document.createElement('section');
 gestione.style.cssText = 'margin-bottom:24px;padding:16px;border:1px solid var(--line)';
 gestione.innerHTML = '<label for="codice-da-conservare">Il tuo codice segreto — conservalo</label><input id="codice-da-conservare" type="text" readonly autocomplete="off" style="width:100%;padding:10px"><div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px"><button type="button" id="copia-codice">Copia codice</button><button type="button" id="cambia-partita">Cambia partita</button></div>';
 $('schermata-gioco').prepend(gestione);
+pulsanteInformazioni(gestione);
+const modificaCodice = document.createElement('section');
+modificaCodice.innerHTML='<label for="nuovo-codice-partita">Cambia il codice della partita</label><input id="nuovo-codice-partita" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" style="width:100%;padding:10px"><button type="button" id="salva-nuovo-codice" style="margin-top:12px">Salva nuovo codice</button><p>Il vecchio codice smetterà di funzionare su tutti i dispositivi. Anche un codice semplice è ammesso, a tuo rischio.</p>';
+gestione.append(modificaCodice);
+$('salva-nuovo-codice').addEventListener('click',()=>esegui(async()=>{
+    const nuovo=normalizzaCodice($('nuovo-codice-partita').value);
+    if(!codiceValido(nuovo)){avvisa('Inserisci un codice da 1 a 128 caratteri.');return;}
+    const dati=await rpc('gioco_cambia_codice',{p_codice:codiceAttivo,p_nuovo_codice:nuovo});
+    await mostraPartita(dati,nuovo);
+    $('nuovo-codice-partita').value='';
+    avvisa('Codice aggiornato. Copia il nuovo codice: quello precedente non dà più accesso alla partita.');
+}));
 $('copia-codice').addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(codiceAttivo); avvisa('Codice copiato. Conservalo in un luogo privato.'); }
     catch { $('codice-da-conservare').select(); avvisa('Seleziona e copia il codice mostrato.'); }
@@ -174,7 +233,7 @@ async function mostraPartita(dati, codice) {
 }
 async function riprendi(valore) {
     const codice = normalizzaCodice(valore);
-    if(!codiceValido(codice)) { avvisa('Inserisci il codice completo generato dal gioco, compresi i trattini.');return; }
+    if(!codiceValido(codice)) { avvisa('Inserisci il codice della partita, da 1 a 128 caratteri.');return; }
     const dati = await rpc('gioco_recupera',{p_codice:codice});
     if(!dati) { rimuoviMemoria(CHIAVE);avvisa('Nessuna partita trovata. Controlla il codice: non è stata creata una nuova partita.');return; }
     await mostraPartita(dati,codice);
@@ -183,7 +242,9 @@ $('btn-login').addEventListener('click', () => esegui(async () => {
     let richiesta;
     try { richiesta = JSON.parse(leggiMemoria(IN_SOSPESO)); } catch {}
     if(!richiesta || !codiceValido(richiesta.codice)) {
-        richiesta = {codice:crypto.randomUUID(),classe:$('scelta-classe').value};
+        const scelto=normalizzaCodice(vecchioInput.value);
+        if(!codiceValido(scelto)){avvisa('Scrivi un codice da 1 a 128 caratteri, oppure usa Genera un codice casuale.');return;}
+        richiesta = {codice:scelto,classe:$('scelta-classe').value};
         // Salva prima della richiesta: un problema di rete non deve duplicare la partita.
         if(!scriviMemoria(IN_SOSPESO,JSON.stringify(richiesta))) {
             avvisa('Per creare una partita abilita la memorizzazione dei dati del sito nel browser.');return;
@@ -221,11 +282,19 @@ $('btn-conferma-reale').type='button';
 $('btn-conferma-reale').addEventListener('click',()=>esegui(()=>scegli('rispondi',$('risposta-reale').value)));
 
 // Ripresa automatica. Un codice errato non crea mai un nuovo personaggio.
-const ricordato = leggiMemoria(CHIAVE);
-if(ricordato) {
-    $('codice-ripresa').value=ricordato;
-    esegui(()=>riprendi(ricordato));
-} else if(leggiMemoria(IN_SOSPESO)) {
-    avvisa('La creazione precedente potrebbe essere rimasta in sospeso. Supera l’enigma e premi Crea partita per recuperarla senza duplicarla.');
+async function inizia() {
+    if(!leggiMemoria('ombra-sui-portici.avviso-codice.v1')) {
+        const chiuso=new Promise(resolve=>avvisoCodice.addEventListener('close',resolve,{once:true}));
+        apriAvvisoCodice();
+        await chiuso;
+    }
+    const ricordato = leggiMemoria(CHIAVE);
+    if(ricordato) {
+        $('codice-ripresa').value=ricordato;
+        await esegui(()=>riprendi(ricordato));
+    } else if(leggiMemoria(IN_SOSPESO)) {
+        avvisa('La creazione precedente potrebbe essere rimasta in sospeso. Supera l’enigma e premi Crea partita per recuperarla senza duplicarla.');
+    }
 }
+inizia();
 
