@@ -1,145 +1,152 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I Cancelli di Bologna - L'Ombra sui Portici</title>
-    <link rel="stylesheet" href="/calendario-avvento-bologna/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I Cancelli di Bologna - L&#39;Ombra sui Portici</title>
+<link rel="stylesheet" href="/calendario-avvento-bologna/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/calendario-avvento-bologna/app.js"></script>
 </head>
 <body>
-    <header class="site-header">
+<header class="site-header">
     <a class="site-brand" href="/calendario-avvento-bologna/">L'Ombra <span>sui Portici</span></a>
     <nav aria-label="Navigazione principale">
         <a href="/calendario-avvento-bologna/#inventario">La Borsa</a>
         <a href="/calendario-avvento-bologna/progetto/">Il progetto</a>
     </nav>
 </header>
-
-    <main class="site-main">
-        <!-- Schermata di Accesso / Dogana -->
-<div id="schermata-login" class="container" style="max-width: 700px; margin: 60px auto; padding: 40px; background: rgba(244, 234, 213, 0.85); border: 1px solid var(--line); border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-    
-    <h1 style="font-family: var(--serif); font-size: 32px; color: var(--accent); margin-bottom: 20px; text-align: center;">
-        Porta Maggiore
-    </h1>
-    
-    <div id="storia-ingresso" style="font-family: var(--serif); font-size: 18px; line-height: 1.7; text-align: justify; margin-bottom: 30px;">
-        <p>Dopo mezza giornata di cammino lungo la Via Emilia, la sagoma imponente di Porta Maggiore si staglia finalmente contro il cielo velato. È qui che il misterioso Iliano ti ha dato appuntamento, promettendo risposte e, soprattutto, monete sonanti.</p>
-        
-        <p>Abituato ai posti di blocco serrati delle altre roccaforti, rimani interdetto: c'è una totale assenza di guardie fisiche. Sotto le alte arcate di mattoni rossi non ci sono picchieri a sbarrare il passo, né balestrieri annoiati sui camminamenti. Per un istante pensi che i governanti di Bologna siano impazziti, o che credano la città talmente intoccabile da non aver bisogno di presidiare gli ingressi.</p>
-        
-        <p>L'istinto del sopravvissuto ti suggerisce l'esistenza di una trappola invisibile. Rallenti il passo, la mano scivola sicura verso la tua arma, gli occhi scrutano le ombre dei portici in cerca di rune innescate. Eppure, diversi mercanti e contadini ti sorpassano a passo svelto, attraversando la soglia senza esitazione e senza saltare in aria.</p>
-        
-        <p>Decidi allora di proseguire, ma appena ti trovi sotto la porta senti una forza che ti trascina verso l'alto e vedi il soffitto aprirsi, per richiudersi subito dopo il tuo passaggio.</p>
-        
-        <p>A quel punto ti ritrovi in una stanza con un omino seguito da una pergamena autoscrivente che ti guarda e sospira: <em>«Eccone un altro senza il soffio di Sapienza. Hai preso appuntamento almeno? Dalla tua faccia direi proprio di no. Vabbé, recati alla Stanza delle Richieste, forse hanno qualche minuto che gli avanza.»</em></p>
-        
-        <p>Appena cerchi di replicare l'ometto si dissolve. Ovviamente senza darti alcuna indicazione per trovare la Stanza delle Richieste. Sul muro vedi una pergamena e ti avvicini.</p>
-    </div>
-
-    <!-- Enigma della Pergamena -->
-    <div id="enigma-pergamena" class="unlock-form">
-        <label for="input-enigma" style="font-weight: bold; color: var(--text);">Cosa scrivi con il dito sulla pergamena?</label>
-        <input type="text" id="input-enigma" placeholder="Domandare è lecito" style="margin-bottom: 15px;">
-        
-        <button id="btn-enigma" style="width: 100%; background: var(--accent); border: 1px solid #631810; color: #f4ead5; padding: 14px; font-size: 16px; cursor: pointer; border-radius: 2px;">
-            Traccia le lettere
-        </button>
-        <p id="errore-enigma" class="unlock-message" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;">
-            L'inchiostro evapora all'istante. Non succede nulla.
-        </p>
-    </div>
-
-    <!-- Form di Creazione (Nascosto all'inizio) -->
-    <div id="form-registrazione" class="unlock-form" style="display: none; border-top: 1px dashed var(--line); padding-top: 20px; margin-top: 10px;">
-        <p style="font-family: var(--serif); font-size: 18px; margin-bottom: 15px; color: #3b6b36;">
-            <em>La pergamena assorbe l'inchiostro e rivela una mappa per la Stanza delle Richieste, richiedendo infine di compilare le tue generalità.</em>
-        </p>
-
-        <label for="codice-accesso" style="font-weight: bold; color: var(--text);">Nome in Codice:</label>
-        <input type="text" id="codice-accesso" placeholder="Es. BalanzoneOscuro" style="margin-bottom: 15px;">
-        
-        <label for="scelta-classe" style="font-weight: bold; color: var(--text);">Classe e Dotazione Iniziale:</label>
-        <select id="scelta-classe" style="width: 100%; padding: 13px; font: 16px var(--sans); border: 1px solid #8b8779; background: var(--background); color: var(--text); margin-bottom: 25px;">
-            <option value="Guerriero">Guerriero (Bonus: 5 HP massimi)</option>
-            <option value="Mago">Mago (Bonus: Pergamena della Chiarezza)</option>
-            <option value="Ladro">Ladro (Bonus: Grimaldello Meccanico)</option>
-        </select>
-
-        <button id="btn-login" style="width: 100%; background: var(--accent); border: 1px solid #631810; color: #f4ead5; padding: 14px; font-size: 16px; cursor: pointer; border-radius: 2px;">
-            Entra nella Stanza
-        </button>
-
-        <p id="messaggio-errore" class="unlock-message" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;"></p>
-        <p id="messaggio-successo" class="unlock-message" style="color: #3b6b36; margin-top: 15px; display: none; text-align: center; font-weight: bold;"></p>
-    </div>
-</div>
-
-
-<!-- Schermata di Gioco Principale (nascosta all'inizio) -->
-<div id="schermata-gioco" class="container" style="display: none; max-width: 900px; margin: 40px auto; padding: 20px;">
-    
-    <!-- Barra di stato -->
-    <header id="barra-stato" style="display: flex; justify-content: space-between; padding: 15px 30px; background: rgba(12, 16, 15, 0.8); color: #ebdcb9; border: 1px solid var(--line); border-radius: 4px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <span id="nome-personaggio" style="font-family: var(--serif); font-size: 18px; font-weight: bold;">Nome: ---</span>
-        <div style="display: flex; gap: 30px;">
-            <span id="hp-personaggio" style="font-weight: bold; color: #d9534f;">HP: ---</span>
-            <span id="argento-personaggio" style="font-weight: bold; color: #c0c0c0;">Argento: 50</span>
-        </div>
-    </header>
-
-<!-- Il timbro burocratico -->
-<div style="text-align: center; margin-bottom: 35px; padding: 20px; border: 2px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
-    <h2 style="font-family: var(--serif); color: var(--accent); margin: 0 0 10px 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px;">Esito Registrazione</h2>
-    <p style="font-family: var(--sans); font-size: 20px; font-weight: bold; color: var(--text); margin: 0;">
-        PRIMO APPUNTAMENTO DISPONIBILE: 15 MARZO
-    </p>
-</div>
-
-<div id="testo-storia" style="font-family: var(--serif); font-size: 20px; line-height: 1.8; text-align: justify;">
-    <p>Lo avevi sentito dire che Bologna la Dotta si era trasformata in <em>Bologna la Prossima Primavera</em>, ma l'idea di tornare indietro con le pive nel sacco proprio non ti va giù. La lettera ricevuta parla di una ricompensa senza eguali, e quel folle ti aveva già inviato 50 monete d'argento prima di sapere se accettassi o meno. Chi mai di questi tempi può buttare così 50 monete d'argento?</p>
-    
-    <p>Mentre ti perdi nei tuoi pensieri, un figuro mingherlino con le dita macchiate d'inchiostro e lo sguardo sfuggente ti si affianca. Indossa una tunica consunta dell'Accademia.</p>
-    
-    <p><em>«Quindici marzo, eh?»</em> sussurra sbirciando la tua pergamena. <em>«Sarai cibo per i ratti prima di allora. Io sono Galeazzo, apprendista archivista. Potrei far scivolare magicamente il tuo nome nel registro di domani mattina, ma rischiare le mie preziose dita per un forestiero... ha un costo.»</em></p>
-    
-    <p>Galeazzo si passa la lingua sui denti e ti propone tre modi per saldare il debito. Quale scegli?</p>
-</div>
-
-<!-- Area per le scelte -->
-        <div id="scelte-storia" style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
+<main class="site-main" id="contenuto">
+<div class="scroll-container">
+<div class="scroll-top" aria-hidden="true"></div>
+<div class="scroll-middle">        <!-- Schermata di Accesso / Dogana -->
+        <div id="schermata-login" style="margin-bottom: 40px;">
             
-            <button id="scelta-paga" style="text-align: left; background: var(--surface); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
-                <strong>1. Corruzione:</strong> Paga 25 monete d'argento. <em>("Il denaro risolve tutto")</em>
-            </button>
+            <h1 style="font-family: var(--serif); font-size: 32px; color: var(--accent); margin-bottom: 20px; text-align: center;">
+                Porta Maggiore
+            </h1>
             
-            <button id="scelta-favore" style="text-align: left; background: var(--surface); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
-                <strong>2. Il Patto di Sangue:</strong> Accetta un favore futuro. <em>("Tieni le tue avare mani a posto. Ti aiuterò quando ne avrai bisogno")</em>
-            </button>
-            
-            <button id="scelta-reale" style="text-align: left; background: var(--surface); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
-                <strong>3. Sfida Esoterica:</strong> <em>("Scommettiamo? Dimostrerò di conoscere la vera natura di questa Porta meglio di te")</em>
-            </button>
+            <div id="storia-ingresso" style="font-family: var(--serif); font-size: 18px; line-height: 1.7; text-align: justify; margin-bottom: 30px;">
+                <p>Dopo mezza giornata di cammino lungo la Via Emilia, la sagoma imponente di Porta Maggiore si staglia finalmente contro il cielo velato. È qui che il misterioso Iliano ti ha dato appuntamento, promettendo risposte e, soprattutto, monete sonanti.</p>
+                
+                <p>Abituato ai posti di blocco serrati delle altre roccaforti, rimani interdetto: c'è una totale assenza di guardie fisiche. Sotto le alte arcate di mattoni rossi non ci sono picchieri a sbarrare il passo, né balestrieri annoiati sui camminamenti. Per un istante pensi che i governanti di Bologna siano impazziti, o che credano la città talmente intoccabile da non aver bisogno di presidiare gli ingressi.</p>
+                
+                <p>L'istinto del sopravvissuto ti suggerisce l'esistenza di una trappola invisibile. Rallenti il passo, la mano scivola sicura verso la tua arma, gli occhi scrutano le ombre dei portici in cerca di rune innescate. Eppure, diversi mercanti e contadini ti sorpassano a passo svelto, attraversando la soglia senza esitazione e senza saltare in aria.</p>
+                
+                <p>Decidi allora di proseguire, ma appena ti trovi sotto la porta senti una forza che ti trascina verso l'alto e vedi il soffitto aprirsi, per richiudersi subito dopo il tuo passaggio.</p>
+                
+                <p>A quel punto ti ritrovi in una stanza con un omino seguito da una pergamena autoscrivente che ti guarda e sospira: <em>«Eccone un altro senza il soffio di Sapienza. Hai preso appuntamento almeno? Dalla tua faccia direi proprio di no. Vabbé, recati alla Stanza delle Richieste, forse hanno qualche minuto che gli avanza.»</em></p>
+                
+                <p>Appena cerchi di replicare l'ometto si dissolve. Ovviamente senza darti alcuna indicazione per trovare la Stanza delle Richieste. Sul muro vedi una pergamena e ti avvicini.</p>
+            </div>
+
+            <!-- Enigma della Pergamena -->
+            <div id="enigma-pergamena" class="unlock-form">
+                <label for="input-enigma" style="font-weight: bold; color: var(--text);">Cosa scrivi con il dito sulla pergamena?</label>
+                <input type="text" id="input-enigma" placeholder="Domandare è lecito" style="margin-bottom: 15px; width: 100%; padding: 10px;">
+                
+                <button id="btn-enigma" style="width: 100%; background: var(--accent); border: 1px solid #631810; color: #f4ead5; padding: 14px; font-size: 16px; cursor: pointer; border-radius: 2px;">
+                    Traccia le lettere
+                </button>
+                <p id="errore-enigma" class="unlock-message" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;">
+                    L'inchiostro evapora all'istante. Non succede nulla.
+                </p>
+            </div>
+
+            <!-- Form di Creazione (Nascosto all'inizio) -->
+            <div id="form-registrazione" class="unlock-form" style="display: none; border-top: 1px dashed var(--line); padding-top: 20px; margin-top: 20px;">
+                <p style="font-family: var(--serif); font-size: 18px; margin-bottom: 15px; color: #3b6b36;">
+                    <em>La pergamena assorbe l'inchiostro e rivela una mappa per la Stanza delle Richieste, richiedendo infine di compilare le tue generalità.</em>
+                </p>
+
+                <label for="codice-accesso" style="font-weight: bold; color: var(--text);">Nome in Codice:</label>
+                <input type="text" id="codice-accesso" placeholder="Es. BalanzoneOscuro" style="margin-bottom: 15px; width: 100%; padding: 10px;">
+                
+                <label for="scelta-classe" style="font-weight: bold; color: var(--text);">Classe e Dotazione Iniziale:</label>
+                <select id="scelta-classe" style="width: 100%; padding: 13px; font: 16px var(--sans); border: 1px solid #8b8779; background: transparent; color: var(--text); margin-bottom: 25px;">
+                    <option value="Guerriero">Guerriero (Bonus: 5 HP massimi)</option>
+                    <option value="Mago">Mago (Bonus: Pergamena della Chiarezza)</option>
+                    <option value="Ladro">Ladro (Bonus: Grimaldello Meccanico)</option>
+                </select>
+
+                <button id="btn-login" style="width: 100%; background: var(--accent); border: 1px solid #631810; color: #f4ead5; padding: 14px; font-size: 16px; cursor: pointer; border-radius: 2px;">
+                    Entra nella Stanza
+                </button>
+
+                <p id="messaggio-errore" class="unlock-message" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;"></p>
+                <p id="messaggio-successo" class="unlock-message" style="color: #3b6b36; margin-top: 15px; display: none; text-align: center; font-weight: bold;"></p>
+            </div>
         </div>
 
-        <!-- Sezione nascosta per l'opzione 3 (Esoterica/Bilancia) -->
-        <div id="enigma-reale" style="display: none; margin-top: 20px; padding: 25px; border: 1px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
-            <p style="font-family: var(--serif); font-size: 18px; margin-top: 0;"><em>«Oh, un forestiero che si crede istruito! Molto bene. Porta Maggiore è lo storico ingresso cerimoniale, da cui passavano Papi, Imperatori e ambasciatori lungo la via Emilia. Se sei davvero degno di camminare per la Dotta, dimmi: qual è il Segno Zodiacale che governa questa soglia, simbolo cosmico di giustizia, diplomazia e accoglienza?»</em></p>
-            
-            <input type="text" id="risposta-reale" placeholder="Es: Toro" style="width: 100%; padding: 12px; margin-bottom: 15px; font-size: 16px; border: 1px solid var(--line); background: var(--surface);">
-            
-            <button id="btn-conferma-reale" style="width: 100%; background: var(--accent); color: #f4ead5; padding: 12px; font-size: 16px; border: none; cursor: pointer;">
-                Rispondi a Galeazzo
-            </button>
-            
-            <p id="errore-reale" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;">
-                <em>«Sbagliato! L'Accademia non fa sconti all'ignoranza. Le stelle non mentono.»</em>
-            </p>
-        </div>
-    </main>
 
-    <footer class="site-footer">
+        <!-- Schermata di Gioco Principale (nascosta all'inizio) -->
+        <div id="schermata-gioco" style="display: none; padding-top: 20px;">
+            
+            <!-- Barra di stato -->
+            <header id="barra-stato" style="display: flex; justify-content: space-between; padding: 15px 30px; background: rgba(12, 16, 15, 0.8); color: #ebdcb9; border: 1px solid var(--line); border-radius: 4px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <span id="nome-personaggio" style="font-family: var(--serif); font-size: 18px; font-weight: bold;">Nome: ---</span>
+                <div style="display: flex; gap: 30px;">
+                    <span id="hp-personaggio" style="font-weight: bold; color: #d9534f;">HP: ---</span>
+                    <span id="argento-personaggio" style="font-weight: bold; color: #c0c0c0;">Argento: 50</span>
+                </div>
+            </header>
+
+            <!-- Il timbro burocratico -->
+            <div style="text-align: center; margin-bottom: 35px; padding: 20px; border: 2px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
+                <h2 style="font-family: var(--serif); color: var(--accent); margin: 0 0 10px 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px;">Esito Registrazione</h2>
+                <p style="font-family: var(--sans); font-size: 20px; font-weight: bold; color: var(--text); margin: 0;">
+                    PRIMO APPUNTAMENTO DISPONIBILE: 15 MARZO
+                </p>
+            </div>
+
+            <div id="testo-storia" style="font-family: var(--serif); font-size: 20px; line-height: 1.8; text-align: justify;">
+                <p>Lo avevi sentito dire che Bologna la Dotta si era trasformata in <em>Bologna la Prossima Primavera</em>, ma l'idea di tornare indietro con le pive nel sacco proprio non ti va giù. La lettera ricevuta parla di una ricompensa senza eguali, e quel folle ti aveva già inviato 50 monete d'argento prima di sapere se accettassi o meno. Chi mai di questi tempi può buttare così 50 monete d'argento?</p>
+                
+                <p>Mentre ti perdi nei tuoi pensieri, un figuro mingherlino con le dita macchiate d'inchiostro e lo sguardo sfuggente ti si affianca. Indossa una tunica consunta dell'Accademia.</p>
+                
+                <p><em>«Quindici marzo, eh?»</em> sussurra sbirciando la tua pergamena. <em>«Sarai cibo per i ratti prima di allora. Io sono Galeazzo, apprendista archivista. Potrei far scivolare magicamente il tuo nome nel registro di domani mattina, ma rischiare le mie preziose dita per un forestiero... ha un costo.»</em></p>
+                
+                <p>Galeazzo si passa la lingua sui denti e ti propone tre modi per saldare il debito. Quale scegli?</p>
+            </div>
+
+            <!-- Area per le scelte -->
+            <div id="scelte-storia" style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
+                
+                <button id="scelta-paga" style="text-align: left; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
+                    <strong>1. Corruzione:</strong> Paga 25 monete d'argento. <em>("Il denaro risolve tutto")</em>
+                </button>
+                
+                <button id="scelta-favore" style="text-align: left; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
+                    <strong>2. Il Patto di Sangue:</strong> Accetta un favore futuro. <em>("Tieni le tue avare mani a posto. Ti aiuterò quando ne avrai bisogno")</em>
+                </button>
+                
+                <button id="scelta-reale" style="text-align: left; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
+                    <strong>3. Sfida Esoterica:</strong> <em>("Scommettiamo? Dimostrerò di conoscere la vera natura di questa Porta meglio di te")</em>
+                </button>
+            </div>
+
+            <!-- Sezione nascosta per l'opzione 3 (Esoterica/Bilancia) -->
+            <div id="enigma-reale" style="display: none; margin-top: 20px; padding: 25px; border: 1px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
+                <p style="font-family: var(--serif); font-size: 18px; margin-top: 0;"><em>«Oh, un forestiero che si crede istruito! Molto bene. Porta Maggiore è lo storico ingresso cerimoniale, da cui passavano Papi, Imperatori e ambasciatori lungo la via Emilia. Se sei davvero degno di camminare per la Dotta, dimmi: qual è il Segno Zodiacale che governa questa soglia, simbolo cosmico di giustizia, diplomazia e accoglienza?»</em></p>
+                
+                <input type="text" id="risposta-reale" placeholder="Es: Toro" style="width: 100%; padding: 12px; margin-bottom: 15px; font-size: 16px; border: 1px solid var(--line); background: transparent;">
+                
+                <button id="btn-conferma-reale" style="width: 100%; background: var(--accent); color: #f4ead5; padding: 12px; font-size: 16px; border: none; cursor: pointer;">
+                    Rispondi a Galeazzo
+                </button>
+                
+                <p id="errore-reale" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;">
+                    <em>«Sbagliato! L'Accademia non fa sconti all'ignoranza. Le stelle non mentono.»</em>
+                </p>
+            </div>
+            
+        </div>
+
+</div>
+<div class="scroll-bottom" aria-hidden="true"></div>
+</div>
+</main>
+<footer class="site-footer">
     <div>
         <p class="footer-title">L'Ombra sui Portici</p>
         <p>Un'avventura di esplorazione e magia nella Bologna medievale.</p>
@@ -158,7 +165,5 @@
         </a>
     </div>
 </footer>
-
-    <script type="module" src="/calendario-avvento-bologna/app.js"></script>
 </body>
 </html>

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="{{ site.lang | default: 'it' }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page.title | default: site.title }}</title>
-    <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page.title | default: site.title | escape }}</title>
+<link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+{% if page.url == '/' %}<script defer src="{{ '/app.js' | relative_url }}"></script>{% endif %}
 </head>
 <body>
-    {% include header.html %}
-
-    <main class="site-main">
-        {{ content }}
-    </main>
-
-    {% include footer.html %}
-
-    <script type="module" src="{{ '/app.js' | relative_url }}"></script>
+{% include header.html %}
+<main class="site-main" id="contenuto">
+<div class="scroll-container">
+<div class="scroll-top" aria-hidden="true"></div>
+<div class="scroll-middle">{{ content }}</div>
+<div class="scroll-bottom" aria-hidden="true"></div>
+</div>
+</main>
+{% include footer.html %}
 </body>
 </html>
