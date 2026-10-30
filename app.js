@@ -68,6 +68,7 @@ const $ = id => document.getElementById(id);
 const CHIAVE = 'ombra-sui-portici.codice-segreto.v2';
 const IN_SOSPESO = 'ombra-sui-portici.creazione.v2';
 let codiceAttivo = null;
+let partitaCorrente = null;
 let occupato = false;
 
 function leggiMemoria(chiave) { try { return localStorage.getItem(chiave); } catch { return null; } }
@@ -127,6 +128,10 @@ async function esegui(azione) {
 async function rpc(nome, parametri) {
     const {data,error} = await supabaseClient.rpc(nome,parametri);
     if (error) {
+        if (['Oggetto non disponibile nella borsa','Oggetto non utilizzabile qui',
+            'Nessun passaggio compatibile','Partita non disponibile'].includes(error.message)) {
+            throw new Error(error.message + '. Riapri la partita per aggiornare il salvataggio.');
+        }
         if(error.message==='Codice non disponibile') {
             rimuoviMemoria(IN_SOSPESO);
             throw new Error('Codice già occupato. Scegline un altro. Se è la tua partita, usa Riprendi la partita con quel codice.');
@@ -202,12 +207,129 @@ const timbro = $('testo-storia').previousElementSibling;
 const testiEsito = {
     paga: 'Galeazzo ha ricevuto 25 monete d’argento. Il posto per domani è tuo.',
     favore: 'Hai accettato il favore futuro: recuperare il grimorio di Galeazzo al Mercato di Mezzo.',
-    enigma: 'Hai superato la sfida di Galeazzo senza spendere argento.'
+    enigma: 'Hai superato la sfida di Galeazzo senza spendere argento.',
+    pergamena: 'La Pergamena della Chiarezza ti ha permesso di superare l’enigma di Galeazzo. La pergamena è stata consumata.'
 };
+
+// Le definizioni sono comuni al gioco; Supabase conserva soltanto gli oggetti posseduti.
+const OGGETTI = Object.freeze({
+    pergamena_chiarezza: {
+        nome: 'Pergamena della Chiarezza',
+        descrizione: 'Permette di superare un enigma irrisolto. Si consuma quando lo sblocca.'
+    },
+    grimaldello: {
+        nome: 'Grimaldello',
+        descrizione: 'Apre un passaggio compatibile di cui non hai trovato la chiave. Si consuma quando lo apre.'
+    }
+});
+function contaOggetti(inventario) {
+    const quantita = new Map();
+    if (!Array.isArray(inventario)) return quantita;
+    for (const id of inventario) {
+        if (typeof id === 'string') quantita.set(id,(quantita.get(id)||0)+1);
+    }
+    return quantita;
+}
+function bersaglioOggetto(id, partita) {
+    if (id === 'pergamena_chiarezza' && partita?.stato_partita?.fase === 'enigma')
+        return 'enigma_galeazzo';
+    return null;
+}
+
+const borsaStile = document.createElement('style');
+borsaStile.textContent = `
+dialog.borsa-dialog{width:min(600px,calc(100% - 24px))}
+.borsa-elenco{list-style:none;margin:16px 0;padding:0}
+.borsa-elenco li{padding:16px 0;border-top:1px solid var(--line)}
+.borsa-elenco h3{margin:0;font:20px/1.4 var(--sans);font-weight:bold}
+.borsa-elenco p{margin:8px 0}
+.borsa-conferma{padding:12px;border:1px solid var(--accent);margin-block:12px}
+.borsa-conferma button+button{margin-top:10px}
+`;
+document.head.append(borsaStile);
+const borsa = document.createElement('dialog');
+borsa.id = 'inventario';
+borsa.className = 'avviso-codice borsa-dialog';
+borsa.setAttribute('aria-labelledby','titolo-borsa');
+borsa.innerHTML = '<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-borsa">La Borsa</h2><p id="borsa-argento"></p><p id="borsa-stato" role="status" aria-live="polite"></p><ul id="borsa-elenco" class="borsa-elenco"></ul><p>Gli oggetti si consumano soltanto dopo la conferma e lo sblocco riuscito.</p><button type="button" id="chiudi-borsa">Torna alla storia</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
+document.body.append(borsa);
+$('chiudi-borsa').addEventListener('click',()=>borsa.close());
+borsa.addEventListener('cancel',event=>{if(occupato)event.preventDefault();});
+borsa.addEventListener('close',()=>{
+    $('borsa-stato').textContent='';
+    $('borsa-elenco').replaceChildren();
+});
+const apriBorsaButton = document.createElement('button');
+apriBorsaButton.id='apri-borsa';
+apriBorsaButton.type='button';
+apriBorsaButton.textContent='Apri la Borsa';
+apriBorsaButton.style.cssText='margin:0 0 24px;padding:10px 16px;cursor:pointer';
+$('barra-stato').after(apriBorsaButton);
+apriBorsaButton.addEventListener('click',apriBorsa);
+document.querySelectorAll('a[href$="#inventario"]').forEach(link=>{
+    link.addEventListener('click',event=>{event.preventDefault();apriBorsa();});
+});
+function apriBorsa() {
+    if (occupato || cambioPergamenaInCorso) return;
+    if (!partitaCorrente) { avvisa('Entra in una partita per aprire la Borsa.');return; }
+    disegnaBorsa();
+    if (!borsa.open) borsa.showModal();
+}
+function disegnaBorsa() {
+    $('borsa-argento').textContent=`Argento disponibile: ${partitaCorrente.oro_rimanente}`;
+    $('borsa-stato').textContent='';
+    const elenco=$('borsa-elenco');elenco.replaceChildren();
+    const quantita=contaOggetti(partitaCorrente.inventario);
+    if (!quantita.size) {
+        const vuota=document.createElement('li');
+        vuota.textContent='La Borsa non contiene oggetti.';elenco.append(vuota);return;
+    }
+    for (const [id,numero] of quantita) {
+        const scheda=document.createElement('li');
+        const definizione=Object.hasOwn(OGGETTI,id) ? OGGETTI[id] : {nome:id,descrizione:'Oggetto conservato nella Borsa. Non è ancora previsto un utilizzo.'};
+        const nome=document.createElement('h3');nome.textContent=`${definizione.nome} × ${numero}`;
+        const descrizione=document.createElement('p');descrizione.textContent=definizione.descrizione;
+        scheda.append(nome,descrizione);
+        const bersaglio=bersaglioOggetto(id,partitaCorrente);
+        if (bersaglio) {
+            const usa=document.createElement('button');usa.type='button';usa.textContent='Usa sull’enigma di Galeazzo';
+            usa.addEventListener('click',()=>confermaUso(id,bersaglio,scheda,usa));
+            scheda.append(usa);
+        } else {
+            const contesto=document.createElement('p');
+            contesto.textContent='Non c’è un bersaglio compatibile in questa scena. L’oggetto resta nella Borsa.';
+            scheda.append(contesto);
+        }
+        elenco.append(scheda);
+    }
+}
+function confermaUso(id,bersaglio,scheda,usa) {
+    if(occupato)return;
+    usa.hidden=true;
+    const conferma=document.createElement('div');conferma.className='borsa-conferma';
+    const testo=document.createElement('p');testo.textContent='Consumare una Pergamena della Chiarezza per superare questo enigma?';
+    const si=document.createElement('button');si.type='button';si.textContent='Conferma e usa una pergamena';
+    const no=document.createElement('button');no.type='button';no.textContent='Annulla';
+    no.addEventListener('click',()=>{conferma.remove();usa.hidden=false;usa.focus();});
+    si.addEventListener('click',()=>esegui(async()=>{
+        $('borsa-stato').textContent='Uso dell’oggetto e salvataggio…';
+        try {
+            const dati=await rpc('gioco_usa_oggetto',{p_codice:codiceAttivo,p_oggetto:id,p_bersaglio:bersaglio});
+            borsa.close();
+            await mostraPartita(dati,codiceAttivo);
+            avvisa('Pergamena utilizzata: consumo e sblocco sono stati salvati.');
+        } catch(errore) {
+            $('borsa-stato').textContent='Non è stato possibile confermare l’uso. Riprova oppure riapri la partita per verificare il salvataggio: non è necessario usare un’altra copia.';
+            throw errore;
+        }
+    }));
+    conferma.append(testo,si,no);scheda.append(conferma);si.focus();
+}
 
 async function mostraPartita(dati, codice) {
     await cambiaPergamena(() => {
         codiceAttivo = codice;
+        partitaCorrente = dati;
         $('schermata-login').style.display = 'none';
         $('schermata-gioco').style.display = 'block';
         $('nome-personaggio').textContent = `Personaggio: ${dati.classe}`;
