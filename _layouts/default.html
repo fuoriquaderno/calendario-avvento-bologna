@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page.title | default: site.title | escape }}</title>
 <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/immagini-schermate.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/dadi.css' | relative_url }}">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer src="{{ '/partita.js' | relative_url }}"></script>
+<script defer src="{{ '/immagini-schermate.js' | relative_url }}"></script>
 <script defer src="{{ '/dadi.js' | relative_url }}"></script>
 {% if page.url == '/' %}<script defer src="{{ '/enigmi.js' | relative_url }}"></script>{% endif %}
 {% if page.url == '/' %}<script defer src="{{ '/app.js' | relative_url }}"></script>{% endif %}
@@ -17,10 +19,18 @@
 <main class="site-main" id="contenuto">
 <div class="scroll-container">
 <div class="scroll-top" aria-hidden="true"></div>
-<div class="scroll-middle">{{ content }}</div>
+<div class="scroll-middle">
+<figure id="immagine-schermata" class="immagine-schermata" hidden
+  data-immagine="{% if page.immagine_schermata %}{{ page.immagine_schermata | relative_url | escape }}{% endif %}"
+  data-descrizione="{{ page.descrizione_immagine | default: '' | escape }}">
+  <img id="illustrazione-schermata" alt="" decoding="async">
+</figure>
+{{ content }}
+</div>
 <div class="scroll-bottom" aria-hidden="true"></div>
 </div>
 </main>
 {% include footer.html %}
 </body>
 </html>
+

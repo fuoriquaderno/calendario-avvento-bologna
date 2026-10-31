@@ -1,0 +1,24 @@
+/* Posizione comune: sopra il contenuto, dentro la pergamena. */
+figure.immagine-schermata {
+  display: block;
+  width: 100%;
+  aspect-ratio: auto;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+figure.immagine-schermata[hidden] { display: none !important; }
+.immagine-schermata > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  opacity: .75;
+}
+@media (max-width: 600px) {
+  figure.immagine-schermata { margin-bottom: 16px; }
+}
+

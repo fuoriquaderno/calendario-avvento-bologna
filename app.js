@@ -17,7 +17,7 @@ let cambioPergamenaInCorso = false;
 async function cambiaPergamena(aggiornaContenuto) {
     if (cambioPergamenaInCorso) return;
     const pergamena = document.querySelector('.scroll-container');
-    if (!pergamena) { aggiornaContenuto(); tornaInizioMain(); return; }
+    if (!pergamena) { await aggiornaContenuto(); tornaInizioMain(); return; }
     cambioPergamenaInCorso = true;
     const movimentoRidotto = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const animazioni = [];
@@ -32,7 +32,7 @@ async function cambiaPergamena(aggiornaContenuto) {
         }
         pergamena.style.opacity = '0';
         animazioni.forEach(animazione => animazione.cancel());
-        aggiornaContenuto();
+        await aggiornaContenuto();
         // Il contenuto determina subito la nuova altezza mentre la pergamena è invisibile.
         await new Promise(resolve => requestAnimationFrame(resolve));
         const main = document.querySelector('main.site-main');
@@ -55,6 +55,8 @@ async function cambiaPergamena(aggiornaContenuto) {
         cambioPergamenaInCorso = false;
     }
 }
+
+window.cambiaPergamena=cambiaPergamena;
 
 (() => {
   'use strict';
@@ -213,8 +215,9 @@ async function cambiaPergamena(aggiornaContenuto) {
       if(!Array.isArray(elenco)||!elenco.length||elenco.some(c=>typeof c.nome!=='string'||!Number.isInteger(c.hp_massimi)||c.hp_massimi<=0))throw new Error('Catalogo non disponibile');
       const precedente=$('scelta-classe').value;
       catalogoClassi=elenco;$('scelta-classe').replaceChildren();
+      const invito=document.createElement('option');invito.value='';invito.textContent='Scegli una classe…';invito.disabled=true;$('scelta-classe').append(invito);
       for(const c of elenco){const o=document.createElement('option');o.value=c.nome;o.textContent=`${c.nome} — ${c.hp_massimi} HP`;$('scelta-classe').append(o)}
-      $('scelta-classe').value=elenco.some(c=>c.nome===precedente)?precedente:elenco[0].nome;
+      $('scelta-classe').value=elenco.some(c=>c.nome===precedente)?precedente:'';
       classiCaricate=true;statoClassi.textContent='';mostraClasse();
     }catch{
       statoClassi.textContent='Non riesco a caricare le classi. Controlla la connessione e riprova.';riprovaClassi.hidden=false;
@@ -231,13 +234,17 @@ async function cambiaPergamena(aggiornaContenuto) {
 
   const nome=document.createElement('div');
   nome.innerHTML='<label for="nome-nuovo-personaggio">Nome del personaggio (facoltativo)</label><input id="nome-nuovo-personaggio" type="text" autocomplete="off" placeholder="Es. Andrea"><p>Puoi usare un soprannome. Il nome non deve essere unico e non serve per accedere alla partita.</p>';
-  const label=document.querySelector('label[for="codice-accesso"]');label.before(nome);label.textContent='Scegli il codice della partita';
+  const label=document.querySelector('label[for="codice-accesso"]');label.before(nome);label.textContent='Scegli un codice';
   $('codice-accesso').hidden=false;$('codice-accesso').style.display='block';$('codice-accesso').placeholder='Scrivi un codice a tua scelta';
   $('codice-accesso').autocomplete='off';$('codice-accesso').setAttribute('autocapitalize','none');$('codice-accesso').spellcheck=false;
   const genera=document.createElement('button');genera.type='button';genera.textContent='Genera un codice casuale';
   genera.addEventListener('click',()=>$('codice-accesso').value=crypto.randomUUID());$('codice-accesso').after(genera);
   const istruzioni=document.createElement('p');istruzioni.textContent='Puoi scegliere un codice da 1 a 128 caratteri, anche con simboli. Maiuscole e minuscole contano; gli spazi iniziali e finali vengono rimossi. Chi lo indovina può usare il salvataggio e cambiare il codice. I codici semplici sono a tuo rischio.';
-  $('btn-login').before(istruzioni);$('btn-login').textContent='Crea partita';$('btn-login').type='button';
+  const scrivi=document.createElement('button');scrivi.type='button';scrivi.textContent='Scrivi un codice a tua scelta';
+  scrivi.addEventListener('click',()=>{$('codice-accesso').focus();$('codice-accesso').select()});
+  genera.after(scrivi);scrivi.after(istruzioni);
+  istruzioni.id='istruzioni-codice';$('codice-accesso').setAttribute('aria-describedby',istruzioni.id);
+  $('btn-login').textContent='Crea partita';$('btn-login').type='button';
   $('btn-login').addEventListener('click',async()=>{
     await api.esegui(async()=>{
       if(!classiCaricate)throw new Error('Attendi il caricamento delle classi o premi Riprova.');
@@ -246,7 +253,9 @@ async function cambiaPergamena(aggiornaContenuto) {
         const codice=api.pulisci($('codice-accesso').value),nome=$('nome-nuovo-personaggio').value.trim();
         if(!api.valido(codice))throw new Error('Scrivi un codice da 1 a 128 caratteri oppure generane uno casuale.');
         if(Array.from(nome).length>40)throw new Error('Il nome può contenere al massimo 40 caratteri.');
-        richiesta={codice,classe:$('scelta-classe').value,nome};
+        const classe=$('scelta-classe').value;
+        if(!catalogoClassi.some(c=>c.nome===classe)){$('scelta-classe').focus();throw new Error('Scegli una classe prima di creare la partita.');}
+        richiesta={codice,classe,nome};
         if(!api.memoria.scrivi(api.SOSPESA,JSON.stringify(richiesta)))throw new Error('Abilita la memorizzazione dei dati del sito per creare una partita.');
       }
       const dati=await api.rpc('gioco_crea',{p_codice:richiesta.codice,p_classe:richiesta.classe,p_nome:richiesta.nome||''});
@@ -254,9 +263,22 @@ async function cambiaPergamena(aggiornaContenuto) {
     },messaggio);
     api.promemoria();
   });
+  let erroriIngresso=0;
   $('btn-enigma').type='button';
   $('btn-enigma').addEventListener('click',()=>api.esegui(async()=>{
-    if(!$('input-enigma').value.toLowerCase().trim().includes('richieste')){$('errore-enigma').style.display='block';return}
+    if(!$('input-enigma').value.toLowerCase().trim().includes('richieste')){
+      // Un invio vuoto non è un tentativo di risposta.
+      if(!$('input-enigma').value.trim()){$('input-enigma').focus();return}
+      erroriIngresso++;
+      $('errore-enigma').style.display='block';
+      if(erroriIngresso>=4){
+        const frase='L’omino ricompare e ti squadra con aria sprezzante. «Quattro tentativi e ancora niente? Te lo devo proprio dettare: devi scrivere stanza delle richieste!»';
+        $('errore-enigma').textContent=frase;
+        if(erroriIngresso===4)window.Messaggi.mostra({titolo:'L’omino ricompare',testo:frase,pulsante:'Torna alla pergamena'});
+      }
+      return;
+    }
+    erroriIngresso=0;
     await cambiaPergamena(()=>{
       $('errore-enigma').style.display='none';$('enigma-pergamena').style.display='none';
       $('storia-ingresso').style.display='none';$('form-registrazione').style.display='block';
@@ -277,7 +299,7 @@ async function cambiaPergamena(aggiornaContenuto) {
       $('schermata-login').style.display='none';$('schermata-gioco').style.display='block';
       const fase=dati.stato_partita?.fase||'galeazzo';
       const morto=dati.morto===true||dati.hp_attuali<=0;
-      morte.hidden=!morto;
+      morte.hidden=!morto||fase==='fallimento_volpe';
       if(morto){
         const numero=api.resocontoMorti(dati).totale;
         $('riepilogo-morte').textContent=`Giorno ${dati.giorno_corrente||1} · Morti totali: ${numero}`;
@@ -303,10 +325,12 @@ async function cambiaPergamena(aggiornaContenuto) {
         }
       }
     };
-    if(opzioni.anima===false)aggiorna();else await cambiaPergamena(aggiorna);
+    if(opzioni.anima===false||opzioni.transizioneGestita)aggiorna();else await cambiaPergamena(aggiorna);
     if(opzioni.anima===true&&!dati.morto&&dati.stato_partita?.fase==='attesa_giorno2'
-      &&['enigma','pergamena'].includes(dati.stato_partita.scelta))mostraRisposta(dati);
-    window.FineGiornata?.aggiorna();
+      &&['enigma','pergamena'].includes(dati.stato_partita.scelta)){
+      if(opzioni.dopoTransizione)opzioni.dopoTransizione.push(()=>mostraRisposta(dati));else mostraRisposta(dati);
+    }
+    if(opzioni.dopoTransizione)opzioni.dopoTransizione.push(()=>window.FineGiornata?.aggiorna());else window.FineGiornata?.aggiorna();
   }
   api.onChange(mostra);
   async function scegli(azione,risposta=null){
