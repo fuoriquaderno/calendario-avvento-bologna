@@ -6,6 +6,7 @@
  if(!figura||!immagine)return;
  const radice=document.currentScript?.src||window.location.href;
  const luoghi={
+  sala_consiglio:{src:new URL('images/stanza-nascosta.png',radice).href,alt:'Scaffali di vecchi tomi e piccoli topi nella stanza nascosta.'},
   locanda_risveglio:{src:new URL('images/locanda.png',radice).href,alt:'La colazione in locanda, con due avventori al tavolo e il locandiere con la brocca.'},
   biblioteca:{src:new URL('images/biblioteca.png',radice).href,alt:"Il bibliotecario fra i manoscritti del convento di San Domenico."},
   san_domenico:{src:new URL('images/san_domenico.png',radice).href,alt:"La basilica e il convento di San Domenico."},
@@ -46,7 +47,7 @@
   return caricamento;
  }
  function aggiorna(dati){
-  if(dati?.giorno_corrente===4&&dati.luogo_attuale==='sala_consiglio')return mostra(null);
+  
   if(document.getElementById('schermata-gioco'))return mostra(dati?(dati.morto?predefinita:luoghi[dati.luogo_attuale]||predefinita):(predefinita||luoghi.porta_maggiore));
   return mostra(predefinita);
  }

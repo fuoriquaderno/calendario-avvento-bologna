@@ -22,7 +22,7 @@
   async function rpc(nome,parametri){
     const {data,error}=await client.rpc(nome,parametri);
     if(error){
-      const note=['Torna alla locanda prima di proseguire','Servizi non disponibili','Esamina prima la parete opposta','Per oggi non ci sono altre informazioni','Scegli un luogo già conosciuto','Sala dei manoscritti non disponibile','Documento non disponibile','Sala di lettura non disponibile','Testo non disponibile','Torna alla biblioteca prima di proseguire','Torna al luogo del racconto prima di proseguire','Scrivi dove vuoi cercare','Usa al massimo 500 caratteri','Incontro con Iliano non disponibile','Il sacchetto è già stato consegnato oppure Iliano non è qui','Questa scelta non è disponibile','Ricompensa di Iliano non configurata','Raggiungi prima questo negozio','Prezzo del prodotto non disponibile','Scena non disponibile','Scrivi una risposta',"Termina prima il combattimento","Luogo non disponibile","Questo personaggio non è qui","Riferimento del personaggio non valido","Non ci sono ancora indicazioni per questo percorso","Concludi prima la perquisizione per entrare in città","Chiedi prima indicazioni per questo luogo","Equipaggiamento non valido","Puoi indossare al massimo due accessori","Oggetto non adatto a questo posto","Richiesta già usata diversamente","Quantità non valida","Prima rimuovi l’oggetto dall’equipaggiamento","Qui non c’è un mercante","Il mercante non ritira questo oggetto","Oggetto non in vendita","Argento insufficiente","Servono pergamena e calamaio per scrivere","Il taccuino può contenere al massimo 20000 caratteri","Gli appunti sono cambiati su un altro dispositivo","Perquisizione non disponibile","La perquisizione è cambiata: recupera lo stato","Non puoi più tentare Inganno","La discussione con la guardia è chiusa","Scrivi una parola","Nessuna proposta da confermare","Servono cinque monete","Accetta o rifiuta prima la proposta","Selezione non valida","Troppi oggetti per i posti disponibili","Scegli un’arma e una difesa","Oggetto non proposto sul tavolo","Quantità non disponibile sul tavolo","Superi il peso massimo della classe","Equipaggiamento non modificabile in questa giornata","Scegli prima cosa fare del bottino","Bottino non disponibile","Quantità non disponibile","Arma non disponibile nella borsa","Questa arma è già equipaggiata","Questa giornata è già confermata","La giornata non è ancora da confermare","Conferma la giornata prima di proseguire","Questa giornata non è ancora aperta","Cura già usata in questa giornata","Durante il combattimento usa le azioni dello scontro","Nessun combattimento in questa scena","Combattimento terminato","Azione non disponibile",'Sessione di allenamento non valida','Richiesta di allenamento diversa','Avversario non disponibile','Classe non disponibile','Allenamento scaduto: ricomincia','Azione di allenamento non valida','Turno cambiato: recupera l’allenamento','Allenamento terminato','Codice non disponibile','Nome troppo lungo','Oggetto non disponibile nella borsa','Oggetto non utilizzabile qui','Nessun passaggio compatibile','Partita non disponibile','Riprendi dal checkpoint prima di proseguire','Completa la giornata corrente prima di proseguire','Questa giornata non è ancora configurata','Checkpoint non disponibile','Tentativo non valido','La partita è cambiata: riapri la Borsa','Questa capacità è riservata al Chierico','Cura non disponibile','Riprendi dal checkpoint prima di usare la cura','Hai già tutti i punti vita','Richiesta non valida','Enigma non disponibile in questa scena','La partita è cambiata: riapri l’enigma','Hai già fatto due offerte','Offerta non valida o argento insufficiente','Scambio non disponibile','Non possiedi l’oggetto richiesto','Acquisto in argento non disponibile','Richiesta già usata con un’altra offerta'];
+      const note=['Stanza nascosta non disponibile','Torna alla stanza nascosta prima di proseguire','La prova del topo è già stata effettuata','Effettua prima la prova del topo','Hai già raccolto queste monete','Hai già raccolto questa pozione','Torna alla locanda prima di proseguire','Servizi non disponibili','Esamina prima la parete opposta','Per oggi non ci sono altre informazioni','Scegli un luogo già conosciuto','Sala dei manoscritti non disponibile','Documento non disponibile','Sala di lettura non disponibile','Testo non disponibile','Torna alla biblioteca prima di proseguire','Torna al luogo del racconto prima di proseguire','Scrivi dove vuoi cercare','Usa al massimo 500 caratteri','Incontro con Iliano non disponibile','Il sacchetto è già stato consegnato oppure Iliano non è qui','Questa scelta non è disponibile','Ricompensa di Iliano non configurata','Raggiungi prima questo negozio','Prezzo del prodotto non disponibile','Scena non disponibile','Scrivi una risposta',"Termina prima il combattimento","Luogo non disponibile","Questo personaggio non è qui","Riferimento del personaggio non valido","Non ci sono ancora indicazioni per questo percorso","Concludi prima la perquisizione per entrare in città","Chiedi prima indicazioni per questo luogo","Equipaggiamento non valido","Puoi indossare al massimo due accessori","Oggetto non adatto a questo posto","Richiesta già usata diversamente","Quantità non valida","Prima rimuovi l’oggetto dall’equipaggiamento","Qui non c’è un mercante","Il mercante non ritira questo oggetto","Oggetto non in vendita","Argento insufficiente","Servono pergamena e calamaio per scrivere","Il taccuino può contenere al massimo 20000 caratteri","Gli appunti sono cambiati su un altro dispositivo","Perquisizione non disponibile","La perquisizione è cambiata: recupera lo stato","Non puoi più tentare Inganno","La discussione con la guardia è chiusa","Scrivi una parola","Nessuna proposta da confermare","Servono cinque monete","Accetta o rifiuta prima la proposta","Selezione non valida","Troppi oggetti per i posti disponibili","Scegli un’arma e una difesa","Oggetto non proposto sul tavolo","Quantità non disponibile sul tavolo","Superi il peso massimo della classe","Equipaggiamento non modificabile in questa giornata","Scegli prima cosa fare del bottino","Bottino non disponibile","Quantità non disponibile","Arma non disponibile nella borsa","Questa arma è già equipaggiata","Questa giornata è già confermata","La giornata non è ancora da confermare","Conferma la giornata prima di proseguire","Questa giornata non è ancora aperta","Cura già usata in questa giornata","Durante il combattimento usa le azioni dello scontro","Nessun combattimento in questa scena","Combattimento terminato","Azione non disponibile",'Sessione di allenamento non valida','Richiesta di allenamento diversa','Avversario non disponibile','Classe non disponibile','Allenamento scaduto: ricomincia','Azione di allenamento non valida','Turno cambiato: recupera l’allenamento','Allenamento terminato','Codice non disponibile','Nome troppo lungo','Oggetto non disponibile nella borsa','Oggetto non utilizzabile qui','Nessun passaggio compatibile','Partita non disponibile','Riprendi dal checkpoint prima di proseguire','Completa la giornata corrente prima di proseguire','Questa giornata non è ancora configurata','Checkpoint non disponibile','Tentativo non valido','La partita è cambiata: riapri la Borsa','Questa capacità è riservata al Chierico','Cura non disponibile','Riprendi dal checkpoint prima di usare la cura','Hai già tutti i punti vita','Richiesta non valida','Enigma non disponibile in questa scena','La partita è cambiata: riapri l’enigma','Hai già fatto due offerte','Offerta non valida o argento insufficiente','Scambio non disponibile','Non possiedi l’oggetto richiesto','Acquisto in argento non disponibile','Richiesta già usata con un’altra offerta'];
       if(error.message==='Codice non disponibile')memoria.rimuovi(SOSPESA);
       throw new Error(note.includes(error.message)?error.message:'Operazione non riuscita. Controlla la connessione e riprova. Se una creazione o un cambio codice potrebbero essere riusciti, prova a riprendere la partita con il codice scelto.');
     }
@@ -37,6 +37,7 @@
     finally{occupato=false;document.querySelectorAll('button').forEach(b=>b.disabled=false)}
   }
   function aggiornaHeader(){
+    const xpHeader=$('xp-personaggio');if(xpHeader)xpHeader.textContent=dati?`${dati.xp??0} XP`:'';
     $('barra-stato').hidden=!dati;
     $('nome-personaggio').textContent=dati?.nome||'';
     $('nome-personaggio').hidden=!dati?.nome;
@@ -565,7 +566,7 @@ window.ConfermaPergamena=(testo,{titolo='Confermi?',conferma='Conferma',annulla=
      nellaStoria.hidden=false;nellaStoria.textContent='Recupera esito del combattimento';
    }else combatti.textContent='Riprendi combattimento';
    if(api.dati.morto)return;
-   try{const s=await api.rpc('gioco_scontro',{p_codice:api.codice,p_azione:'disponibile'});if(n!==revisione)return;if(s&&!s.terminato){combatti.hidden=false;nellaStoria.hidden=false;nellaStoria.textContent='Inizia il combattimento'}}
+   try{const s=await api.rpc('gioco_scontro',{p_codice:api.codice,p_azione:'disponibile'});if(n!==revisione)return;if(s&&!s.terminato){combatti.hidden=false;nellaStoria.hidden=api.dati.stato_partita?.fase==='g4_fantasma';nellaStoria.textContent='Inizia il combattimento'}}
    catch{/* La borsa resta utilizzabile quando la verifica dello scontro fallisce. */}
  }
  window.AzioniGioco={apriScontro:()=>apri('storia'),async usaPozione(id){
@@ -613,7 +614,7 @@ window.ConfermaPergamena=(testo,{titolo='Confermi?',conferma='Conferma',annulla=
    await api.esegui(async()=>{
      try{
        risultato=await api.rpc(r.nomeRpc,r.args);api.memoria.rimuovi(REQ);
-       if(risultato?.partita)await api.applica(risultato.partita,r.codice,{anima:['gioco_iliano','gioco_giorno3'].includes(r.nomeRpc)||(r.nomeRpc==='gioco_sala_lettura'&&['manoscritti','sala','torna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_manoscritti'&&r.args.p_azione!=='documento')||(r.nomeRpc==='gioco_servizi'&&['entra','premi','corridoio','torna','esci'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno4'&&!['parla','passante'].includes(r.args.p_azione))});
+       if(risultato?.partita)await api.applica(risultato.partita,r.codice,{anima:['gioco_iliano','gioco_giorno3'].includes(r.nomeRpc)||(r.nomeRpc==='gioco_sala_lettura'&&['manoscritti','sala','torna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_manoscritti'&&r.args.p_azione!=='documento')||(r.nomeRpc==='gioco_servizi'&&['entra','premi','corridoio','torna','esci'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno4'&&!['parla','passante'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_stanza_nascosta'&&['esplora','scaffali','libri','uscita','torna'].includes(r.args.p_azione))});
        if($('inventario').open)await aggiorna();
      }catch(e){if(!e.message.startsWith('Operazione non riuscita'))api.memoria.rimuovi(REQ);throw e}
    },msg);
@@ -889,7 +890,7 @@ window.ConfermaPergamena=(testo,{titolo='Confermi?',conferma='Conferma',annulla=
  }
  function disegna(){
    pulsante.hidden=!api.dati;apriMappa.hidden=!dati?.ha_mappa;
-   scena.hidden=!dati||!$('schermata-gioco')||dati.partita.morto||([3,4].includes(dati.partita.giorno_corrente)&&String(dati.partita.stato_partita?.fase||'').startsWith('g3_'))||(dati.partita.giorno_corrente===4&&['g4_colazione','g4_passaggio','g4_nascosta'].includes(dati.partita.stato_partita?.fase))||(dati.partita.giorno_corrente===2&&['ritorno_porta','indicazioni_giorno2','guardia_giorno2','scontro_guardie'].includes(dati.partita.stato_partita?.fase));
+   scena.hidden=!dati||!$('schermata-gioco')||dati.partita.morto||([3,4].includes(dati.partita.giorno_corrente)&&String(dati.partita.stato_partita?.fase||'').startsWith('g3_'))||(dati.partita.giorno_corrente===4&&['g4_colazione','g4_passaggio','g4_nascosta','g4_esplora','g4_fantasma','g4_dopocustode'].includes(dati.partita.stato_partita?.fase))||(dati.partita.giorno_corrente===2&&['ritorno_porta','indicazioni_giorno2','guardia_giorno2','scontro_guardie'].includes(dati.partita.stato_partita?.fase));
    if(!dati)return;
    titolo.textContent=dati.corrente.nome;descrizione.textContent=dati.corrente.descrizione;persone.replaceChildren();
    if(!dati.ingresso_completato)persone.append(p('Puoi chiedere indicazioni. Per entrare in città devi prima concludere la perquisizione.'));
@@ -1358,7 +1359,7 @@ window.ConfermaPergamena=(testo,{titolo='Confermi?',conferma='Conferma',annulla=
   finally{busy=false;aggiorna()}
  }
  function aggiorna(){
-  const d=api.dati,f=d?.stato_partita?.fase;area.replaceChildren();area.hidden=!d||d.giorno_corrente!==4||d.morto||!['g4_colazione','g4_strada','g4_nascosta'].includes(f);if(area.hidden)return;
+  const d=api.dati,f=d?.stato_partita?.fase;area.replaceChildren();area.hidden=!d||d.giorno_corrente!==4||d.morto||!['g4_colazione','g4_strada'].includes(f);if(area.hidden)return;
   if(f==='g4_strada'&&['armaiolo','bottega_preziosi','speziale'].includes(d.luogo_attuale)){area.hidden=true;return}
   const titolo=document.createElement('h2');titolo.textContent=f==='g4_colazione'?'Il quarto giorno':f==='g4_nascosta'?'La stanza nascosta':'La mattina in città';area.append(titolo);
   const sospesa=window.BorsaNuova.pending();
@@ -1383,6 +1384,56 @@ window.ConfermaPergamena=(testo,{titolo='Confermi?',conferma='Conferma',annulla=
  window.GiornoQuattro={aggiorna,parla:id=>invia('parla',id),entra:()=>invia('entra_nascosta'),servizi:()=>invia('servizi')};api.onChange(aggiorna);api.ready.then(aggiorna);
 })();
 
+(() => {
+ 'use strict';
+ const api=window.Partita,$=id=>document.getElementById(id);if(!$('schermata-gioco'))return;
+ const area=document.createElement('section');area.id='stanza-nascosta';area.hidden=true;document.querySelector('main .scroll-middle').append(area);
+ let busy=false;
+ function p(t){const e=document.createElement('p');e.textContent=t;return e}
+ function b(t,f){const e=document.createElement('button');e.type='button';e.textContent=t;e.disabled=busy;e.addEventListener('click',f);return e}
+ async function invia(azione){
+  if(busy)return;busy=true;
+  try{const r=await window.BorsaNuova.esegui('gioco_stanza_nascosta',{p_codice:api.codice,p_azione:azione,p_richiesta:crypto.randomUUID(),p_tentativo:api.dati.tentativo});if(r?.lettura){preparaMessaggiAllenamento();window.Messaggi.mostra({titolo:r.lettura.titolo,testo:r.lettura.testo,pulsante:'Continua'})}}
+  finally{busy=false;aggiorna()}
+ }
+ function aggiorna(){
+  const d=api.dati,f=d?.stato_partita?.fase,s=d?.stato_partita?.stanza_nascosta||{};area.replaceChildren();
+  area.hidden=!d||d.giorno_corrente!==4||d.morto||!['g4_nascosta','g4_esplora','g4_fantasma','g4_dopocustode'].includes(f);if(area.hidden)return;
+  const titolo=document.createElement('h2');titolo.textContent=f==='g4_fantasma'?'Il custode degli scaffali':f==='g4_esplora'?'Fra polvere e pietre':'La stanza nascosta';area.append(titolo);
+  const sospesa=window.BorsaNuova.pending();
+  if(sospesa){area.append(p('Recupera il risultato dell’ultima azione prima di proseguire.'),b('Recupera il risultato',async()=>{await window.BorsaNuova.esegui(sospesa.nomeRpc,sospesa.args);aggiorna()}));return}
+  if(d.luogo_attuale!=='sala_consiglio'){area.append(p('Puoi riprendere l’esplorazione oltre il passaggio della biblioteca.'),b('Torna alla stanza nascosta',()=>invia('torna')));return}
+  if(f==='g4_fantasma'){
+   area.append(p('Appena tocchi un libro, l’aria si raffredda. Fra gli scaffali prende forma una figura trasparente, con una mano ancora tesa verso il volume.'),p('Il volto dello spirito si contrae. Le dita attraversano il ripiano e si allungano verso di te. Non sembra disposto a lasciarti consultare la raccolta.'),b('Inizia il combattimento',()=>window.AzioniGioco.apriScontro()));return;
+  }
+  if(!s.tiro_topo){
+   area.append(p('Scaffalature polverose occupano le pareti. I dorsi dei vecchi tomi sono segnati dal tempo; alcuni volumi giacciono di traverso, come se l’ultimo lettore non li avesse rimessi a posto.'),p('Muovi un passo. Un topolino ti attraversa la strada proprio mentre stai abbassando il piede.'),p('Prova di agilità: d20 con il bonus di Furtività. Devi raggiungere almeno 8.'),b('Evita il topo — tira il d20',()=>invia('topo')));return;
+  }
+  const dado=document.createElement('div'),totale=document.createElement('p');dado.className='dadi-area';
+  if(window.Dadi)window.Dadi.mostraRisultato(dado,totale,s.tiro_topo);else totale.textContent=`Prova del topo: ${s.tiro_topo.totale} · soglia 8`;
+  area.append(dado,totale,p(s.tiro_topo.successo?'Sposti il piede in tempo. Il topo scompare sotto uno scaffale senza protestare.':'Gli pesti la coda. Il topo si volta e ti morde prima di scappare sotto uno scaffale. Perdi 1 HP.'));
+  if(f==='g4_esplora'){
+   area.append(p('Ti tieni lontano dai libri e osservi il resto della stanza. Vicino alla base di uno scaffale noti una pietra del pavimento leggermente sollevata. Quando la sfiori, si muove.'));
+   if(!s.pietra_sollevata)area.append(b('Solleva la pietra allentata',()=>invia('solleva')));
+   else{
+    area.append(p('Sotto la pietra trovi un piccolo incavo: due monete d’argento e un’ampolla ancora chiusa. È una pozione curativa media.'));
+    if(!s.monete_prese)area.append(b('Prendi le 2 monete d’argento',()=>invia('monete')));else area.append(p('Hai raccolto le due monete.'));
+    if(!s.pozione_presa)area.append(b('Prendi la pozione curativa media',()=>invia('pozione')));else area.append(p('Hai raccolto la pozione.'));
+   }
+   area.append(b('Torna davanti agli scaffali',()=>invia('scaffali')));
+  }else{
+   if(d.stato_partita.custode_sconfitto)area.append(p('Il custode si è dissolto. L’aria torna immobile e gli scaffali non sembrano più sorvegliati.'));
+   else area.append(p('Ora puoi guardarti intorno. Davanti a te rimangono gli scaffali e i loro vecchi tomi.'));
+   area.append(b('Esplora la stanza',()=>invia('esplora')),b(d.stato_partita.custode_sconfitto?'Consulta i libri':'Prendi un libro dagli scaffali',()=>invia('libri')));
+  }
+  area.append(b('Torna nei servizi',()=>invia('uscita')));
+  if(window.BorsaNuova.errore)area.append(p(window.BorsaNuova.errore));
+ }
+ const stile=document.createElement('style');stile.textContent='#stanza-nascosta{border:0;background:none;margin-block:24px}#stanza-nascosta button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}#stanza-nascosta button:disabled{opacity:.5}@media(max-width:600px){#stanza-nascosta button{width:100%}}';document.head.append(stile);
+ window.StanzaNascosta={aggiorna};api.onChange(aggiorna);api.ready.then(aggiorna);
 })();
+
+})();
+
 
 
