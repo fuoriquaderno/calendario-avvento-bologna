@@ -5,17 +5,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>I Cancelli di Bologna - L&#39;Ombra sui Portici</title>
 <link rel="stylesheet" href="/calendario-avvento-bologna/style.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/dadi.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/calendario-avvento-bologna/partita.js"></script>
+<script defer src="/calendario-avvento-bologna/dadi.js"></script>
+<script defer src="/calendario-avvento-bologna/enigmi.js"></script>
 <script defer src="/calendario-avvento-bologna/app.js"></script>
 </head>
 <body>
 <header class="site-header">
-    <a class="site-brand" href="/calendario-avvento-bologna/">L'Ombra <span>sui Portici</span></a>
-    <nav aria-label="Navigazione principale">
-        <a href="/calendario-avvento-bologna/#inventario">La Borsa</a>
-        <a href="/calendario-avvento-bologna/progetto/">Il progetto</a>
-    </nav>
+  <a class="site-brand" href="/calendario-avvento-bologna/">L'Ombra <span>sui Portici</span></a>
+  <nav aria-label="Navigazione principale">
+    <button type="button" id="apri-borsa" class="azione-header">Borsa</button>
+    <a href="/calendario-avvento-bologna/progetto/">Il progetto</a>
+    <button type="button" id="apri-codice" class="azione-header">Codice</button>
+  </nav>
+  <div id="barra-stato" hidden aria-label="Stato del personaggio" aria-live="polite">
+    <span id="nome-personaggio"></span>
+    <span id="classe-personaggio"></span>
+    <span id="hp-personaggio"></span>
+    <span id="argento-personaggio"></span>
+  </div>
+  <p id="stato-condiviso" class="stato-condiviso" role="status" aria-live="polite"></p>
 </header>
+
+<dialog id="dialogo-codice" class="avviso-codice" aria-labelledby="titolo-gestione-codice">
+  <div class="scroll-top" aria-hidden="true"></div>
+  <div class="scroll-middle">
+    <h2 id="titolo-gestione-codice">La tua partita</h2>
+    <p id="stato-gestione-codice" role="status" aria-live="polite"></p>
+    <div id="gestione-senza-partita" hidden>
+      <p>Entra nel gioco per creare o riprendere una partita.</p>
+      <a href="/calendario-avvento-bologna/">Vai al gioco</a>
+    </div>
+    <div id="gestione-con-partita" hidden>
+      <label for="codice-da-conservare">Il tuo codice segreto — conservalo</label>
+      <input id="codice-da-conservare" type="text" readonly autocomplete="off">
+      <button type="button" id="copia-codice">Copia codice</button>
+      <button type="button" id="cambia-partita">Cambia partita</button>
+      <label for="nome-personaggio-modifica">Nome del personaggio</label>
+      <input id="nome-personaggio-modifica" type="text" autocomplete="off" placeholder="Scegli un nome o soprannome">
+      <button type="button" id="salva-nome-personaggio">Salva nome</button>
+      <label for="nuovo-codice-partita">Cambia il codice della partita</label>
+      <input id="nuovo-codice-partita" type="text" autocomplete="off" autocapitalize="none" spellcheck="false">
+      <button type="button" id="salva-nuovo-codice">Salva nuovo codice</button>
+      <p>Il vecchio codice smetterà di funzionare su tutti i dispositivi. Un codice semplice è ammesso, a tuo rischio.</p>
+    </div>
+    <button type="button" id="info-codice">Come funziona il codice della partita</button>
+    <button type="button" id="chiudi-gestione-codice">Chiudi</button>
+  </div>
+  <div class="scroll-bottom" aria-hidden="true"></div>
+</dialog>
+
+<dialog id="inventario" class="avviso-codice borsa-dialog" aria-labelledby="titolo-borsa">
+  <div class="scroll-top" aria-hidden="true"></div>
+  <div class="scroll-middle">
+    <h2 id="titolo-borsa">La Borsa</h2>
+    <p id="borsa-argento"></p>
+    <p id="borsa-stato" role="status" aria-live="polite"></p>
+    <ul id="borsa-elenco" class="borsa-elenco"></ul>
+    <p id="borsa-contesto"></p>
+    <a id="borsa-vai-al-gioco" href="/calendario-avvento-bologna/">Torna al gioco</a>
+    <button type="button" id="chiudi-borsa">Chiudi</button>
+  </div>
+  <div class="scroll-bottom" aria-hidden="true"></div>
+</dialog>
+
+<dialog id="avviso-codice" class="avviso-codice" aria-labelledby="titolo-avviso-codice">
+  <div class="scroll-top" aria-hidden="true"></div>
+  <div class="scroll-middle">
+    <h2 id="titolo-avviso-codice">La tua partita, il tuo codice</h2>
+    <p>Abbiamo scelto di non richiedere la registrazione: per giocare non devi fornire un nome reale, un’email o una password. Il salvataggio viene comunque conservato su Supabase; il servizio può trattare dati tecnici di connessione.</p>
+    <p>Puoi usare il codice segreto generato automaticamente oppure sceglierne uno tuo. Preferisci un codice lungo e poco prevedibile: aggiungere qualche simbolo a un nome comune non basta a proteggerlo.</p>
+    <p>Chi conosce o indovina il codice può giocare la tua partita, modificare il salvataggio e cambiare il codice.</p>
+    <p>Conservalo per riprendere la partita anche da un altro dispositivo. Se lo perdi e il browser non lo ricorda più, non potremo recuperarla.</p>
+    <button type="button" id="chiudi-avviso-codice">Ho capito</button>
+  </div>
+  <div class="scroll-bottom" aria-hidden="true"></div>
+</dialog>
+
 <main class="site-main" id="contenuto">
 <div class="scroll-container">
 <div class="scroll-top" aria-hidden="true"></div>
@@ -83,13 +151,6 @@
         <div id="schermata-gioco" style="display: none; padding-top: 20px;">
             
             <!-- Barra di stato -->
-            <header id="barra-stato" style="display: flex; justify-content: space-between; padding: 15px 30px; background: rgba(12, 16, 15, 0.8); color: #ebdcb9; border: 1px solid var(--line); border-radius: 4px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                <span id="nome-personaggio" style="font-family: var(--serif); font-size: 18px; font-weight: bold;">Nome: ---</span>
-                <div style="display: flex; gap: 30px;">
-                    <span id="hp-personaggio" style="font-weight: bold; color: #d9534f;">HP: ---</span>
-                    <span id="argento-personaggio" style="font-weight: bold; color: #c0c0c0;">Argento: 50</span>
-                </div>
-            </header>
 
             <!-- Il timbro burocratico -->
             <div style="text-align: center; margin-bottom: 35px; padding: 20px; border: 2px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
@@ -127,20 +188,21 @@
 
             <!-- Sezione nascosta per l'opzione 3 (Esoterica/Bilancia) -->
             <div id="enigma-reale" style="display: none; margin-top: 20px; padding: 25px; border: 1px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
-                <p style="font-family: var(--serif); font-size: 18px; margin-top: 0;"><em>«Oh, un forestiero che si crede istruito! Molto bene. Porta Maggiore è lo storico ingresso cerimoniale, da cui passavano Papi, Imperatori e ambasciatori lungo la via Emilia. Se sei davvero degno di camminare per la Dotta, dimmi: qual è il Segno Zodiacale che governa questa soglia, simbolo cosmico di giustizia, diplomazia e accoglienza?»</em></p>
+                <p id="testo-enigma-galeazzo" style="font-family: var(--serif); font-size: 18px; margin-top: 0;">Caricamento dell’enigma…</p>
                 
-                <input type="text" id="risposta-reale" placeholder="Es: Toro" style="width: 100%; padding: 12px; margin-bottom: 15px; font-size: 16px; border: 1px solid var(--line); background: transparent;">
+                <input type="text" id="risposta-reale" placeholder="La tua risposta" style="width: 100%; padding: 12px; margin-bottom: 15px; font-size: 16px; border: 1px solid var(--line); background: transparent;">
                 
                 <button id="btn-conferma-reale" style="width: 100%; background: var(--accent); color: #f4ead5; padding: 12px; font-size: 16px; border: none; cursor: pointer;">
                     Rispondi a Galeazzo
                 </button>
                 
                 <p id="errore-reale" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;">
-                    <em>«Sbagliato! L'Accademia non fa sconti all'ignoranza. Le stelle non mentono.»</em>
+                    <em>«Non è la risposta che cerco.»</em>
                 </p>
             </div>
             
         </div>
+
 
 </div>
 <div class="scroll-bottom" aria-hidden="true"></div>

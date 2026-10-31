@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page.title | default: site.title | escape }}</title>
 <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/dadi.css' | relative_url }}">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="{{ '/partita.js' | relative_url }}"></script>
+<script defer src="{{ '/dadi.js' | relative_url }}"></script>
+{% if page.url == '/' %}<script defer src="{{ '/enigmi.js' | relative_url }}"></script>{% endif %}
 {% if page.url == '/' %}<script defer src="{{ '/app.js' | relative_url }}"></script>{% endif %}
 </head>
 <body>

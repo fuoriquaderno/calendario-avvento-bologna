@@ -29,3 +29,94 @@ h1{font-size:clamp(23px,4vw,32px)!important;line-height:1.4}h2{line-height:1.5}#
 @media(max-width:1100px){.site-main{display:block}.site-main::before,.site-main::after{display:none}}
 @media(max-width:600px){.site-header,.site-footer{padding:20px}.site-brand{font-size:20px}.site-main{padding-block:24px}.scroll-middle{padding-inline:8%}#enigma-reale{padding:16px!important}#barra-stato{margin-bottom:24px!important}.site-footer{align-items:flex-start}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* Comandi dell'header allineati, con la stessa altezza cliccabile. */
+.site-header nav { align-items: center; }
+.site-header nav > a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
+
+
+
+/* Struttura condivisa dell'header, presente su ogni pagina. */
+.site-header nav { align-items:center; }
+.site-header nav > a,
+.site-header nav > button.azione-header {
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:44px;margin:0;padding:0;border:0;background:none;
+    color:var(--text);font:inherit;line-height:1.65;
+    letter-spacing:inherit;text-transform:inherit;
+    text-decoration:underline;text-underline-offset:5px;cursor:pointer;
+}
+.site-header nav > a:hover,
+.site-header nav > button.azione-header:hover { color:var(--accent);filter:none; }
+.site-header button:disabled { opacity:.5;cursor:wait; }
+.site-header #barra-stato {
+    flex-basis:100%;width:100%;display:flex;flex-wrap:wrap;
+    justify-content:center;align-items:baseline;gap:8px 18px;
+    margin:0!important;padding:0!important;border:0;background:none;
+    box-shadow:none;color:var(--text);font:inherit;line-height:1.65;
+}
+.site-header #barra-stato[hidden] { display:none; }
+.site-header #barra-stato span {
+    font-family:var(--sans);font-size:inherit;font-weight:normal;
+    line-height:inherit;overflow-wrap:anywhere;
+}
+.site-header #barra-stato #nome-personaggio {
+    font-family:var(--serif);font-weight:bold;
+    position:relative;top:-0.10em;
+}
+.stato-condiviso { flex-basis:100%;margin:0;text-align:center; }
+.stato-condiviso:empty,.stato-gioco:empty { display:none; }
+
+/* Pop-up condivisi: la stessa pergamena su tutte le pagine. */
+dialog.avviso-codice {
+    width:min(560px,calc(100% - 24px));max-height:90vh;max-height:90dvh;
+    padding:0;border:0;background:transparent;color:var(--text);
+    font:18px/1.6 var(--sans);overflow:auto;filter:drop-shadow(0 5px 16px #0006);
+}
+dialog.avviso-codice::backdrop { background:#0009; }
+dialog.avviso-codice .scroll-middle { padding:0 10%;overflow-wrap:anywhere; }
+dialog.avviso-codice h2 { margin:0;font:clamp(20px,4vw,26px)/1.4 var(--serif);color:var(--accent); }
+dialog.avviso-codice button {
+    width:100%;padding:12px;margin-block:6px;background:var(--accent);
+    color:var(--surface);border:0;border-radius:3px;font:inherit;cursor:pointer;
+}
+dialog.avviso-codice button:disabled { opacity:.5;cursor:wait; }
+dialog.avviso-codice input,.accesso-partita input,#nome-nuovo-personaggio {
+    width:100%;padding:10px;margin-bottom:12px;
+}
+dialog.borsa-dialog { width:min(600px,calc(100% - 24px)); }
+.borsa-elenco { list-style:none;margin:16px 0;padding:0; }
+.borsa-elenco li { padding:16px 0;border-top:1px solid var(--line); }
+.borsa-elenco h3 { margin:0;font:20px/1.4 var(--sans);font-weight:bold; }
+.borsa-elenco p { margin:8px 0; }
+.borsa-conferma { padding:12px;border:1px solid var(--accent);margin-block:12px; }
+.accesso-partita { margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line); }
+.accesso-partita button { padding:10px 16px; }
+
+/* Desktop: descrizione a sinistra, firma e logo a destra. */
+.site-footer {
+    flex-direction:row;align-items:center;justify-content:space-between;
+    text-align:left;gap:28px;
+}
+.site-footer > div { max-width:100%; }
+.site-footer .footer-brand { text-align:left; }
+.site-footer .footer-logo { margin-inline:0; }
+/* Solo mobile: tutti i contenuti centrati e sovrapposti. */
+@media(max-width:600px) {
+    .site-footer { flex-direction:column;align-items:center;justify-content:center;text-align:center; }
+    .site-footer .footer-brand { text-align:center; }
+    .site-footer .footer-logo { margin-inline:auto; }
+}
+
+/* Testo direttamente sulla pergamena, anche quando l’HTML ha stili in linea. */
+#enigma-reale,#testo-storia,#storia-ingresso,#form-registrazione,
+#schermata-gioco > section:not(.indizio-enigma){
+  border:0!important;outline:0;background:transparent!important;box-shadow:none!important;
+}
+.indizio-enigma{border:0!important;background:transparent!important;box-shadow:none!important}

@@ -1,11 +1,3 @@
-// VERSIONE CON DISSOLVENZA DELLA PERGAMENA — 30 ottobre 2026
-// app.js
-
-// 1. Inizializzazione Supabase (sostituisci con i tuoi dati dal pannello Supabase -> Project Settings -> API)
-const SUPABASE_URL = 'https://qjbpacymsqsvxecgzreo.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_xGe5aZMIXxd3_v9zY1bVJQ__89AO9Ae';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 // Attende il nuovo layout prima di riportare la lettura all'inizio del main.
 function tornaInizioMain() {
     requestAnimationFrame(() => {
@@ -64,359 +56,285 @@ async function cambiaPergamena(aggiornaContenuto) {
     }
 }
 
-const $ = id => document.getElementById(id);
-const CHIAVE = 'ombra-sui-portici.codice-segreto.v2';
-const IN_SOSPESO = 'ombra-sui-portici.creazione.v2';
-let codiceAttivo = null;
-let partitaCorrente = null;
-let occupato = false;
-
-function leggiMemoria(chiave) { try { return localStorage.getItem(chiave); } catch { return null; } }
-function scriviMemoria(chiave, valore) { try { localStorage.setItem(chiave, valore); return true; } catch { return false; } }
-function rimuoviMemoria(chiave) { try { localStorage.removeItem(chiave); } catch {} }
-function normalizzaCodice(codice) { return codice.trim(); }
-function codiceValido(codice) { return typeof codice==='string' && Array.from(codice.trim()).length>=1 && Array.from(codice.trim()).length<=128; }
-
-// Informazione sul funzionamento, non una richiesta di consenso privacy.
-const avvisoStile = document.createElement('style');
-avvisoStile.textContent = `
-dialog.avviso-codice{width:min(560px,calc(100% - 24px));max-height:90vh;max-height:90dvh;padding:0;border:0;background:transparent;color:var(--text);font:18px/1.6 var(--sans);overflow:auto;filter:drop-shadow(0 5px 16px #0006)}
-dialog.avviso-codice::backdrop{background:#0009}
-dialog.avviso-codice .scroll-middle{padding:0 10%;overflow-wrap:anywhere}
-dialog.avviso-codice h2{margin:0;font:clamp(20px,4vw,26px)/1.4 var(--serif);color:var(--accent)}
-dialog.avviso-codice button{width:100%;padding:12px;background:var(--accent);color:var(--surface);border:0;border-radius:3px;font:inherit;cursor:pointer}
-`;
-document.head.append(avvisoStile);
-const avvisoCodice = document.createElement('dialog');
-avvisoCodice.className='avviso-codice';
-avvisoCodice.setAttribute('aria-labelledby','titolo-avviso-codice');
-avvisoCodice.innerHTML = '<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-avviso-codice">La tua partita, il tuo codice</h2><p>Abbiamo scelto di non richiedere la registrazione: per giocare non devi fornire un nome reale, un’email o una password. Il salvataggio viene comunque conservato su Supabase; il servizio può trattare dati tecnici di connessione.</p><p>Per proteggere la partita puoi usare il codice segreto generato automaticamente oppure sceglierne uno tuo. Se lo scegli tu, preferisci un codice lungo e poco prevedibile, anche con numeri e simboli: aggiungere qualche carattere speciale a un nome comune non basta a renderlo difficile da indovinare.</p><p>Chi conosce o indovina il codice può giocare la tua partita, modificare il salvataggio e cambiare il codice.</p><p>Conservalo: ti servirà per riprendere la partita anche su un altro dispositivo. Se lo perdi e il browser non lo ricorda più, non potremo recuperarla.</p><button type="button" id="chiudi-avviso-codice">Ho capito</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
-document.body.append(avvisoCodice);
-$('chiudi-avviso-codice').addEventListener('click',()=>{
-    scriviMemoria('ombra-sui-portici.avviso-codice.v1','letto');
-    avvisoCodice.close();
-});
-function apriAvvisoCodice() {
-    if(!avvisoCodice.open) avvisoCodice.showModal();
-}
-function pulsanteInformazioni(contenitore) {
-    const button=document.createElement('button');
-    button.type='button';button.textContent='Come funziona il codice della partita';
-    button.style.cssText='display:block;margin-block:12px;padding:8px;cursor:pointer';
-    button.addEventListener('click',apriAvvisoCodice);
-    contenitore.append(button);
-}
-
-const messaggio = document.createElement('p');
-messaggio.setAttribute('role', 'status');
-messaggio.setAttribute('aria-live', 'polite');
-document.querySelector('.scroll-middle').prepend(messaggio);
-function avvisa(testo) { messaggio.textContent = testo; }
-function abilitaPulsanti(disabilitati) {
-    document.querySelectorAll('.scroll-middle button').forEach(button => { button.disabled = disabilitati; });
-}
-async function esegui(azione) {
-    if (occupato || cambioPergamenaInCorso) return;
-    occupato = true;
-    abilitaPulsanti(true);
-    avvisa('');
-    try { await azione(); }
-    catch (errore) {
-        avvisa(errore.message || 'Operazione non riuscita. Riprova: non creare una nuova partita se stavi recuperando quella esistente.');
-    } finally { occupato = false; abilitaPulsanti(false); }
-}
-async function rpc(nome, parametri) {
-    const {data,error} = await supabaseClient.rpc(nome,parametri);
-    if (error) {
-        if (['Oggetto non disponibile nella borsa','Oggetto non utilizzabile qui',
-            'Nessun passaggio compatibile','Partita non disponibile'].includes(error.message)) {
-            throw new Error(error.message + '. Riapri la partita per aggiornare il salvataggio.');
+(() => {
+  'use strict';
+  const $=id=>document.getElementById(id),api=window.Partita;
+  let classiCaricate=false;
+  const popupRisposta=document.createElement('dialog');
+  popupRisposta.className='avviso-codice messaggio-orizzontale';
+  popupRisposta.setAttribute('aria-labelledby','titolo-popup-risposta');
+  popupRisposta.innerHTML='<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-popup-risposta"></h2><p id="frase-popup-risposta"></p><button type="button" id="chiudi-popup-risposta">Continua</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
+  document.body.append(popupRisposta);
+  let pagineMessaggio=[],paginaMessaggio=0,pulsanteMessaggio='Continua';
+  const testoMessaggio=$('frase-popup-risposta'),comandoMessaggio=$('chiudi-popup-risposta');
+  function mostraPaginaMessaggio(){
+    testoMessaggio.textContent=pagineMessaggio[paginaMessaggio]||'';
+    comandoMessaggio.textContent=paginaMessaggio<pagineMessaggio.length-1?'Avanti':pulsanteMessaggio;
+  }
+  comandoMessaggio.addEventListener('click',()=>{
+    if(paginaMessaggio<pagineMessaggio.length-1){paginaMessaggio++;mostraPaginaMessaggio()}
+    else popupRisposta.close();
+  });
+  window.Messaggi={mostra({titolo='Messaggio',testo='',pulsante='Continua'}={}){
+    $('titolo-popup-risposta').textContent=titolo;
+    testoMessaggio.textContent=testo;testoMessaggio.style.whiteSpace='pre-line';
+    testoMessaggio.style.overflow='hidden';
+    comandoMessaggio.textContent=pulsante;pulsanteMessaggio=pulsante;
+    const misura=document.createElement('span');
+    misura.style.cssText='position:fixed;visibility:hidden;white-space:pre;pointer-events:none';
+    misura.style.font=window.getComputedStyle(popupRisposta).font;
+    misura.textContent=testo;document.body.append(misura);
+    const larghezzaTesto=misura.getBoundingClientRect().width;misura.remove();
+    const limite=Math.max(0,document.documentElement.clientWidth-24);
+    let larghezza=Math.min(limite,Math.max(520,Math.ceil(larghezzaTesto/3+180)));
+    function impostaLarghezza(){popupRisposta.style.width=larghezza+'px';popupRisposta.style.setProperty('--larghezza-messaggio',larghezza+'px')}
+    impostaLarghezza();
+    if(!popupRisposta.open)popupRisposta.showModal();
+    // Misura il testo nell’altezza effettivamente disponibile, senza barre di scorrimento.
+    const entra=()=>testoMessaggio.scrollHeight<=testoMessaggio.clientHeight+1;
+    while(!entra()&&larghezza<limite){larghezza=Math.min(limite,larghezza+40);impostaLarghezza()}
+    pagineMessaggio=[];paginaMessaggio=0;
+    if(entra())pagineMessaggio=[testo];
+    else{
+      // Su mobile il testo prosegue per pagine, mantenendo l’altezza fissa.
+      const parole=String(testo).split(/(\s+)/);let inizio=0;
+      while(inizio<parole.length){
+        let basso=inizio+1,alto=parole.length,fine=inizio+1;
+        while(basso<=alto){
+          const centro=Math.floor((basso+alto)/2);
+          testoMessaggio.textContent=parole.slice(inizio,centro).join('');
+          if(entra()){fine=centro;basso=centro+1}else alto=centro-1;
         }
-        if(error.message==='Codice non disponibile') {
-            rimuoviMemoria(IN_SOSPESO);
-            throw new Error('Codice già occupato. Scegline un altro. Se è la tua partita, usa Riprendi la partita con quel codice.');
-        }
-        throw new Error('Operazione non riuscita. Controlla la connessione. Se la creazione o il cambio codice potrebbero essere riusciti, prova Riprendi la partita con il codice scelto.');
+        pagineMessaggio.push(parole.slice(inizio,fine).join('').trim());inizio=fine;
+      }
     }
-    return data;
-}
+    mostraPaginaMessaggio();
+  }};
+  function mostraRisposta(dati){
+    const reazione=dati.enigmi_stato?.['1']?.reazione_risposta;
+    if(!reazione?.testo)return;
+    const giusta=reazione.tipo==='risposta_giusta';
+    window.Messaggi.mostra({titolo:giusta?'Risposta giusta':'Risposta sbagliata',testo:reazione.testo,pulsante:giusta?'Continua':'Torna all’enigma'});
+  }
+  // Durata dell’apertura laterale: modifica 850ms qui sotto.
+  const stilePopup=document.createElement('style');
+  stilePopup.textContent=`
+    dialog.messaggio-orizzontale[open]{animation:apertura-pergamena-laterale 850ms cubic-bezier(.22,.7,.25,1) both}
 
-// Accesso a una partita esistente sempre disponibile, anche prima dell'enigma.
-const accesso = document.createElement('section');
-accesso.style.cssText = 'margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line)';
-accesso.innerHTML = '<h2>Hai già una partita?</h2><label for="codice-ripresa">Codice segreto della partita</label><input id="codice-ripresa" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" style="width:100%;padding:10px"><button type="button" id="riprendi-partita" style="margin-top:12px;padding:10px 16px">Riprendi la partita</button><p>Chi conosce il codice può accedere al salvataggio. Conservalo per giocare anche su un altro dispositivo. Senza il codice non possiamo recuperare la partita.</p>';
-$('schermata-login').prepend(accesso);
-pulsanteInformazioni(accesso);
-$('riprendi-partita').addEventListener('click', () => esegui(() => riprendi($('codice-ripresa').value)));
-$('codice-ripresa').addEventListener('keydown', event => {
-    if(event.key==='Enter'){event.preventDefault();$('riprendi-partita').click();}
-});
-
-// Codice scelto liberamente; il generatore casuale resta facoltativo.
-const vecchioInput = $('codice-accesso');
-const etichettaCodice = document.querySelector('label[for="codice-accesso"]');
-if(etichettaCodice) etichettaCodice.textContent='Scegli il codice della partita';
-vecchioInput.hidden = false;
-vecchioInput.style.display = 'block';
-vecchioInput.placeholder = 'Scrivi un codice a tua scelta';
-vecchioInput.autocomplete = 'off';
-vecchioInput.setAttribute('autocapitalize','none');
-vecchioInput.spellcheck = false;
-const generaCodice = document.createElement('button');
-generaCodice.type='button';generaCodice.textContent='Genera un codice casuale';
-generaCodice.style.cssText='margin-bottom:16px;padding:8px';
-vecchioInput.after(generaCodice);
-generaCodice.addEventListener('click',()=>{vecchioInput.value=crypto.randomUUID();});
-$('btn-login').type = 'button';
-$('btn-login').textContent = 'Crea partita';
-const spiegazione = document.createElement('p');
-spiegazione.textContent = 'Puoi scegliere un codice da 1 a 128 caratteri, anche con simboli. Maiuscole e minuscole contano; gli spazi iniziali e finali vengono rimossi. Chi lo conosce o lo indovina può accedere e modificarlo, incluso cambiare il codice. I codici semplici sono a tuo rischio. Senza il codice non possiamo recuperare la partita.';
-$('btn-login').before(spiegazione);
-
-const gestione = document.createElement('section');
-gestione.style.cssText = 'margin-bottom:24px;padding:16px;border:1px solid var(--line)';
-gestione.innerHTML = '<label for="codice-da-conservare">Il tuo codice segreto — conservalo</label><input id="codice-da-conservare" type="text" readonly autocomplete="off" style="width:100%;padding:10px"><div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px"><button type="button" id="copia-codice">Copia codice</button><button type="button" id="cambia-partita">Cambia partita</button></div>';
-$('schermata-gioco').prepend(gestione);
-pulsanteInformazioni(gestione);
-const modificaCodice = document.createElement('section');
-modificaCodice.innerHTML='<label for="nuovo-codice-partita">Cambia il codice della partita</label><input id="nuovo-codice-partita" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" style="width:100%;padding:10px"><button type="button" id="salva-nuovo-codice" style="margin-top:12px">Salva nuovo codice</button><p>Il vecchio codice smetterà di funzionare su tutti i dispositivi. Anche un codice semplice è ammesso, a tuo rischio.</p>';
-gestione.append(modificaCodice);
-$('salva-nuovo-codice').addEventListener('click',()=>esegui(async()=>{
-    const nuovo=normalizzaCodice($('nuovo-codice-partita').value);
-    if(!codiceValido(nuovo)){avvisa('Inserisci un codice da 1 a 128 caratteri.');return;}
-    const dati=await rpc('gioco_cambia_codice',{p_codice:codiceAttivo,p_nuovo_codice:nuovo});
-    await mostraPartita(dati,nuovo);
-    $('nuovo-codice-partita').value='';
-    avvisa('Codice aggiornato. Copia il nuovo codice: quello precedente non dà più accesso alla partita.');
-}));
-$('copia-codice').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(codiceAttivo); avvisa('Codice copiato. Conservalo in un luogo privato.'); }
-    catch { $('codice-da-conservare').select(); avvisa('Seleziona e copia il codice mostrato.'); }
-});
-$('cambia-partita').addEventListener('click', () => {
-    if(occupato || cambioPergamenaInCorso) return;
-    if(!window.confirm('Hai conservato il codice? Senza di esso non potrai recuperare questa partita.')) return;
-    rimuoviMemoria(CHIAVE);rimuoviMemoria(IN_SOSPESO);
-    window.location.reload();
-});
-
-const esito = document.createElement('section');
-esito.style.cssText = 'display:none;margin-block:24px;padding:20px;border:1px solid var(--line)';
-$('schermata-gioco').append(esito);
-const timbro = $('testo-storia').previousElementSibling;
-const testiEsito = {
-    paga: 'Galeazzo ha ricevuto 25 monete d’argento. Il posto per domani è tuo.',
-    favore: 'Hai accettato il favore futuro: recuperare il grimorio di Galeazzo al Mercato di Mezzo.',
-    enigma: 'Hai superato la sfida di Galeazzo senza spendere argento.',
-    pergamena: 'La Pergamena della Chiarezza ti ha permesso di superare l’enigma di Galeazzo. La pergamena è stata consumata.'
-};
-
-// Le definizioni sono comuni al gioco; Supabase conserva soltanto gli oggetti posseduti.
-const OGGETTI = Object.freeze({
-    pergamena_chiarezza: {
-        nome: 'Pergamena della Chiarezza',
-        descrizione: 'Permette di superare un enigma irrisolto. Si consuma quando lo sblocca.'
-    },
-    grimaldello: {
-        nome: 'Grimaldello',
-        descrizione: 'Apre un passaggio compatibile di cui non hai trovato la chiave. Si consuma quando lo apre.'
+    dialog.messaggio-orizzontale{
+      --altezza-messaggio:min(320px,90dvh);
+      --rotolo:calc(var(--altezza-messaggio) / 5);
+      --corsa-rotolo:calc((min(var(--larghezza-messaggio),100vw - 24px) - var(--rotolo)) / 2);
+      height:var(--altezza-messaggio);max-height:none;
+      max-width:calc(100vw - 24px);box-sizing:border-box;
+      overflow:hidden;padding:0;
     }
-});
-function contaOggetti(inventario) {
-    const quantita = new Map();
-    if (!Array.isArray(inventario)) return quantita;
-    for (const id of inventario) {
-        if (typeof id === 'string') quantita.set(id,(quantita.get(id)||0)+1);
+    dialog.messaggio-orizzontale .scroll-top,
+    dialog.messaggio-orizzontale .scroll-bottom{
+      position:absolute;top:var(--altezza-messaggio);left:0;
+      width:var(--altezza-messaggio);height:var(--rotolo);
+      aspect-ratio:auto;transform:rotate(-90deg);transform-origin:0 0;
+      pointer-events:none;z-index:2;
     }
-    return quantita;
-}
-function bersaglioOggetto(id, partita) {
-    if (id === 'pergamena_chiarezza' && partita?.stato_partita?.fase === 'enigma')
-        return 'enigma_galeazzo';
-    return null;
-}
+    dialog.messaggio-orizzontale .scroll-bottom{left:calc(100% - var(--rotolo))}
+    dialog.messaggio-orizzontale[open] .scroll-top{animation:rotolo-sinistro 850ms cubic-bezier(.22,.7,.25,1) both}
+    dialog.messaggio-orizzontale[open] .scroll-bottom{animation:rotolo-destro 850ms cubic-bezier(.22,.7,.25,1) both}
+    @keyframes rotolo-sinistro{from{transform:translateX(var(--corsa-rotolo)) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
+    @keyframes rotolo-destro{from{transform:translateX(calc(-1 * var(--corsa-rotolo))) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
+    @media(prefers-reduced-motion:reduce){
+      dialog.messaggio-orizzontale[open] .scroll-top,dialog.messaggio-orizzontale[open] .scroll-bottom{animation:none}
+    }
+    dialog.messaggio-orizzontale .scroll-middle{
+      position:absolute;inset:0 var(--rotolo);width:auto;height:100%;
+      padding:22px 12px;box-sizing:border-box;background:none;
+      display:flex;flex-direction:column;justify-content:center;gap:12px;
+      isolation:isolate;
+    }
+    dialog.messaggio-orizzontale .scroll-middle::before{
+      content:'';position:absolute;z-index:-1;
+      top:50%;left:50%;width:var(--altezza-messaggio);height:calc(100cqw + 56px);
+      background:url('./images/middle-pergamena.png') center top/100% auto repeat-y;
+      transform:translate(-50%,-50%) rotate(-90deg);pointer-events:none;
+    }
+    dialog.messaggio-orizzontale .scroll-middle{container-type:inline-size}
+    dialog.messaggio-orizzontale .scroll-middle p{
+      margin:0;overflow:auto;min-height:0;line-height:1.45;
+    }
+    dialog.messaggio-orizzontale .scroll-middle h2{flex-shrink:0;font-size:22px}
+    dialog.messaggio-orizzontale .scroll-middle button{flex-shrink:0;margin:0;padding:8px}
+    @media(max-width:420px){
+      dialog.messaggio-orizzontale{font-size:16px}
+      dialog.messaggio-orizzontale .scroll-middle{padding:16px 6px;gap:8px}
+      dialog.messaggio-orizzontale .scroll-middle h2{font-size:19px}
+    }
+    @keyframes apertura-pergamena-laterale{
+      from{clip-path:inset(0 49.5%);opacity:0}
+      15%{opacity:1}
+      to{clip-path:inset(0 0);opacity:1}
+    }
+    @media(prefers-reduced-motion:reduce){dialog.messaggio-orizzontale[open]{animation:none}}
+  `;
+  stilePopup.textContent+="\n    /* Su mobile torna la pergamena verticale, come nella storia. */\n    @media(max-width:600px){\n      dialog.messaggio-orizzontale{\n        width:calc(100vw - 24px)!important;height:auto;max-height:calc(100dvh - 24px);\n        overflow:hidden;\n      }\n      dialog.messaggio-orizzontale[open]{display:flex;flex-direction:column;animation:apertura-pergamena-verticale 850ms ease-out both}\n      dialog.messaggio-orizzontale .scroll-top,\n      dialog.messaggio-orizzontale .scroll-bottom{\n        position:static;inset:auto;width:100%;height:auto;aspect-ratio:5/1;\n        flex-shrink:0;transform:none!important;animation:none!important;\n      }\n      dialog.messaggio-orizzontale .scroll-middle{\n        position:relative;inset:auto;width:100%;height:auto;min-height:0;flex:1 1 auto;\n        padding:0 10%;container-type:normal;\n        background:url('./images/middle-pergamena.png') center top/100% auto repeat-y;\n      }\n      dialog.messaggio-orizzontale .scroll-middle::before{display:none}\n    }\n    @keyframes apertura-pergamena-verticale{\n      from{clip-path:inset(49.5% 0);opacity:0}to{clip-path:inset(0);opacity:1}\n    }\n    @media(prefers-reduced-motion:reduce){dialog.messaggio-orizzontale[open]{animation:none}}\n";
+  document.head.append(stilePopup);
 
-const borsaStile = document.createElement('style');
-borsaStile.textContent = `
-dialog.borsa-dialog{width:min(600px,calc(100% - 24px))}
-.borsa-elenco{list-style:none;margin:16px 0;padding:0}
-.borsa-elenco li{padding:16px 0;border-top:1px solid var(--line)}
-.borsa-elenco h3{margin:0;font:20px/1.4 var(--sans);font-weight:bold}
-.borsa-elenco p{margin:8px 0}
-.borsa-conferma{padding:12px;border:1px solid var(--accent);margin-block:12px}
-.borsa-conferma button+button{margin-top:10px}
-`;
-document.head.append(borsaStile);
-const borsa = document.createElement('dialog');
-borsa.id = 'inventario';
-borsa.className = 'avviso-codice borsa-dialog';
-borsa.setAttribute('aria-labelledby','titolo-borsa');
-borsa.innerHTML = '<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-borsa">La Borsa</h2><p id="borsa-argento"></p><p id="borsa-stato" role="status" aria-live="polite"></p><ul id="borsa-elenco" class="borsa-elenco"></ul><p>Gli oggetti si consumano soltanto dopo la conferma e lo sblocco riuscito.</p><button type="button" id="chiudi-borsa">Torna alla storia</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
-document.body.append(borsa);
-$('chiudi-borsa').addEventListener('click',()=>borsa.close());
-borsa.addEventListener('cancel',event=>{if(occupato)event.preventDefault();});
-borsa.addEventListener('close',()=>{
-    $('borsa-stato').textContent='';
-    $('borsa-elenco').replaceChildren();
-});
-const apriBorsaButton = document.createElement('button');
-apriBorsaButton.id='apri-borsa';
-apriBorsaButton.type='button';
-apriBorsaButton.textContent='Apri la Borsa';
-apriBorsaButton.style.cssText='margin:0 0 24px;padding:10px 16px;cursor:pointer';
-$('barra-stato').after(apriBorsaButton);
-apriBorsaButton.addEventListener('click',apriBorsa);
-document.querySelectorAll('a[href$="#inventario"]').forEach(link=>{
-    link.addEventListener('click',event=>{event.preventDefault();apriBorsa();});
-});
-function apriBorsa() {
-    if (occupato || cambioPergamenaInCorso) return;
-    if (!partitaCorrente) { avvisa('Entra in una partita per aprire la Borsa.');return; }
-    disegnaBorsa();
-    if (!borsa.open) borsa.showModal();
-}
-function disegnaBorsa() {
-    $('borsa-argento').textContent=`Argento disponibile: ${partitaCorrente.oro_rimanente}`;
-    $('borsa-stato').textContent='';
-    const elenco=$('borsa-elenco');elenco.replaceChildren();
-    const quantita=contaOggetti(partitaCorrente.inventario);
-    if (!quantita.size) {
-        const vuota=document.createElement('li');
-        vuota.textContent='La Borsa non contiene oggetti.';elenco.append(vuota);return;
+  const messaggio=document.createElement('p');messaggio.className='stato-gioco';messaggio.setAttribute('role','status');
+  document.querySelector('main .scroll-middle').prepend(messaggio);
+  const dettagliClasse=document.createElement('div');
+  dettagliClasse.id='dettagli-classe';dettagliClasse.setAttribute('aria-live','polite');
+  $('scelta-classe').after(dettagliClasse);
+  const statoClassi=document.createElement('p');statoClassi.setAttribute('role','status');
+  const riprovaClassi=document.createElement('button');
+  riprovaClassi.type='button';riprovaClassi.textContent='Riprova';riprovaClassi.hidden=true;
+  dettagliClasse.append(statoClassi,riprovaClassi);
+  const schedaClasse=document.createElement('div');dettagliClasse.append(schedaClasse);
+  const etichetteBonus={attacco_fisico:'Attacco fisico',difesa_fisica:'Difesa fisica',attacco_magico:'Attacco magico',conoscenza_arcana:'Conoscenza arcana',furtivita:'Furtività',inganno:'Inganno',serrature:'Serrature',religione:'Religione',intuizione:'Intuizione'};
+  const nomiOggetti={pergamena_chiarezza:'Pergamena della Chiarezza',grimaldello:'Grimaldello'};
+  let catalogoClassi=[];
+  function mostraClasse(){
+    schedaClasse.replaceChildren();
+    const c=catalogoClassi.find(c=>c.nome===$('scelta-classe').value);
+    if(!c)return;
+    const hp=document.createElement('p');hp.textContent=`Punti vita massimi: ${c.hp_massimi}`;schedaClasse.append(hp);
+    const lista=document.createElement('ul');
+    for(const [tipo,bonus] of Object.entries(c.modificatori||{})){
+      const li=document.createElement('li');li.textContent=`${Object.hasOwn(etichetteBonus,tipo)?etichetteBonus[tipo]:tipo}: ${bonus>0?'+':''}${bonus}`;lista.append(li);
     }
-    for (const [id,numero] of quantita) {
-        const scheda=document.createElement('li');
-        const definizione=Object.hasOwn(OGGETTI,id) ? OGGETTI[id] : {nome:id,descrizione:'Oggetto conservato nella Borsa. Non è ancora previsto un utilizzo.'};
-        const nome=document.createElement('h3');nome.textContent=`${definizione.nome} × ${numero}`;
-        const descrizione=document.createElement('p');descrizione.textContent=definizione.descrizione;
-        scheda.append(nome,descrizione);
-        const bersaglio=bersaglioOggetto(id,partitaCorrente);
-        if (bersaglio) {
-            const usa=document.createElement('button');usa.type='button';usa.textContent='Usa sull’enigma di Galeazzo';
-            usa.addEventListener('click',()=>confermaUso(id,bersaglio,scheda,usa));
-            scheda.append(usa);
-        } else {
-            const contesto=document.createElement('p');
-            contesto.textContent='Non c’è un bersaglio compatibile in questa scena. L’oggetto resta nella Borsa.';
-            scheda.append(contesto);
-        }
-        elenco.append(scheda);
-    }
-}
-function confermaUso(id,bersaglio,scheda,usa) {
-    if(occupato)return;
-    usa.hidden=true;
-    const conferma=document.createElement('div');conferma.className='borsa-conferma';
-    const testo=document.createElement('p');testo.textContent='Consumare una Pergamena della Chiarezza per superare questo enigma?';
-    const si=document.createElement('button');si.type='button';si.textContent='Conferma e usa una pergamena';
-    const no=document.createElement('button');no.type='button';no.textContent='Annulla';
-    no.addEventListener('click',()=>{conferma.remove();usa.hidden=false;usa.focus();});
-    si.addEventListener('click',()=>esegui(async()=>{
-        $('borsa-stato').textContent='Uso dell’oggetto e salvataggio…';
-        try {
-            const dati=await rpc('gioco_usa_oggetto',{p_codice:codiceAttivo,p_oggetto:id,p_bersaglio:bersaglio});
-            borsa.close();
-            await mostraPartita(dati,codiceAttivo);
-            avvisa('Pergamena utilizzata: consumo e sblocco sono stati salvati.');
-        } catch(errore) {
-            $('borsa-stato').textContent='Non è stato possibile confermare l’uso. Riprova oppure riapri la partita per verificare il salvataggio: non è necessario usare un’altra copia.';
-            throw errore;
-        }
-    }));
-    conferma.append(testo,si,no);scheda.append(conferma);si.focus();
-}
+    schedaClasse.append(lista);
+    const oggetti=document.createElement('p');
+    const dotazione=Array.isArray(c.dotazione_iniziale)?c.dotazione_iniziale:[];
+    oggetti.textContent=dotazione.length?'Dotazione iniziale: '+dotazione.map(id=>Object.hasOwn(nomiOggetti,id)?nomiOggetti[id]:id).join(', '):'Nessun oggetto iniziale.';
+    schedaClasse.append(oggetti);
+  }
+  async function caricaClassi(){
+    classiCaricate=false;$('scelta-classe').disabled=true;riprovaClassi.hidden=true;
+    statoClassi.textContent='Caricamento delle classi…';
+    try{
+      const elenco=await api.rpc('gioco_catalogo_classi',{});
+      if(!Array.isArray(elenco)||!elenco.length||elenco.some(c=>typeof c.nome!=='string'||!Number.isInteger(c.hp_massimi)||c.hp_massimi<=0))throw new Error('Catalogo non disponibile');
+      const precedente=$('scelta-classe').value;
+      catalogoClassi=elenco;$('scelta-classe').replaceChildren();
+      for(const c of elenco){const o=document.createElement('option');o.value=c.nome;o.textContent=`${c.nome} — ${c.hp_massimi} HP`;$('scelta-classe').append(o)}
+      $('scelta-classe').value=elenco.some(c=>c.nome===precedente)?precedente:elenco[0].nome;
+      classiCaricate=true;statoClassi.textContent='';mostraClasse();
+    }catch{
+      statoClassi.textContent='Non riesco a caricare le classi. Controlla la connessione e riprova.';riprovaClassi.hidden=false;
+    }finally{$('scelta-classe').disabled=!classiCaricate}
+  }
+  $('scelta-classe').addEventListener('change',mostraClasse);
+  riprovaClassi.addEventListener('click',caricaClassi);
+  caricaClassi();
+  const accesso=document.createElement('section');accesso.className='accesso-partita';
+  accesso.innerHTML='<h2>Hai già una partita?</h2><label for="codice-ripresa">Codice segreto della partita</label><input id="codice-ripresa" type="text" autocomplete="off" autocapitalize="none" spellcheck="false"><button type="button" id="riprendi-partita">Riprendi la partita</button><p>Chi conosce il codice può accedere al salvataggio. Conservalo per giocare anche da un altro dispositivo.</p>';
+  $('schermata-login').prepend(accesso);
+  $('riprendi-partita').addEventListener('click',()=>api.esegui(()=>api.riprendi($('codice-ripresa').value),messaggio));
+  $('codice-ripresa').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('riprendi-partita').click()}});
 
-async function mostraPartita(dati, codice) {
-    await cambiaPergamena(() => {
-        codiceAttivo = codice;
-        partitaCorrente = dati;
-        $('schermata-login').style.display = 'none';
-        $('schermata-gioco').style.display = 'block';
-        $('nome-personaggio').textContent = `Personaggio: ${dati.classe}`;
-        $('hp-personaggio').textContent = `HP: ${dati.hp_attuali}`;
-        $('argento-personaggio').textContent = `Argento: ${dati.oro_rimanente}`;
-        $('codice-da-conservare').value = codice;
-        const fase = dati.stato_partita?.fase || 'galeazzo';
-        $('testo-storia').style.display = fase==='galeazzo' ? 'block' : 'none';
-        $('scelte-storia').style.display = fase==='galeazzo' ? 'flex' : 'none';
-        $('enigma-reale').style.display = fase==='enigma' ? 'block' : 'none';
-        if(timbro) timbro.style.display = fase==='galeazzo' ? 'block' : 'none';
-        $('errore-reale').style.display = 'none';
-        esito.style.display = fase==='attesa_giorno2' ? 'block' : 'none';
-        esito.replaceChildren();
-        if(fase==='attesa_giorno2') {
-            const titolo = document.createElement('h2');titolo.textContent = 'Primo giorno completato';
-            const testo = document.createElement('p');testo.textContent = testiEsito[dati.stato_partita.scelta] || 'La tua scelta è stata salvata.';
-            const seguito = document.createElement('p');seguito.textContent = 'Il Giorno 2 è sbloccato. Il contenuto del prossimo giorno non è ancora presente in questa versione del gioco.';
-            esito.append(titolo,testo,seguito);
-        }
-        if(!scriviMemoria(CHIAVE,codice)) avvisa('Il browser non può ricordare il codice. Copialo prima di chiudere la pagina.');
+  const nome=document.createElement('div');
+  nome.innerHTML='<label for="nome-nuovo-personaggio">Nome del personaggio (facoltativo)</label><input id="nome-nuovo-personaggio" type="text" autocomplete="off" placeholder="Es. Andrea"><p>Puoi usare un soprannome. Il nome non deve essere unico e non serve per accedere alla partita.</p>';
+  const label=document.querySelector('label[for="codice-accesso"]');label.before(nome);label.textContent='Scegli il codice della partita';
+  $('codice-accesso').hidden=false;$('codice-accesso').style.display='block';$('codice-accesso').placeholder='Scrivi un codice a tua scelta';
+  $('codice-accesso').autocomplete='off';$('codice-accesso').setAttribute('autocapitalize','none');$('codice-accesso').spellcheck=false;
+  const genera=document.createElement('button');genera.type='button';genera.textContent='Genera un codice casuale';
+  genera.addEventListener('click',()=>$('codice-accesso').value=crypto.randomUUID());$('codice-accesso').after(genera);
+  const istruzioni=document.createElement('p');istruzioni.textContent='Puoi scegliere un codice da 1 a 128 caratteri, anche con simboli. Maiuscole e minuscole contano; gli spazi iniziali e finali vengono rimossi. Chi lo indovina può usare il salvataggio e cambiare il codice. I codici semplici sono a tuo rischio.';
+  $('btn-login').before(istruzioni);$('btn-login').textContent='Crea partita';$('btn-login').type='button';
+  $('btn-login').addEventListener('click',async()=>{
+    await api.esegui(async()=>{
+      if(!classiCaricate)throw new Error('Attendi il caricamento delle classi o premi Riprova.');
+      let richiesta;try{richiesta=JSON.parse(api.memoria.leggi(api.SOSPESA))}catch{}
+      if(!richiesta||!api.valido(richiesta.codice)){
+        const codice=api.pulisci($('codice-accesso').value),nome=$('nome-nuovo-personaggio').value.trim();
+        if(!api.valido(codice))throw new Error('Scrivi un codice da 1 a 128 caratteri oppure generane uno casuale.');
+        if(Array.from(nome).length>40)throw new Error('Il nome può contenere al massimo 40 caratteri.');
+        richiesta={codice,classe:$('scelta-classe').value,nome};
+        if(!api.memoria.scrivi(api.SOSPESA,JSON.stringify(richiesta)))throw new Error('Abilita la memorizzazione dei dati del sito per creare una partita.');
+      }
+      const dati=await api.rpc('gioco_crea',{p_codice:richiesta.codice,p_classe:richiesta.classe,p_nome:richiesta.nome||''});
+      await api.applica(dati,richiesta.codice,{anima:true});api.memoria.rimuovi(api.SOSPESA);
+    },messaggio);
+    api.promemoria();
+  });
+  $('btn-enigma').type='button';
+  $('btn-enigma').addEventListener('click',()=>api.esegui(async()=>{
+    if(!$('input-enigma').value.toLowerCase().trim().includes('richieste')){$('errore-enigma').style.display='block';return}
+    await cambiaPergamena(()=>{
+      $('errore-enigma').style.display='none';$('enigma-pergamena').style.display='none';
+      $('storia-ingresso').style.display='none';$('form-registrazione').style.display='block';
     });
-}
-async function riprendi(valore) {
-    const codice = normalizzaCodice(valore);
-    if(!codiceValido(codice)) { avvisa('Inserisci il codice della partita, da 1 a 128 caratteri.');return; }
-    const dati = await rpc('gioco_recupera',{p_codice:codice});
-    if(!dati) { rimuoviMemoria(CHIAVE);avvisa('Nessuna partita trovata. Controlla il codice: non è stata creata una nuova partita.');return; }
-    await mostraPartita(dati,codice);
-}
-$('btn-login').addEventListener('click', () => esegui(async () => {
-    let richiesta;
-    try { richiesta = JSON.parse(leggiMemoria(IN_SOSPESO)); } catch {}
-    if(!richiesta || !codiceValido(richiesta.codice)) {
-        const scelto=normalizzaCodice(vecchioInput.value);
-        if(!codiceValido(scelto)){avvisa('Scrivi un codice da 1 a 128 caratteri, oppure usa Genera un codice casuale.');return;}
-        richiesta = {codice:scelto,classe:$('scelta-classe').value};
-        // Salva prima della richiesta: un problema di rete non deve duplicare la partita.
-        if(!scriviMemoria(IN_SOSPESO,JSON.stringify(richiesta))) {
-            avvisa('Per creare una partita abilita la memorizzazione dei dati del sito nel browser.');return;
+  },messaggio));
+
+  const esito=document.createElement('section');esito.style.cssText='display:none;margin-block:24px;padding:0';$('schermata-gioco').append(esito);
+  const morte=document.createElement('section');morte.hidden=true;
+  morte.innerHTML='<h2>Sei morto</h2><p id="riepilogo-morte"></p><p>Puoi riprendere dall’inizio della giornata. Storia, monete e oggetti torneranno al checkpoint; ripartirai con tutti i punti vita. Il registro delle morti resterà invariato.</p><button type="button" id="riprova-giornata" style="width:100%;padding:14px;background:var(--accent);color:var(--surface);border:0;cursor:pointer;font:inherit">Riprova dall’inizio della giornata</button>';
+  $('schermata-gioco').append(morte);
+  $('riprova-giornata').addEventListener('click',()=>api.esegui(()=>api.riprendiCheckpoint(),messaggio));
+  const timbro=$('testo-storia').previousElementSibling;
+  const testi={paga:'Galeazzo ha ricevuto 25 monete d’argento. Il posto per domani è tuo.',favore:'Hai accettato il favore futuro: recuperare il grimorio di Galeazzo al Mercato di Mezzo.',enigma:'Hai superato la sfida di Galeazzo.',pergamena:'La Pergamena della Chiarezza ti ha permesso di superare l’enigma di Galeazzo. La pergamena è stata consumata.'};
+  let renderizzata=false;
+  async function mostra(dati,codice,opzioni={}){
+    renderizzata=true;
+    const aggiorna=()=>{
+      $('schermata-login').style.display='none';$('schermata-gioco').style.display='block';
+      const fase=dati.stato_partita?.fase||'galeazzo';
+      const morto=dati.morto===true||dati.hp_attuali<=0;
+      morte.hidden=!morto;
+      if(morto){
+        const numero=api.resocontoMorti(dati).totale;
+        $('riepilogo-morte').textContent=`Giorno ${dati.giorno_corrente||1} · Morti totali: ${numero}`;
+      }
+      $('testo-storia').style.display=!morto&&fase==='galeazzo'?'block':'none';
+      $('scelte-storia').style.display=!morto&&fase==='galeazzo'?'flex':'none';
+      $('enigma-reale').style.display=!morto&&fase==='enigma'?'block':'none';
+      if(timbro)timbro.style.display=!morto&&fase==='galeazzo'?'block':'none';
+      $('errore-reale').style.display='none';esito.style.display=!morto&&fase==='attesa_giorno2'?'block':'none';esito.replaceChildren();
+      const reazione=dati.enigmi_stato?.['1']?.reazione_risposta;
+      if(!morto&&fase==='enigma'&&reazione?.tipo==='risposta_sbagliata'){
+        $('errore-reale').textContent=reazione.testo;
+        $('errore-reale').style.display='block';
+      }
+      if(!morto&&fase==='attesa_giorno2'){
+        const titolo=document.createElement('h2');titolo.textContent=dati.giornata_completata?'Primo giorno confermato':'Primo giorno: scelte da confermare';
+        const testo=document.createElement('p');testo.textContent=testi[dati.stato_partita.scelta]||'La tua scelta è stata salvata.';
+        const seguito=document.createElement('p');seguito.textContent=dati.giornata_completata?'Le scelte di questa giornata sono definitive.':'Puoi confermare il risultato oppure rigiocare dall’inizio della giornata.';
+        esito.append(titolo,testo,seguito);
+        if(reazione?.tipo==='risposta_giusta'&&['enigma','pergamena'].includes(dati.stato_partita.scelta)){
+          const frase=document.createElement('p');frase.textContent=reazione.testo;frase.style.fontStyle='italic';
+          testo.after(frase);
         }
-    }
-    const dati = await rpc('gioco_crea',{p_codice:richiesta.codice,p_classe:richiesta.classe});
-    await mostraPartita(dati,richiesta.codice);
-    rimuoviMemoria(IN_SOSPESO);
-}));
-
-$('btn-enigma').type = 'button';
-$('btn-enigma').addEventListener('click', () => esegui(async () => {
-    if(!$('input-enigma').value.toLowerCase().trim().includes('richieste')) {
-        $('errore-enigma').style.display='block';return;
-    }
-    await cambiaPergamena(() => {
-        $('errore-enigma').style.display='none';
-        $('enigma-pergamena').style.display='none';
-        $('storia-ingresso').style.display='none';
-        $('form-registrazione').style.display='block';
-    });
-}));
-
-async function scegli(azione, risposta=null) {
-    if(!codiceAttivo) return;
-    const dati = await rpc('gioco_scegli',{p_codice:codiceAttivo,p_azione:azione,p_risposta:risposta});
-    if(dati.risposta_errata) { $('errore-reale').style.display='block';return; }
-    await mostraPartita(dati,codiceAttivo);
-}
-for(const [id,azione] of [['scelta-paga','paga'],['scelta-favore','favore'],['scelta-reale','enigma']]) {
-    $(id).type='button';
-    $(id).addEventListener('click',()=>esegui(()=>scegli(azione)));
-}
-$('btn-conferma-reale').type='button';
-$('btn-conferma-reale').addEventListener('click',()=>esegui(()=>scegli('rispondi',$('risposta-reale').value)));
-
-// Ripresa automatica. Un codice errato non crea mai un nuovo personaggio.
-async function inizia() {
-    if(!leggiMemoria('ombra-sui-portici.avviso-codice.v1')) {
-        const chiuso=new Promise(resolve=>avvisoCodice.addEventListener('close',resolve,{once:true}));
-        apriAvvisoCodice();
-        await chiuso;
-    }
-    const ricordato = leggiMemoria(CHIAVE);
-    if(ricordato) {
-        $('codice-ripresa').value=ricordato;
-        await esegui(()=>riprendi(ricordato));
-    } else if(leggiMemoria(IN_SOSPESO)) {
-        avvisa('La creazione precedente potrebbe essere rimasta in sospeso. Supera l’enigma e premi Crea partita per recuperarla senza duplicarla.');
-    }
-}
-inizia();
+      }
+    };
+    if(opzioni.anima===false)aggiorna();else await cambiaPergamena(aggiorna);
+    if(opzioni.anima===true&&!dati.morto&&dati.stato_partita?.fase==='attesa_giorno2'
+      &&['enigma','pergamena'].includes(dati.stato_partita.scelta))mostraRisposta(dati);
+    window.FineGiornata?.aggiorna();
+  }
+  api.onChange(mostra);
+  async function scegli(azione,risposta=null){
+    if(!api.codice)return;
+    const dati=azione==='rispondi'
+      ?await api.rpc('gioco_rispondi_enigma',{p_codice:api.codice,p_enigma:1,p_risposta:risposta,p_tentativo:api.dati.tentativo})
+      :await api.rpc('gioco_scegli',{p_codice:api.codice,p_azione:azione,p_risposta:risposta});
+    if(dati.risposta_errata){await api.applica(dati,api.codice,{anima:false});mostraRisposta(dati);return}
+    await api.applica(dati,api.codice,{anima:true});
+  }
+  for(const[id,azione]of[['scelta-paga','paga'],['scelta-favore','favore'],['scelta-reale','enigma']]){
+    $(id).type='button';$(id).addEventListener('click',()=>api.esegui(()=>scegli(azione),messaggio));
+  }
+  $('btn-conferma-reale').type='button';$('btn-conferma-reale').addEventListener('click',()=>api.esegui(()=>scegli('rispondi',$('risposta-reale').value),messaggio));
+  const tornaScelte=document.createElement('button');
+  tornaScelte.type='button';tornaScelte.id='torna-scelte-galeazzo';
+  tornaScelte.textContent='Torna alle scelte';
+  tornaScelte.style.cssText='width:100%;margin-top:16px;padding:12px;background:transparent;border:1px solid var(--accent);color:var(--text);font:inherit;cursor:pointer';
+  $('enigma-reale').append(tornaScelte);
+  tornaScelte.addEventListener('click',()=>api.esegui(async()=>{
+    const dati=await api.rpc('gioco_torna_scelte',{p_codice:api.codice});
+    if(dati.stato_partita?.fase==='galeazzo')$('risposta-reale').value='';
+    await api.applica(dati,api.codice,{anima:true});
+  },messaggio));
+  api.ready.then(async()=>{
+    if(api.dati&&!renderizzata)await mostra(api.dati,api.codice,{anima:false});
+    if(!api.dati&&api.memoria.leggi(api.SOSPESA))messaggio.textContent='La creazione precedente potrebbe essere riuscita. Prova Riprendi la partita con il codice scelto prima di creare una nuova partita.';
+    api.promemoria();
+  });
+})();
 

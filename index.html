@@ -66,13 +66,6 @@ title: I Cancelli di Bologna - L'Ombra sui Portici
         <div id="schermata-gioco" style="display: none; padding-top: 20px;">
             
             <!-- Barra di stato -->
-            <header id="barra-stato" style="display: flex; justify-content: space-between; padding: 15px 30px; background: rgba(12, 16, 15, 0.8); color: #ebdcb9; border: 1px solid var(--line); border-radius: 4px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                <span id="nome-personaggio" style="font-family: var(--serif); font-size: 18px; font-weight: bold;">Nome: ---</span>
-                <div style="display: flex; gap: 30px;">
-                    <span id="hp-personaggio" style="font-weight: bold; color: #d9534f;">HP: ---</span>
-                    <span id="argento-personaggio" style="font-weight: bold; color: #c0c0c0;">Argento: 50</span>
-                </div>
-            </header>
 
             <!-- Il timbro burocratico -->
             <div style="text-align: center; margin-bottom: 35px; padding: 20px; border: 2px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
@@ -110,18 +103,19 @@ title: I Cancelli di Bologna - L'Ombra sui Portici
 
             <!-- Sezione nascosta per l'opzione 3 (Esoterica/Bilancia) -->
             <div id="enigma-reale" style="display: none; margin-top: 20px; padding: 25px; border: 1px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
-                <p style="font-family: var(--serif); font-size: 18px; margin-top: 0;"><em>«Oh, un forestiero che si crede istruito! Molto bene. Porta Maggiore è lo storico ingresso cerimoniale, da cui passavano Papi, Imperatori e ambasciatori lungo la via Emilia. Se sei davvero degno di camminare per la Dotta, dimmi: qual è il Segno Zodiacale che governa questa soglia, simbolo cosmico di giustizia, diplomazia e accoglienza?»</em></p>
+                <p id="testo-enigma-galeazzo" style="font-family: var(--serif); font-size: 18px; margin-top: 0;">Caricamento dell’enigma…</p>
                 
-                <input type="text" id="risposta-reale" placeholder="Es: Toro" style="width: 100%; padding: 12px; margin-bottom: 15px; font-size: 16px; border: 1px solid var(--line); background: transparent;">
+                <input type="text" id="risposta-reale" placeholder="La tua risposta" style="width: 100%; padding: 12px; margin-bottom: 15px; font-size: 16px; border: 1px solid var(--line); background: transparent;">
                 
                 <button id="btn-conferma-reale" style="width: 100%; background: var(--accent); color: #f4ead5; padding: 12px; font-size: 16px; border: none; cursor: pointer;">
                     Rispondi a Galeazzo
                 </button>
                 
                 <p id="errore-reale" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;">
-                    <em>«Sbagliato! L'Accademia non fa sconti all'ignoranza. Le stelle non mentono.»</em>
+                    <em>«Non è la risposta che cerco.»</em>
                 </p>
             </div>
             
         </div>
+
 
