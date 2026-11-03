@@ -1,6 +1,7 @@
 <header class="site-header">
   <a class="site-brand" href="{{ '/' | relative_url }}">L'Ombra <span>sui Portici</span></a>
   <nav aria-label="Navigazione principale">
+    <a href="{{ '/' | relative_url }}">Calendario</a>
     <button type="button" id="apri-borsa" class="azione-header">Borsa</button>
     <a href="{{ '/progetto/' | relative_url }}">Il progetto</a>
     <button type="button" id="apri-codice" class="azione-header">Codice</button>
@@ -22,7 +23,7 @@
     <p id="stato-gestione-codice" role="status" aria-live="polite"></p>
     <div id="gestione-senza-partita" hidden>
       <p>Entra nel gioco per creare o riprendere una partita.</p>
-      <a href="{{ '/' | relative_url }}">Vai al gioco</a>
+      <a href="{{ '/gioca/' | relative_url }}">Vai al gioco</a>
     </div>
     <div id="gestione-con-partita" hidden>
       <label for="codice-da-conservare">Il tuo codice segreto — conservalo</label>
@@ -51,7 +52,7 @@
     <p id="borsa-stato" role="status" aria-live="polite"></p>
     <ul id="borsa-elenco" class="borsa-elenco"></ul>
     <p id="borsa-contesto"></p>
-    <a id="borsa-vai-al-gioco" href="{{ '/' | relative_url }}">Torna al gioco</a>
+    <a id="borsa-vai-al-gioco" href="{{ '/gioca/' | relative_url }}">Torna al gioco</a>
     <button type="button" id="chiudi-borsa">Chiudi</button>
   </div>
   <div class="scroll-bottom" aria-hidden="true"></div>
@@ -69,5 +70,3 @@
   </div>
   <div class="scroll-bottom" aria-hidden="true"></div>
 </dialog>
-
-

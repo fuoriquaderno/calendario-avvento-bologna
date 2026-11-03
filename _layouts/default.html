@@ -7,12 +7,40 @@
 <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/immagini-schermate.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/dadi.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/css/finestre.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/css/gioco.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/css/giornate.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/css/biblioteca.css' | relative_url }}">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="{{ '/js/ui/pergamene.js' | relative_url }}"></script>
 <script defer src="{{ '/partita.js' | relative_url }}"></script>
+<script defer src="{{ '/js/gioco/borsa-base.js' | relative_url }}"></script>
+<script defer src="{{ '/js/gioco/combattimento.js' | relative_url }}"></script>
+<script defer src="{{ '/js/gioco/borsa.js' | relative_url }}"></script>
+<script defer src="{{ '/js/gioco/perquisizione.js' | relative_url }}"></script>
+<script defer src="{{ '/js/gioco/fine-giornata.js' | relative_url }}"></script>
+<script defer src="{{ '/js/gioco/luoghi.js' | relative_url }}"></script>
+<script defer src="{{ '/js/gioco/negozi.js' | relative_url }}"></script>
 <script defer src="{{ '/immagini-schermate.js' | relative_url }}"></script>
 <script defer src="{{ '/dadi.js' | relative_url }}"></script>
-{% if page.url == '/' %}<script defer src="{{ '/enigmi.js' | relative_url }}"></script>{% endif %}
-{% if page.url == '/' %}<script defer src="{{ '/app.js' | relative_url }}"></script>{% endif %}
+{% if page.gioco %}
+<script defer src="{{ '/js/giornate/giorno-2.js' | relative_url }}"></script>
+<script defer src="{{ '/js/giornate/iliano.js' | relative_url }}"></script>
+<script defer src="{{ '/js/giornate/giorno-3.js' | relative_url }}"></script>
+<script defer src="{{ '/js/biblioteca/sala-lettura.js' | relative_url }}"></script>
+<script defer src="{{ '/js/biblioteca/manoscritti.js' | relative_url }}"></script>
+<script defer src="{{ '/js/biblioteca/servizi.js' | relative_url }}"></script>
+<script defer src="{{ '/js/giornate/giorno-4.js' | relative_url }}"></script>
+<script defer src="{{ '/js/biblioteca/stanza-nascosta.js' | relative_url }}"></script>
+<script defer src="{{ '/enigmi.js' | relative_url }}"></script>
+<script defer src="{{ '/js/ui/transizioni.js' | relative_url }}"></script>
+<script defer src="{{ '/js/giornate/giorno-1.js' | relative_url }}"></script>
+{% endif %}
+{% if page.calendario %}
+<link rel="stylesheet" href="{{ '/css/calendario.css' | relative_url }}">
+<script defer src="{{ '/js/gioco/calendario.js' | relative_url }}"></script>
+{% endif %}
+<script defer src="{{ '/js/avvio.js' | relative_url }}"></script>
 </head>
 <body>
 {% include header.html %}
@@ -33,4 +61,3 @@
 {% include footer.html %}
 </body>
 </html>
-

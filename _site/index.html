@@ -3,21 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>I Cancelli di Bologna - L&#39;Ombra sui Portici</title>
+<title>Il calendario — L&#39;Ombra sui Portici</title>
 <link rel="stylesheet" href="/calendario-avvento-bologna/style.css">
 <link rel="stylesheet" href="/calendario-avvento-bologna/immagini-schermate.css">
 <link rel="stylesheet" href="/calendario-avvento-bologna/dadi.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/finestre.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/gioco.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/giornate.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/biblioteca.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/calendario-avvento-bologna/js/ui/pergamene.js"></script>
 <script defer src="/calendario-avvento-bologna/partita.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/borsa-base.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/combattimento.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/borsa.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/perquisizione.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/fine-giornata.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/luoghi.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/negozi.js"></script>
 <script defer src="/calendario-avvento-bologna/immagini-schermate.js"></script>
 <script defer src="/calendario-avvento-bologna/dadi.js"></script>
-<script defer src="/calendario-avvento-bologna/enigmi.js"></script>
-<script defer src="/calendario-avvento-bologna/app.js"></script>
+
+
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/calendario.css">
+<script defer src="/calendario-avvento-bologna/js/gioco/calendario.js"></script>
+
+<script defer src="/calendario-avvento-bologna/js/avvio.js"></script>
 </head>
 <body>
 <header class="site-header">
   <a class="site-brand" href="/calendario-avvento-bologna/">L'Ombra <span>sui Portici</span></a>
   <nav aria-label="Navigazione principale">
+    <a href="/calendario-avvento-bologna/">Calendario</a>
     <button type="button" id="apri-borsa" class="azione-header">Borsa</button>
     <a href="/calendario-avvento-bologna/progetto/">Il progetto</a>
     <button type="button" id="apri-codice" class="azione-header">Codice</button>
@@ -39,7 +56,7 @@
     <p id="stato-gestione-codice" role="status" aria-live="polite"></p>
     <div id="gestione-senza-partita" hidden>
       <p>Entra nel gioco per creare o riprendere una partita.</p>
-      <a href="/calendario-avvento-bologna/">Vai al gioco</a>
+      <a href="/calendario-avvento-bologna/gioca/">Vai al gioco</a>
     </div>
     <div id="gestione-con-partita" hidden>
       <label for="codice-da-conservare">Il tuo codice segreto — conservalo</label>
@@ -68,7 +85,7 @@
     <p id="borsa-stato" role="status" aria-live="polite"></p>
     <ul id="borsa-elenco" class="borsa-elenco"></ul>
     <p id="borsa-contesto"></p>
-    <a id="borsa-vai-al-gioco" href="/calendario-avvento-bologna/">Torna al gioco</a>
+    <a id="borsa-vai-al-gioco" href="/calendario-avvento-bologna/gioca/">Torna al gioco</a>
     <button type="button" id="chiudi-borsa">Chiudi</button>
   </div>
   <div class="scroll-bottom" aria-hidden="true"></div>
@@ -87,8 +104,6 @@
   <div class="scroll-bottom" aria-hidden="true"></div>
 </dialog>
 
-
-
 <main class="site-main" id="contenuto">
 <div class="scroll-container">
 <div class="scroll-top" aria-hidden="true"></div>
@@ -98,121 +113,270 @@
   data-descrizione="">
   <img id="illustrazione-schermata" alt="" decoding="async">
 </figure>
-        <!-- Schermata di Accesso / Dogana -->
-        <div id="schermata-login" style="margin-bottom: 40px;">
-            
-            <h1 style="font-family: var(--serif); font-size: 32px; color: var(--accent); margin-bottom: 20px; text-align: center;">
-                Porta Maggiore
-            </h1>
-            
-            <div id="storia-ingresso" style="font-family: var(--serif); font-size: 18px; line-height: 1.7; text-align: justify; margin-bottom: 30px;">
-                <p>Dopo mezza giornata di cammino lungo la Via Emilia, la sagoma imponente di Porta Maggiore si staglia finalmente contro il cielo velato. È qui che il misterioso Iliano ti ha dato appuntamento, promettendo risposte e, soprattutto, monete sonanti.</p>
-                
-                <p>Abituato ai posti di blocco serrati delle altre roccaforti, rimani interdetto: c'è una totale assenza di guardie fisiche. Sotto le alte arcate di mattoni rossi non ci sono picchieri a sbarrare il passo, né balestrieri annoiati sui camminamenti. Per un istante pensi che i governanti di Bologna siano impazziti, o che credano la città talmente intoccabile da non aver bisogno di presidiare gli ingressi.</p>
-                
-                <p>L'istinto del sopravvissuto ti suggerisce l'esistenza di una trappola invisibile. Rallenti il passo, la mano scivola sicura verso la tua arma, gli occhi scrutano le ombre dei portici in cerca di rune innescate. Eppure, diversi mercanti e contadini ti sorpassano a passo svelto, attraversando la soglia senza esitazione e senza saltare in aria.</p>
-                
-                <p>Decidi allora di proseguire, ma appena ti trovi sotto la porta senti una forza che ti trascina verso l'alto e vedi il soffitto aprirsi, per richiudersi subito dopo il tuo passaggio.</p>
-                
-                <p>A quel punto ti ritrovi in una stanza con un omino seguito da una pergamena autoscrivente che ti guarda e sospira: <em>«Eccone un altro senza il soffio di Sapienza. Hai preso appuntamento almeno? Dalla tua faccia direi proprio di no. Vabbé, recati alla Stanza delle Richieste, forse hanno qualche minuto che gli avanza.»</em></p>
-                
-                <p>Appena cerchi di replicare l'ometto si dissolve. Ovviamente senza darti alcuna indicazione per trovare la Stanza delle Richieste. Sul muro vedi una pergamena e ti avvicini.</p>
-            </div>
+<section id="calendario-avvento" class="calendario-avvento" data-gioco="/calendario-avvento-bologna/gioca/" aria-labelledby="titolo-calendario">
+  <header class="calendario-intestazione">
+    <p class="calendario-sopratitolo">Un'avventura nella Bologna medievale</p>
+    <h1 id="titolo-calendario">L'Ombra sui Portici</h1>
+    <p class="calendario-sottotitolo">Il tuo calendario dell'Avvento</p>
+    <p>Apri una casella e continua la tua storia, un giorno alla volta.</p>
+  </header>
 
-            <!-- Enigma della Pergamena -->
-            <div id="enigma-pergamena" class="unlock-form">
-                <label for="input-enigma" style="font-weight: bold; color: var(--text);">Cosa scrivi con il dito sulla pergamena?</label>
-                <input type="text" id="input-enigma" placeholder="Domandare è lecito" style="margin-bottom: 15px; width: 100%; padding: 10px;">
-                
-                <button id="btn-enigma" style="width: 100%; background: var(--accent); border: 1px solid #631810; color: #f4ead5; padding: 14px; font-size: 16px; cursor: pointer; border-radius: 2px;">
-                    Traccia le lettere
-                </button>
-                <p id="errore-enigma" class="unlock-message" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;">
-                    L'inchiostro evapora all'istante. Non succede nulla.
-                </p>
-            </div>
+  <div id="calendario-ripresa" class="calendario-ripresa" hidden>
+    <p id="calendario-benvenuto"></p>
+    <a id="calendario-continua" class="calendario-continua" href="/calendario-avvento-bologna/gioca/">Riprendi l'avventura</a>
+  </div>
+  <p id="calendario-stato" class="calendario-stato" role="status" aria-live="polite">Sto preparando le caselle…</p>
+  <button id="calendario-riprova" type="button" class="calendario-riprova" hidden>Riprova a caricare il calendario</button>
 
-            <!-- Form di Creazione (Nascosto all'inizio) -->
-            <div id="form-registrazione" class="unlock-form" style="display: none; border-top: 1px dashed var(--line); padding-top: 20px; margin-top: 20px;">
-                <p style="font-family: var(--serif); font-size: 18px; margin-bottom: 15px; color: #3b6b36;">
-                    <em>La pergamena assorbe l'inchiostro e rivela una mappa per la Stanza delle Richieste, richiedendo infine di compilare le tue generalità.</em>
-                </p>
+  <ol class="calendario-griglia" aria-label="Le 25 giornate dell'avventura">
+    
+    <li>
+      <button id="casella-1" type="button" class="casella-calendario" data-giorno="1" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">1</span>
+        <span id="stato-casella-1" class="casella-stato">Da aprire</span>
+        <time id="data-casella-1" class="casella-data">1 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-2" type="button" class="casella-calendario" data-giorno="2" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">2</span>
+        <span id="stato-casella-2" class="casella-stato">Da aprire</span>
+        <time id="data-casella-2" class="casella-data">2 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-3" type="button" class="casella-calendario" data-giorno="3" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">3</span>
+        <span id="stato-casella-3" class="casella-stato">Da aprire</span>
+        <time id="data-casella-3" class="casella-data">3 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-4" type="button" class="casella-calendario" data-giorno="4" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">4</span>
+        <span id="stato-casella-4" class="casella-stato">Da aprire</span>
+        <time id="data-casella-4" class="casella-data">4 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-5" type="button" class="casella-calendario" data-giorno="5" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">5</span>
+        <span id="stato-casella-5" class="casella-stato">Da aprire</span>
+        <time id="data-casella-5" class="casella-data">5 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-6" type="button" class="casella-calendario" data-giorno="6" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">6</span>
+        <span id="stato-casella-6" class="casella-stato">Da aprire</span>
+        <time id="data-casella-6" class="casella-data">6 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-7" type="button" class="casella-calendario" data-giorno="7" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">7</span>
+        <span id="stato-casella-7" class="casella-stato">Da aprire</span>
+        <time id="data-casella-7" class="casella-data">7 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-8" type="button" class="casella-calendario" data-giorno="8" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">8</span>
+        <span id="stato-casella-8" class="casella-stato">Da aprire</span>
+        <time id="data-casella-8" class="casella-data">8 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-9" type="button" class="casella-calendario" data-giorno="9" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">9</span>
+        <span id="stato-casella-9" class="casella-stato">Da aprire</span>
+        <time id="data-casella-9" class="casella-data">9 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-10" type="button" class="casella-calendario" data-giorno="10" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">10</span>
+        <span id="stato-casella-10" class="casella-stato">Da aprire</span>
+        <time id="data-casella-10" class="casella-data">10 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-11" type="button" class="casella-calendario" data-giorno="11" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">11</span>
+        <span id="stato-casella-11" class="casella-stato">Da aprire</span>
+        <time id="data-casella-11" class="casella-data">11 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-12" type="button" class="casella-calendario" data-giorno="12" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">12</span>
+        <span id="stato-casella-12" class="casella-stato">Da aprire</span>
+        <time id="data-casella-12" class="casella-data">12 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-13" type="button" class="casella-calendario" data-giorno="13" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">13</span>
+        <span id="stato-casella-13" class="casella-stato">Da aprire</span>
+        <time id="data-casella-13" class="casella-data">13 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-14" type="button" class="casella-calendario" data-giorno="14" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">14</span>
+        <span id="stato-casella-14" class="casella-stato">Da aprire</span>
+        <time id="data-casella-14" class="casella-data">14 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-15" type="button" class="casella-calendario" data-giorno="15" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">15</span>
+        <span id="stato-casella-15" class="casella-stato">Da aprire</span>
+        <time id="data-casella-15" class="casella-data">15 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-16" type="button" class="casella-calendario" data-giorno="16" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">16</span>
+        <span id="stato-casella-16" class="casella-stato">Da aprire</span>
+        <time id="data-casella-16" class="casella-data">16 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-17" type="button" class="casella-calendario" data-giorno="17" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">17</span>
+        <span id="stato-casella-17" class="casella-stato">Da aprire</span>
+        <time id="data-casella-17" class="casella-data">17 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-18" type="button" class="casella-calendario" data-giorno="18" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">18</span>
+        <span id="stato-casella-18" class="casella-stato">Da aprire</span>
+        <time id="data-casella-18" class="casella-data">18 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-19" type="button" class="casella-calendario" data-giorno="19" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">19</span>
+        <span id="stato-casella-19" class="casella-stato">Da aprire</span>
+        <time id="data-casella-19" class="casella-data">19 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-20" type="button" class="casella-calendario" data-giorno="20" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">20</span>
+        <span id="stato-casella-20" class="casella-stato">Da aprire</span>
+        <time id="data-casella-20" class="casella-data">20 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-21" type="button" class="casella-calendario" data-giorno="21" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">21</span>
+        <span id="stato-casella-21" class="casella-stato">Da aprire</span>
+        <time id="data-casella-21" class="casella-data">21 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-22" type="button" class="casella-calendario" data-giorno="22" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">22</span>
+        <span id="stato-casella-22" class="casella-stato">Da aprire</span>
+        <time id="data-casella-22" class="casella-data">22 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-23" type="button" class="casella-calendario" data-giorno="23" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">23</span>
+        <span id="stato-casella-23" class="casella-stato">Da aprire</span>
+        <time id="data-casella-23" class="casella-data">23 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-24" type="button" class="casella-calendario" data-giorno="24" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">24</span>
+        <span id="stato-casella-24" class="casella-stato">Da aprire</span>
+        <time id="data-casella-24" class="casella-data">24 dicembre</time>
+      </button>
+    </li>
+    
+    <li>
+      <button id="casella-25" type="button" class="casella-calendario" data-giorno="25" data-stato="caricamento" data-disabilitato aria-disabled="true" disabled>
+        <span class="casella-giorno">Giorno</span>
+        <span class="casella-numero">25</span>
+        <span id="stato-casella-25" class="casella-stato">Da aprire</span>
+        <time id="data-casella-25" class="casella-data">25 dicembre</time>
+      </button>
+    </li>
+    
+  </ol>
 
-                <label for="codice-accesso" style="font-weight: bold; color: var(--text);">Nome in Codice:</label>
-                <input type="text" id="codice-accesso" placeholder="Es. BalanzoneOscuro" style="margin-bottom: 15px; width: 100%; padding: 10px;">
-                
-                <label for="scelta-classe" style="font-weight: bold; color: var(--text);">Classe e Dotazione Iniziale:</label>
-                <select id="scelta-classe" style="width: 100%; padding: 13px; font: 16px var(--sans); border: 1px solid #8b8779; background: transparent; color: var(--text); margin-bottom: 25px;">
-                    <option value="" disabled selected>Scegli una classe…</option>
-                </select>
+  <ul class="calendario-legenda" aria-label="Stati delle caselle">
+    <li data-stato="disponibile">Disponibile</li>
+    <li data-stato="in_corso">In corso</li>
+    <li data-stato="conclusa">Conclusa</li>
+    <li data-stato="chiusa">Da aprire</li>
+  </ul>
+  <p class="calendario-nota">Puoi recuperare le giornate già aperte, seguendo l'ordine della storia. Le scelte di una giornata confermata restano definitive.</p>
 
-                <button id="btn-login" style="width: 100%; background: var(--accent); border: 1px solid #631810; color: #f4ead5; padding: 14px; font-size: 16px; cursor: pointer; border-radius: 2px;">
-                    Entra nella Stanza
-                </button>
-
-                <p id="messaggio-errore" class="unlock-message" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;"></p>
-                <p id="messaggio-successo" class="unlock-message" style="color: #3b6b36; margin-top: 15px; display: none; text-align: center; font-weight: bold;"></p>
-            </div>
-        </div>
-
-
-        <!-- Schermata di Gioco Principale (nascosta all'inizio) -->
-        <div id="schermata-gioco" style="display: none; padding-top: 20px;">
-            
-            <!-- Barra di stato -->
-
-            <!-- Il timbro burocratico -->
-            <div style="text-align: center; margin-bottom: 35px; padding: 20px; border: 2px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
-                <h2 style="font-family: var(--serif); color: var(--accent); margin: 0 0 10px 0; font-size: 22px; text-transform: uppercase; letter-spacing: 2px;">Esito Registrazione</h2>
-                <p style="font-family: var(--sans); font-size: 20px; font-weight: bold; color: var(--text); margin: 0;">
-                    PRIMO APPUNTAMENTO DISPONIBILE: 15 MARZO
-                </p>
-            </div>
-
-            <div id="testo-storia" style="font-family: var(--serif); font-size: 20px; line-height: 1.8; text-align: justify;">
-                <p>Lo avevi sentito dire che Bologna la Dotta si era trasformata in <em>Bologna la Prossima Primavera</em>, ma l'idea di tornare indietro con le pive nel sacco proprio non ti va giù. La lettera ricevuta parla di una ricompensa senza eguali, e quel folle ti aveva già inviato 50 monete d'argento prima di sapere se accettassi o meno. Chi mai di questi tempi può buttare così 50 monete d'argento?</p>
-                
-                <p>Mentre ti perdi nei tuoi pensieri, un figuro mingherlino con le dita macchiate d'inchiostro e lo sguardo sfuggente ti si affianca. Indossa una tunica consunta dell'Accademia.</p>
-                
-                <p><em>«Quindici marzo, eh?»</em> sussurra sbirciando la tua pergamena. <em>«Sarai cibo per i ratti prima di allora. Io sono Galeazzo, apprendista archivista. Potrei far scivolare magicamente il tuo nome nel registro di domani mattina, ma rischiare le mie preziose dita per un forestiero... ha un costo.»</em></p>
-                
-                <p>Galeazzo si passa la lingua sui denti e ti propone tre modi per saldare il debito. Quale scegli?</p>
-            </div>
-
-            <!-- Area per le scelte -->
-            <div id="scelte-storia" style="margin-top: 40px; display: flex; flex-direction: column; gap: 15px;">
-                
-                <button id="scelta-paga" style="text-align: left; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
-                    <strong>1. Corruzione:</strong> Paga 25 monete d'argento. <em>("Il denaro risolve tutto")</em>
-                </button>
-                
-                <button id="scelta-favore" style="text-align: left; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
-                    <strong>2. Il Patto di Sangue:</strong> Accetta un favore futuro. <em>("Tieni le tue avare mani a posto. Ti aiuterò quando ne avrai bisogno")</em>
-                </button>
-                
-                <button id="scelta-reale" style="text-align: left; background: rgba(255, 255, 255, 0.5); border: 1px solid var(--line); color: var(--text); padding: 15px; font-size: 16px; font-family: var(--sans); cursor: pointer; transition: 0.2s;">
-                    <strong>3. Sfida Esoterica:</strong> <em>("Scommettiamo? Dimostrerò di conoscere la vera natura di questa Porta meglio di te")</em>
-                </button>
-            </div>
-
-            <!-- Sezione nascosta per l'opzione 3 (Esoterica/Bilancia) -->
-            <div id="enigma-reale" style="display: none; margin-top: 20px; padding: 25px; border: 1px solid var(--accent); background: rgba(139, 38, 27, 0.05); border-radius: 4px;">
-                <p id="testo-enigma-galeazzo" style="font-family: var(--serif); font-size: 18px; margin-top: 0;">Caricamento dell’enigma…</p>
-                
-                <input type="text" id="risposta-reale" placeholder="La tua risposta" style="width: 100%; padding: 12px; margin-bottom: 15px; font-size: 16px; border: 1px solid var(--line); background: transparent;">
-                
-                <button id="btn-conferma-reale" style="width: 100%; background: var(--accent); color: #f4ead5; padding: 12px; font-size: 16px; border: none; cursor: pointer;">
-                    Rispondi a Galeazzo
-                </button>
-                
-                <p id="errore-reale" style="color: #a83232; margin-top: 15px; display: none; text-align: center; font-weight: bold;">
-                    <em>«Non è la risposta che cerco.»</em>
-                </p>
-            </div>
-            
-        </div>
-
-
+  <section id="calendario-accesso" class="calendario-accesso" aria-labelledby="titolo-riprendi-calendario">
+    <h2 id="titolo-riprendi-calendario">Hai già una partita?</h2>
+    <p>Inserisci il codice segreto per ritrovare il tuo calendario e il salvataggio.</p>
+    <form id="form-riprendi-calendario">
+      <label for="codice-calendario">Codice segreto della partita</label>
+      <input id="codice-calendario" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="128" required>
+      <button type="submit">Riprendi la partita</button>
+    </form>
+    <p id="errore-calendario" role="status" aria-live="polite"></p>
+    <p class="calendario-nota">Se è la tua prima visita, comincia dalla casella 1.</p>
+  </section>
+</section>
 
 </div>
 <div class="scroll-bottom" aria-hidden="true"></div>
@@ -239,4 +403,3 @@
 </footer>
 </body>
 </html>
-

@@ -1,0 +1,79 @@
+
+    dialog.messaggio-orizzontale[open]{animation:apertura-pergamena-laterale 850ms cubic-bezier(.22,.7,.25,1) both}
+
+    dialog.messaggio-orizzontale{
+      --altezza-messaggio:min(320px,90dvh);
+      --rotolo:calc(var(--altezza-messaggio) / 5);
+      --corsa-rotolo:calc((min(var(--larghezza-messaggio),100vw - 24px) - var(--rotolo)) / 2);
+      height:var(--altezza-messaggio);max-height:none;
+      max-width:calc(100vw - 24px);box-sizing:border-box;
+      overflow:hidden;padding:0;
+    }
+    dialog.messaggio-orizzontale .scroll-top,
+    dialog.messaggio-orizzontale .scroll-bottom{
+      position:absolute;top:var(--altezza-messaggio);left:0;
+      width:var(--altezza-messaggio);height:var(--rotolo);
+      aspect-ratio:auto;transform:rotate(-90deg);transform-origin:0 0;
+      pointer-events:none;z-index:2;
+    }
+    dialog.messaggio-orizzontale .scroll-bottom{left:calc(100% - var(--rotolo))}
+    dialog.messaggio-orizzontale[open] .scroll-top{animation:rotolo-sinistro 850ms cubic-bezier(.22,.7,.25,1) both}
+    dialog.messaggio-orizzontale[open] .scroll-bottom{animation:rotolo-destro 850ms cubic-bezier(.22,.7,.25,1) both}
+    @keyframes rotolo-sinistro{from{transform:translateX(var(--corsa-rotolo)) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
+    @keyframes rotolo-destro{from{transform:translateX(calc(-1 * var(--corsa-rotolo))) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
+    @media(prefers-reduced-motion:reduce){
+      dialog.messaggio-orizzontale[open] .scroll-top,dialog.messaggio-orizzontale[open] .scroll-bottom{animation:none}
+    }
+    dialog.messaggio-orizzontale .scroll-middle{
+      position:absolute;inset:0 var(--rotolo);width:auto;height:100%;
+      padding:22px 12px;box-sizing:border-box;background:none;
+      display:flex;flex-direction:column;justify-content:center;gap:12px;
+      isolation:isolate;
+    }
+    dialog.messaggio-orizzontale .scroll-middle::before{
+      content:'';position:absolute;z-index:-1;
+      top:50%;left:50%;width:var(--altezza-messaggio);height:calc(100cqw + 56px);
+      background:url('../images/middle-pergamena.png') center top/100% auto repeat-y;
+      transform:translate(-50%,-50%) rotate(-90deg);pointer-events:none;
+    }
+    dialog.messaggio-orizzontale .scroll-middle{container-type:inline-size}
+    dialog.messaggio-orizzontale .scroll-middle p{
+      margin:0;overflow:auto;min-height:0;line-height:1.45;
+    }
+    dialog.messaggio-orizzontale .scroll-middle h2{flex-shrink:0;font-size:22px}
+    dialog.messaggio-orizzontale .scroll-middle button{flex-shrink:0;margin:0;padding:8px}
+    @media(max-width:420px){
+      dialog.messaggio-orizzontale{font-size:16px}
+      dialog.messaggio-orizzontale .scroll-middle{padding:16px 6px;gap:8px}
+      dialog.messaggio-orizzontale .scroll-middle h2{font-size:19px}
+    }
+    @keyframes apertura-pergamena-laterale{
+      from{clip-path:inset(0 49.5%);opacity:0}
+      15%{opacity:1}
+      to{clip-path:inset(0 0);opacity:1}
+    }
+    @media(prefers-reduced-motion:reduce){dialog.messaggio-orizzontale[open]{animation:none}}
+  
+    /* Su mobile torna la pergamena verticale, come nella storia. */
+    @media(max-width:600px){
+      dialog.messaggio-orizzontale{
+        width:calc(100vw - 24px)!important;height:auto;max-height:calc(100dvh - 24px);
+        overflow:hidden;
+      }
+      dialog.messaggio-orizzontale[open]{display:flex;flex-direction:column;animation:apertura-pergamena-verticale 850ms ease-out both}
+      dialog.messaggio-orizzontale .scroll-top,
+      dialog.messaggio-orizzontale .scroll-bottom{
+        position:static;inset:auto;width:100%;height:auto;aspect-ratio:5/1;
+        flex-shrink:0;transform:none!important;animation:none!important;
+      }
+      dialog.messaggio-orizzontale .scroll-middle{
+        position:relative;inset:auto;width:100%;height:auto;min-height:0;flex:1 1 auto;
+        padding:0 10%;container-type:normal;
+        background:url('../images/middle-pergamena.png') center top/100% auto repeat-y;
+      }
+      dialog.messaggio-orizzontale .scroll-middle::before{display:none}
+    }
+    @keyframes apertura-pergamena-verticale{
+      from{clip-path:inset(49.5% 0);opacity:0}to{clip-path:inset(0);opacity:1}
+    }
+    @media(prefers-reduced-motion:reduce){dialog.messaggio-orizzontale[open]{animation:none}}

@@ -7,17 +7,31 @@
 <link rel="stylesheet" href="/calendario-avvento-bologna/style.css">
 <link rel="stylesheet" href="/calendario-avvento-bologna/immagini-schermate.css">
 <link rel="stylesheet" href="/calendario-avvento-bologna/dadi.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/finestre.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/gioco.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/giornate.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/biblioteca.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="/calendario-avvento-bologna/js/ui/pergamene.js"></script>
 <script defer src="/calendario-avvento-bologna/partita.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/borsa-base.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/combattimento.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/borsa.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/perquisizione.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/fine-giornata.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/luoghi.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/negozi.js"></script>
 <script defer src="/calendario-avvento-bologna/immagini-schermate.js"></script>
 <script defer src="/calendario-avvento-bologna/dadi.js"></script>
 
 
+<script defer src="/calendario-avvento-bologna/js/avvio.js"></script>
 </head>
 <body>
 <header class="site-header">
   <a class="site-brand" href="/calendario-avvento-bologna/">L'Ombra <span>sui Portici</span></a>
   <nav aria-label="Navigazione principale">
+    <a href="/calendario-avvento-bologna/">Calendario</a>
     <button type="button" id="apri-borsa" class="azione-header">Borsa</button>
     <a href="/calendario-avvento-bologna/progetto/">Il progetto</a>
     <button type="button" id="apri-codice" class="azione-header">Codice</button>
@@ -39,7 +53,7 @@
     <p id="stato-gestione-codice" role="status" aria-live="polite"></p>
     <div id="gestione-senza-partita" hidden>
       <p>Entra nel gioco per creare o riprendere una partita.</p>
-      <a href="/calendario-avvento-bologna/">Vai al gioco</a>
+      <a href="/calendario-avvento-bologna/gioca/">Vai al gioco</a>
     </div>
     <div id="gestione-con-partita" hidden>
       <label for="codice-da-conservare">Il tuo codice segreto — conservalo</label>
@@ -68,7 +82,7 @@
     <p id="borsa-stato" role="status" aria-live="polite"></p>
     <ul id="borsa-elenco" class="borsa-elenco"></ul>
     <p id="borsa-contesto"></p>
-    <a id="borsa-vai-al-gioco" href="/calendario-avvento-bologna/">Torna al gioco</a>
+    <a id="borsa-vai-al-gioco" href="/calendario-avvento-bologna/gioca/">Torna al gioco</a>
     <button type="button" id="chiudi-borsa">Chiudi</button>
   </div>
   <div class="scroll-bottom" aria-hidden="true"></div>
@@ -86,8 +100,6 @@
   </div>
   <div class="scroll-bottom" aria-hidden="true"></div>
 </dialog>
-
-
 
 <main class="site-main" id="contenuto">
 <div class="scroll-container">
@@ -127,4 +139,3 @@
 </footer>
 </body>
 </html>
-
