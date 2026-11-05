@@ -19,8 +19,8 @@
  function b(t,f){const e=document.createElement('button');e.type='button';e.textContent=t;e.disabled=busy;e.addEventListener('click',f);return e}
  function salva(){api.memoria.scrivi(KEY,JSON.stringify({codice:api.codice,modo,sessione:vista?.sessione||pendente?.p_sessione,pendente}))}
  function dadi(t,r){
-   if(!r)return;const h=document.createElement('h3');h.textContent=t;const a=document.createElement('div');a.className='dadi-area';a.setAttribute('aria-hidden','true');const totale=document.createElement('p');
-   if(window.Dadi)window.Dadi.mostraRisultato(a,totale,r);else totale.textContent=`${r.valori.join(' + ')} + ${r.bonus} = ${r.totale}`;
+   if(!r||(window.Dadi&&!window.Dadi.contestoAttivo('combattimento')))return;const h=document.createElement('h3');h.textContent=t;const a=document.createElement('div');a.className='dadi-area';a.setAttribute('aria-hidden','true');const totale=document.createElement('p');
+   if(window.Dadi)window.Dadi.mostraRisultato(a,totale,r,'combattimento');else totale.textContent=`${r.valori.join(' + ')} + ${r.bonus} = ${r.totale}`;
    area.append(h,a,totale);
  }
  function racconto(){
@@ -55,7 +55,7 @@
      if(vista.cura_disponibile){const cura=b('Cura del Chierico — usa il turno',()=>azione('cura'));cura.disabled=busy||vista.giocatore.hp>=vista.giocatore.hp_massimi;area.append(cura)}
      for(const o of vista.oggetti||[]){const oggetto=b(`Usa ${o.nome} (${o.quantita}) — usa il turno`,()=>azione('oggetto',o.id));area.append(oggetto)}
    }else{
-     area.append(p(vista.esito==='vittoria'?'Hai vinto!':vista.esito==='fuga'?'La fuga è riuscita.':'Hai perso lo scontro.'));
+     area.append(p(vista.esito==='vittoria'?(api.dati?.interazioni?.missione_galeazzo?.attiva?'L’avversario è stordito.':'Hai vinto!'):vista.esito==='fuga'?'La fuga è riuscita.':'Hai perso lo scontro.'));
      if(modo==='allenamento')area.append(p('La partita non è cambiata.'),b('Scegli un nuovo avversario',()=>{vista=null;api.memoria.rimuovi(KEY);disegna()}));
      else if(vista.premio){area.append(p(`Bottino: ${vista.premio.monete} monete d’argento, ${vista.premio.xp} XP.`));for(const id of vista.premio.oggetti||[])area.append(p('Oggetto da scegliere nella Borsa: '+id))}
    }
@@ -101,6 +101,7 @@
    }catch(e){stato.textContent=e.message}finally{busy=false;disegna()}
  }
  $('chiudi-allenamento').addEventListener('click',()=>{if(!busy)dialogo.close()});
+ dialogo.addEventListener('close',()=>window.Dadi?.pulisci());
  dialogo.addEventListener('cancel',e=>{if(busy)e.preventDefault()});
  prova.addEventListener('click',()=>apri('allenamento'));combatti.addEventListener('click',()=>apri('storia'));nellaStoria.addEventListener('click',()=>apri('storia'));
  let revisione=0;

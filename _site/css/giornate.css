@@ -5,3 +5,11 @@
 #racconto-giorno3{border:0;background:none;margin-block:24px}#racconto-giorno3 input{display:block;width:100%;box-sizing:border-box;font:inherit;padding:12px;margin-block:12px;background:transparent;color:inherit;border:1px solid #926033}#racconto-giorno3 button{font:inherit;line-height:1.4;margin:8px 10px 8px 0;padding:12px 18px;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}#racconto-giorno3 button:disabled{opacity:.5}@media(max-width:600px){#racconto-giorno3 button{width:100%;margin-inline:0}}
 
 #racconto-giorno4{border:0;background:none;margin-block:24px}#racconto-giorno4 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}#racconto-giorno4 button:disabled{opacity:.5}@media(max-width:600px){#racconto-giorno4 button{width:100%}}
+
+/* Giorno 5: stessa pergamena e stessi pulsanti del sito. */
+.giorno5-attivo>:not(#racconto-giorno5){display:none!important}
+#racconto-giorno5{border:0;background:none;margin-block:24px}
+#racconto-giorno5 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}#racconto-giorno5 button:disabled{opacity:.5}
+#racconto-giorno5 .prototipi-numeri{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-block:16px}
+#racconto-giorno5 .prototipi-numeri button{margin:0;min-width:0}
+@media(max-width:600px){#racconto-giorno5 .prototipi-numeri{grid-template-columns:repeat(4,minmax(0,1fr))}}

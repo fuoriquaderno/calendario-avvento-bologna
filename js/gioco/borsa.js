@@ -31,7 +31,7 @@
    await api.esegui(async()=>{
      try{
        risultato=await api.rpc(r.nomeRpc,r.args);api.memoria.rimuovi(REQ);
-       if(risultato?.partita)await api.applica(risultato.partita,r.codice,{anima:['gioco_iliano','gioco_giorno3'].includes(r.nomeRpc)||(r.nomeRpc==='gioco_sala_lettura'&&['manoscritti','sala','torna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_manoscritti'&&r.args.p_azione!=='documento')||(r.nomeRpc==='gioco_servizi'&&['entra','premi','corridoio','torna','esci'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno4'&&!['parla','passante'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_stanza_nascosta'&&['esplora','scaffali','libri','uscita','torna'].includes(r.args.p_azione))});
+       if(risultato?.partita)await api.applica(risultato.partita,r.codice,{anima:['gioco_giorno5','gioco_missione_guardia','gioco_missione_galeazzo','gioco_iliano','gioco_giorno3'].includes(r.nomeRpc)||(r.nomeRpc==='gioco_sala_lettura'&&['manoscritti','sala','torna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_manoscritti'&&r.args.p_azione!=='documento')||(r.nomeRpc==='gioco_servizi'&&['entra','premi','corridoio','torna','esci'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno4'&&!['parla','passante'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_stanza_nascosta'&&['esplora','scaffali','libri','uscita','torna'].includes(r.args.p_azione))});
        if($('inventario').open)await aggiorna();
      }catch(e){if(!e.message.startsWith('Operazione non riuscita'))api.memoria.rimuovi(REQ);throw e}
    },msg);

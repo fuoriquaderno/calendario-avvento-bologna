@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page.title | default: site.title | escape }}</title>
+<link rel="icon" type="image/png" href="{{ '/images/favicon1.png' | relative_url }}">
 <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/immagini-schermate.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/dadi.css' | relative_url }}">
@@ -40,6 +41,14 @@
 <link rel="stylesheet" href="{{ '/css/calendario.css' | relative_url }}">
 <script defer src="{{ '/js/gioco/calendario.js' | relative_url }}"></script>
 {% endif %}
+{% if page.gioco %}
+<link rel="stylesheet" href="{{ '/css/missione-galeazzo.css' | relative_url }}">
+<script defer src="{{ '/js/gioco/missione-galeazzo.js' | relative_url }}"></script>
+{% endif %}
+{% if page.gioco %}
+<script defer src="{{ '/js/gioco/missione-guardia.js' | relative_url }}"></script>
+{% endif %}
+{% if page.gioco %}<script defer src="{{ '/js/giornate/giorno-5.js' | relative_url }}"></script>{% endif %}
 <script defer src="{{ '/js/avvio.js' | relative_url }}"></script>
 </head>
 <body>
@@ -61,3 +70,4 @@
 {% include footer.html %}
 </body>
 </html>
+

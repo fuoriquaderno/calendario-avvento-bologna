@@ -62,7 +62,7 @@
    if(busy)return;busy=true;const codice=api.codice,tentativo=api.dati.tentativo;
    const esito=await api.esegui(async()=>{
      const nuovi=await api.rpc('gioco_concludi_giornata',{p_codice:codice,p_tentativo:tentativo,p_scelta:scelta});
-     dialogo.close();await api.applica(nuovi,codice,{anima:scelta==='rigioca'});return true;
+     dialogo.close();await api.applica(nuovi,codice,{anima:scelta==='rigioca'||nuovi.espulsione_galeazzo===true||!!nuovi.arresto_guardia});if(nuovi.arresto_guardia)window.Messaggi.mostra({titolo:'Arrestato per furto',testo:nuovi.arresto_guardia==='flirt'?'La stessa guardia di Porta Maggiore ti ferma. «Sei in arresto per furto.» Al tuo sguardo incredulo si avvicina e aggiunge: «Non è mica bello tentare di rubare la donna altrui.» Capisci che Beatrice gli ha raccontato del tuo tentativo di flirt e che l’accusa è una vendetta. Riparti dall’inizio della giornata.':'La guardia di Porta Maggiore ti sbarra la strada. «Sei in arresto per furto.» Poi abbassa la voce: «La parola data va mantenuta, altrimenti ne paghi le conseguenze.» Capisci che si è inventata l’accusa perché non hai consegnato la lettera entro il quinto giorno. Riparti dall’inizio della giornata 5.',pulsante:'Riprova la giornata'});else if(nuovi.espulsione_galeazzo)window.Messaggi.mostra({titolo:'Il pass è stato revocato',testo:'Le guardie ti fermano: Galeazzo ha fatto revocare il tuo pass speciale. Non hai mantenuto la parola e vieni cacciato dalla città. Riparti dall’inizio della giornata 10: puoi ancora recuperare il sacchetto e consegnarlo.',pulsante:'Riprova la giornata 10'});return true;
    },$('errore-fine-giornata'));
    busy=false;
    if(!esito)stato.textContent=$('errore-fine-giornata').textContent;

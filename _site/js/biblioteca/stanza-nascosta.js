@@ -17,6 +17,7 @@
   else if(figuraNascosta){figuraNascosta=false;window.ImmagineSchermata?.aggiorna(api.dati)}
  }
  async function cambiaVista(apri){
+  window.Dadi?.pulisci();
   const cambia=()=>{vistaVerbali=apri;paginaVerbali=null;aggiorna()};
   if(window.cambiaPergamena)await window.cambiaPergamena(cambia);else cambia();
   area.scrollIntoView?.({block:'start',behavior:'smooth'});
@@ -59,11 +60,11 @@
    area.append(p('Appena tocchi un libro, l’aria si raffredda. Fra gli scaffali prende forma una figura trasparente, con una mano ancora tesa verso il volume.'),p('Il volto dello spirito si contrae. Le dita attraversano il ripiano e si allungano verso di te. Non sembra disposto a lasciarti consultare la raccolta.'),b('Inizia il combattimento',()=>window.AzioniGioco.apriScontro()));return;
   }
   if(!s.tiro_topo){
-   area.append(p('Scaffalature polverose occupano le pareti. I dorsi dei vecchi tomi sono segnati dal tempo; alcuni volumi giacciono di traverso, come se l’ultimo lettore non li avesse rimessi a posto.'),p('Muovi un passo. Un topolino ti attraversa la strada proprio mentre stai abbassando il piede.'),p('Prova di agilità: d20 con il bonus di Furtività. Devi raggiungere almeno 8.'),b('Evita il topo — tira il d20',()=>invia('topo')));return;
+   area.append(p('Scaffalature polverose occupano le pareti. I dorsi dei vecchi tomi sono segnati dal tempo; alcuni volumi giacciono di traverso, come se l’ultimo lettore non li avesse rimessi a posto.'),p('Muovi un passo. Un topolino ti attraversa la strada proprio mentre stai abbassando il piede.'),p('Prova di agilità: d20 con il bonus di Furtività. Cerca di evitarlo.'),b('Evita il topo — tira il d20',()=>invia('topo')));return;
   }
   const dado=document.createElement('div'),totale=document.createElement('p');dado.className='dadi-area';
-  if(window.Dadi)window.Dadi.mostraRisultato(dado,totale,s.tiro_topo);else totale.textContent=`Prova del topo: ${s.tiro_topo.totale} · soglia 8`;
-  if(!vistaVerbali)area.append(dado,totale,p(s.tiro_topo.successo?'Sposti il piede in tempo. Il topo scompare sotto uno scaffale senza protestare.':'Gli pesti la coda. Il topo si volta e ti morde prima di scappare sotto uno scaffale. Perdi 1 HP.'));
+  if(window.Dadi)window.Dadi.mostraRisultato(dado,totale,s.tiro_topo,'topo');else totale.textContent=`Prova del topo: ${s.tiro_topo.totale}`;
+  if(!vistaVerbali&&(!window.Dadi||window.Dadi.contestoAttivo('topo')))area.append(dado,totale,p(s.tiro_topo.successo?'Sposti il piede in tempo. Il topo scompare sotto uno scaffale senza protestare.':'Gli pesti la coda. Il topo si volta e ti morde prima di scappare sotto uno scaffale. Perdi 1 HP.'));
   if(f==='g4_tomi'){
    const letto=id=>!!s.letti?.[id];
    const libro=(id,t)=>b(t+(letto(id)?' · Letto':''),()=>invia('leggi:'+id));

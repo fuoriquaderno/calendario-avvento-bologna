@@ -19,12 +19,38 @@
     for(let i=0;i<numero;i++){const dado=document.createElement('span');dado.className='dado-virtuale';dado.dataset.facce=String(facce);dado.textContent='…';$('dadi-area').append(dado)}
   }
   function risultatoValido(t){return t&&Number.isInteger(t.numero)&&t.numero>=1&&t.numero<=6&&FACCE.includes(t.facce)&&Number.isInteger(t.bonus)&&Array.isArray(t.valori)&&t.valori.length===t.numero&&t.valori.every(n=>Number.isInteger(n)&&n>=1&&n<=t.facce)&&t.totale===t.valori.reduce((a,b)=>a+b,0)+t.bonus}
-  function mostraRisultato(area,testo,tiro){
+  // Solo l'operazione appena conclusa può mostrare un risultato. Le letture non lo riattivano.
+  let contestoCorrente=null;
+  const risultatiVisivi=new Set();
+  function pulisci(){
+    contestoCorrente=null;
+    for(const r of risultatiVisivi){r.area.replaceChildren();r.testo.textContent=''}
+    risultatiVisivi.clear();
+  }
+  function contestoAttivo(c){return contestoCorrente===c}
+  function operazione(nome,args={},data){
+    const a=args.p_azione||'leggi';
+    if(/^gioco_(catalogo|calendario|leggi_enigma)/.test(nome))return;
+    if(['leggi','disponibile','catalogo'].includes(a)&&!['gioco_cura','gioco_pozione','gioco_prova_dadi','gioco_recupera','gioco_riprendi_checkpoint','gioco_concludi_giornata','gioco_inizia_giornata','gioco_crea'].includes(nome))return;
+    pulisci();
+    if(nome==='gioco_missione_galeazzo'&&data?.missione?.tiro)contestoCorrente='missione';
+    else if(nome==='gioco_missione_guardia'&&a==='flirta'&&data?.missione?.tiro)contestoCorrente='guardia';
+    else if(nome==='gioco_stanza_nascosta'&&a==='topo')contestoCorrente='topo';
+    else if(nome==='gioco_perquisizione'&&a==='inganno')contestoCorrente='perquisizione';
+    else if(nome==='gioco_indizio'&&a==='tiro')contestoCorrente='indizio';
+    else if(['gioco_scontro','gioco_allenamento'].includes(nome)&&!['apri','crea'].includes(a))contestoCorrente='combattimento';
+    else if(nome==='gioco_cura')contestoCorrente='cura';
+    else if(nome==='gioco_prova_dadi')contestoCorrente='prova';
+  }
+
+  function mostraRisultato(area,testo,tiro,contesto){
+    if(contesto&&!contestoAttivo(contesto)){area.replaceChildren();testo.textContent='';return false}
+    risultatiVisivi.add({area,testo});
     if(!risultatoValido(tiro))throw new Error('Risultato dei dadi non valido. Riprova a recuperare lo stesso tiro.');
     area.replaceChildren();
     for(const valore of tiro.valori){const dado=document.createElement('span');dado.className='dado-virtuale';dado.dataset.facce=String(tiro.facce);dado.textContent=String(valore);area.append(dado)}
     const bonus=tiro.bonus>0?` + ${tiro.bonus}`:tiro.bonus<0?` − ${Math.abs(tiro.bonus)}`:'';
-    testo.textContent=`${tiro.numero}d${tiro.facce}${bonus}: ${tiro.valori.join(' + ')}${bonus} = ${tiro.totale}`;
+    testo.textContent=`${tiro.numero}d${tiro.facce}${bonus}: ${tiro.valori.join(' + ')}${bonus} = ${tiro.totale}`;return true;
   }
   function aggiorna(){
     if(impegnato)return;
@@ -36,7 +62,7 @@
     if(r){campi(r);$('dadi-stato').textContent='Un tiro potrebbe essere già stato salvato. Recuperalo per vedere lo stesso risultato, senza tirare di nuovo.'}
     else{
       const ultimo=leggi(LAST);
-      if(ultimo?.codice===api.codice&&risultatoValido(ultimo.tiro))mostraRisultato($('dadi-area'),$('dadi-risultato'),ultimo.tiro);
+      if(ultimo?.codice===api.codice&&risultatoValido(ultimo.tiro))mostraRisultato($('dadi-area'),$('dadi-risultato'),ultimo.tiro,'prova');
     }
   }
   $('dadi-abbandona').addEventListener('click',()=>{
@@ -61,7 +87,7 @@
         const [tiro]=await Promise.all([api.rpc('gioco_prova_dadi',{p_codice:r.codice,p_richiesta:r.richiesta,p_facce:r.facce,p_numero:r.numero,p_bonus:r.bonus}),durata]);
         if(tiro?.richiesta!==r.richiesta||tiro.numero!==r.numero||tiro.facce!==r.facce||tiro.bonus!==r.bonus)
           throw new Error('Il risultato non corrisponde al tiro richiesto. Recupera lo stesso tiro.');
-        mostraRisultato($('dadi-area'),$('dadi-risultato'),tiro);
+        mostraRisultato($('dadi-area'),$('dadi-risultato'),tiro,'prova');
         if(api.memoria.scrivi(LAST,JSON.stringify({codice:r.codice,tiro})))api.memoria.rimuovi(PENDING);
         $('dadi-stato').textContent='Tiro di prova salvato. Nessun effetto sulla partita.';
       }catch(errore){
@@ -76,5 +102,6 @@
   });
   api.onChange(aggiorna);api.ready.then(aggiorna);
   // La parte visiva può essere riusata nelle scene con un risultato deciso dal server.
-  window.Dadi={mostraRisultato};
+  $('inventario').addEventListener('close',pulisci);
+  window.Dadi={mostraRisultato,operazione,contestoAttivo,pulisci};
 })();

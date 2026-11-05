@@ -28,6 +28,7 @@
       if(error.message==='Codice non disponibile')memoria.rimuovi(SOSPESA);
       throw new Error(note.includes(error.message)?error.message:'Operazione non riuscita. Controlla la connessione e riprova. Se una creazione o un cambio codice potrebbero essere riusciti, prova a riprendere la partita con il codice scelto.');
     }
+    window.Dadi?.operazione(nome,parametri,data);
     return data;
   }
   async function esegui(azione,messaggio=$('stato-condiviso')){

@@ -34,8 +34,8 @@
    const pendente=window.BorsaNuova.pending();if(pendente){area.append(p('C’è una richiesta da recuperare.'),b('Recupera la richiesta',async()=>{await window.BorsaNuova.esegui(pendente.nomeRpc,pendente.args);await aggiorna()}));return}
    const s=vista.stato;
    if(s.messaggio)area.append(p(s.messaggio));
-   if(s.inganno){const dado=document.createElement('div'),totale=document.createElement('p');dado.className='dadi-area';if(window.Dadi)window.Dadi.mostraRisultato(dado,totale,s.inganno);else totale.textContent='Inganno: '+s.inganno.totale;area.append(dado,totale)}
-   else if(!s.cacciato&&!vista.senza_limite)area.append(b('Tenta di nascondere un oggetto — Inganno',()=>azione('inganno')));
+   if(s.inganno&&(!window.Dadi||window.Dadi.contestoAttivo('perquisizione'))){const dado=document.createElement('div'),totale=document.createElement('p');dado.className='dadi-area';if(window.Dadi)window.Dadi.mostraRisultato(dado,totale,s.inganno,'perquisizione');else totale.textContent='Inganno: '+s.inganno.totale;area.append(dado,totale)}
+   else if(!s.inganno&&!s.cacciato&&!vista.senza_limite)area.append(b('Tenta di nascondere un oggetto — Inganno',()=>azione('inganno')));
    if(s.proposta)area.append(b('Accetta la proposta',()=>azione('accetta')),b('Rifiuta la proposta',()=>azione('rifiuta')));
    else if(!s.dialogo_chiuso){
      const lettere=document.createElement('p');lettere.className='lettere-perquisizione';lettere.textContent=vista.lettere;

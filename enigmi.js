@@ -38,8 +38,8 @@
     if(!vista)return;
     const r=sospesa();
     if(r&&(vista.indizio||(r.azione==='tiro'&&vista.tiro)||(r.azione==='offerta'&&(vista.offerte||[]).some(o=>o.richiesta===r.richiesta))))api.memoria.rimuovi(PENDING);
-    if(vista.tiro){
-      try{window.Dadi.mostraRisultato($('indizio-dado'),$('indizio-tiro'),vista.tiro)}
+    if(vista.tiro&&(!window.Dadi||window.Dadi.contestoAttivo('indizio'))){
+      try{window.Dadi.mostraRisultato($('indizio-dado'),$('indizio-tiro'),vista.tiro,'indizio')}
       catch{$('indizio-tiro').textContent=`Tiro ${vista.tiro.valori?.[0]}, modificatore ${vista.tiro.bonus}, totale ${vista.tiro.totale}.`}
       $('indizio-tiro').textContent+=vista.tiro.successo?' — Indizio ottenuto.':' — Nessun indizio ottenuto con il tiro.';
     }else{$('indizio-dado').replaceChildren();$('indizio-tiro').textContent=''}
@@ -48,7 +48,7 @@
     const daRiprovare=sospesa();
     if(daRiprovare){$('indizio-comandi').append(creaBottone('Recupera la richiesta in sospeso',()=>eseguiRichiesta(daRiprovare)));return;}
     if(!vista.tiro){
-      const p=document.createElement('p');p.textContent=`Un solo tentativo: d100 ${vista.bonus>=0?'+':'−'} ${Math.abs(vista.bonus)}. Devi superare ${vista.soglia}.`;
+      const p=document.createElement('p');p.textContent=`Un solo tentativo: d100 ${vista.bonus>=0?'+':'−'} ${Math.abs(vista.bonus)}.`;
       $('indizio-comandi').append(p,creaBottone('Tenta Intuizione',()=>nuovaRichiesta('tiro')));
     }
     if(vista.acquisto_argento){

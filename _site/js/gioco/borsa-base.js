@@ -42,12 +42,12 @@
     }catch{/* Gli oggetti restano consultabili anche se la capacità non si può verificare. */}
   }
   function esitoCura(cura){
-    if(!cura)return;
+    if(!cura||(window.Dadi&&!window.Dadi.contestoAttivo('cura')))return;
     const area=document.createElement('div');area.className='dadi-area';area.setAttribute('aria-hidden','true');
     const tiro=document.createElement('p');tiro.className='dadi-totale';
     try{
       if(!window.Dadi)throw new Error('Visualizzazione semplice');
-      window.Dadi.mostraRisultato(area,tiro,cura);
+      window.Dadi.mostraRisultato(area,tiro,cura,'cura');
     }catch{tiro.textContent=`Tiro della cura: ${(cura.valori||[]).join(' + ')} + ${cura.bonus} = ${cura.totale}`;}
     const recupero=document.createElement('p');recupero.textContent=`HP recuperati: ${cura.recuperati} (da ${cura.hp_prima} a ${cura.hp_dopo}).`;
     capacitaSezione.append(area,tiro,recupero);

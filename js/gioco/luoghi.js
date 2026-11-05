@@ -35,15 +35,16 @@
  }
  function disegna(){
    pulsante.hidden=!api.dati;apriMappa.hidden=!dati?.ha_mappa;
-   scena.hidden=!dati||!$('schermata-gioco')||dati.partita.morto||([3,4].includes(dati.partita.giorno_corrente)&&String(dati.partita.stato_partita?.fase||'').startsWith('g3_'))||(dati.partita.giorno_corrente===4&&['g4_colazione','g4_passaggio','g4_nascosta','g4_esplora','g4_fantasma','g4_dopocustode'].includes(dati.partita.stato_partita?.fase))||(dati.partita.giorno_corrente===2&&['ritorno_porta','indicazioni_giorno2','guardia_giorno2','scontro_guardie'].includes(dati.partita.stato_partita?.fase));
+   scena.hidden=(dati?.partita.giorno_corrente===5&&String(dati.partita.stato_partita?.fase||'').startsWith('g5_')&&(dati.partita.stato_partita.fase==='g5_colazione'||dati.partita.luogo_attuale==='torre_demetrio'))||!dati||!$('schermata-gioco')||dati.partita.morto||([3,4].includes(dati.partita.giorno_corrente)&&String(dati.partita.stato_partita?.fase||'').startsWith('g3_'))||(dati.partita.giorno_corrente===4&&['g4_colazione','g4_passaggio','g4_nascosta','g4_esplora','g4_fantasma','g4_dopocustode'].includes(dati.partita.stato_partita?.fase))||(dati.partita.giorno_corrente===2&&['ritorno_porta','indicazioni_giorno2','guardia_giorno2','scontro_guardie'].includes(dati.partita.stato_partita?.fase));
    if(!dati)return;
    titolo.textContent=dati.corrente.nome;descrizione.textContent=dati.corrente.descrizione;persone.replaceChildren();
    if(!dati.ingresso_completato)persone.append(p('Puoi chiedere indicazioni. Per entrare in città devi prima concludere la perquisizione.'));
    if(dati.in_combattimento)persone.append(p('Termina il combattimento prima di spostarti o chiedere indicazioni.'));
    for(const n of dati.informatori){const e=b((api.dati.giorno_corrente===4?'Parla con ':'Chiedi indicazioni a ')+n.nome,()=>api.dati.giorno_corrente===4?window.GiornoQuattro.parla(n.id):apriIndicazioni(n));e.disabled=bloccato();persone.append(e)}
    if(dati.ingresso_completato)persone.append(b('Apri i luoghi conosciuti',apriElenco));if(dati.partita.giorno_corrente===3&&dati.partita.stato_partita?.fase==='fine_giorno3'&&!['armaiolo','bottega_preziosi','speziale'].includes(dati.partita.luogo_attuale))persone.append(p('Per oggi qui non trovi altri incontri o novità. Puoi continuare la passeggiata, visitare le botteghe oppure terminare la giornata dalla Borsa.'));
+   window.MissioneGaleazzo?.azioniLuogo(persone,dati);window.MissioneGuardia?.azioniLuogo(persone,dati);
    $('regole-luoghi').textContent=dati.ha_mappa?'Puoi orientarti con la mappa e raggiungere i luoghi segnati.':'Conosci già Porta Maggiore, San Francesco e Piazza Maggiore. Per gli altri luoghi chiedi indicazioni: una volta scoperti rimangono nell’elenco.';
-   lista($('elenco-luoghi'));if(mappa.open)lista($('destinazioni-mappa'));
+   lista($('elenco-luoghi'));window.MissioneGaleazzo?.azioniLuogo($('elenco-luoghi'),dati);window.MissioneGuardia?.azioniLuogo($('elenco-luoghi'),dati);if(mappa.open)lista($('destinazioni-mappa'));
  }
  async function aggiorna(){
    const n=++richiesta;if(owner!==api.codice){dati=null;owner=api.codice}
