@@ -4,6 +4,24 @@
  if(!$('schermata-gioco'))return;
  const area=document.createElement('section');area.id='perquisizione';area.hidden=true;document.querySelector('main .scroll-middle').append(area);
  let vista=null,versione=0,form=null,stato=null,inputs=new Map(),arma=null,difesa=null,riepilogo=null,conferma=null;
+ let propostaInCorso=false,timerProposta=null;
+ async function apriProposta(){
+   const s=vista?.stato;if(propostaInCorso||!s?.proposta||area.hidden||window.BorsaNuova.pending())return;
+   if(api.occupato){programmaProposta();return}
+   const aperto=document.querySelector('dialog[open]');
+   if(aperto){aperto.addEventListener('close',programmaProposta,{once:true});return}
+   propostaInCorso=true;
+   const codiceProposta=api.codice,tentativoProposta=api.dati?.tentativo,versioneProposta=vista.versione;
+   try{
+     const accetta=await window.ConfermaPergamena(s.messaggio||'La guardia attende una risposta.',{titolo:s.proposta==='prometto'?'Il favore della guardia':'La proposta della guardia',conferma:'Accetta la proposta',annulla:'Rifiuta la proposta'});
+     if(area.hidden||api.codice!==codiceProposta||api.dati?.tentativo!==tentativoProposta||vista?.versione!==versioneProposta||vista?.stato?.proposta!==s.proposta)return;
+     await azione(accetta?'accetta':'rifiuta');
+   }finally{propostaInCorso=false}
+ }
+ function programmaProposta(){
+   if(timerProposta!==null||propostaInCorso)return;
+   timerProposta=setTimeout(()=>{timerProposta=null;apriProposta()},100);
+ }
  function p(t){const e=document.createElement('p');e.textContent=t;return e}
  function b(t,f){const e=document.createElement('button');e.type='button';e.textContent=t;e.addEventListener('click',f);return e}
  function leggiBozza(){try{const r=JSON.parse(api.memoria.leggi(DRAFT));return r?.codice===api.codice&&r?.tentativo===api.dati.tentativo?r.selezione:null}catch{return null}}
@@ -21,7 +39,7 @@
  async function azione(azione,extra={}){
    const args={p_codice:api.codice,p_azione:azione,p_richiesta:crypto.randomUUID(),p_tentativo:api.dati.tentativo,p_versione:vista.versione,...extra};
    const r=await window.BorsaNuova.esegui('gioco_perquisizione',args);
-   if(r){if(vista&&!vista.conclusa&&conferma)aggiornaPeso();if(r.perquisizione.stato.messaggio){window.Messaggi.mostra({titolo:'Il guardiano',testo:r.perquisizione.stato.messaggio,pulsante:'Continua'})}}
+   if(r){if(vista&&!vista.conclusa&&conferma)aggiornaPeso();if(r.perquisizione.stato.proposta){programmaProposta()}else if(r.perquisizione.stato.messaggio){window.Messaggi.mostra({titolo:'Il guardiano',testo:r.perquisizione.stato.messaggio,pulsante:'Continua'})}}
    else if(window.BorsaNuova.pending())await aggiorna();
    else if(stato)stato.textContent=window.BorsaNuova.errore;
  }
@@ -33,10 +51,10 @@
    if(vista.dotazione_classe.length)area.append(p('Dotazione di classe: '+vista.dotazione_descritta.join(', ')));
    const pendente=window.BorsaNuova.pending();if(pendente){area.append(p('C’è una richiesta da recuperare.'),b('Recupera la richiesta',async()=>{await window.BorsaNuova.esegui(pendente.nomeRpc,pendente.args);await aggiorna()}));return}
    const s=vista.stato;
-   if(s.messaggio)area.append(p(s.messaggio));
-   if(s.inganno&&(!window.Dadi||window.Dadi.contestoAttivo('perquisizione'))){const dado=document.createElement('div'),totale=document.createElement('p');dado.className='dadi-area';if(window.Dadi)window.Dadi.mostraRisultato(dado,totale,s.inganno,'perquisizione');else totale.textContent='Inganno: '+s.inganno.totale;area.append(dado,totale)}
-   else if(!s.inganno&&!s.cacciato&&!vista.senza_limite)area.append(b('Tenta di nascondere un oggetto — Inganno',()=>azione('inganno')));
-   if(s.proposta)area.append(b('Accetta la proposta',()=>azione('accetta')),b('Rifiuta la proposta',()=>azione('rifiuta')));
+   if(s.messaggio&&!s.proposta)area.append(p(s.messaggio));
+   if(!s.proposta&&s.inganno&&(!window.Dadi||window.Dadi.contestoAttivo('perquisizione'))){const dado=document.createElement('div'),totale=document.createElement('p');dado.className='dadi-area';if(window.Dadi)window.Dadi.mostraRisultato(dado,totale,s.inganno,'perquisizione');else totale.textContent='Inganno: '+s.inganno.totale;area.append(dado,totale)}
+   else if(!s.proposta&&!s.inganno&&!s.cacciato&&!vista.senza_limite)area.append(b('Tenta di nascondere un oggetto — Inganno',()=>azione('inganno')));
+   if(s.proposta){area.append(p('La guardia attende la tua risposta alla proposta.'),b('Rileggi la proposta della guardia',apriProposta));programmaProposta()}
    else if(!s.dialogo_chiuso){
      const lettere=document.createElement('p');lettere.className='lettere-perquisizione';lettere.textContent=vista.lettere;
      const label=document.createElement('label');label.htmlFor='parola-perquisizione';label.textContent='Come reagisci? Componi una parola di 7 o 8 lettere. Non devi usarle tutte.';

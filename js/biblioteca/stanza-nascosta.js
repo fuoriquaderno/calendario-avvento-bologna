@@ -25,8 +25,9 @@
  function linkSocial(testo,url){const a=document.createElement('a');a.textContent=testo;a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.style.cssText='display:inline-block;margin:4px 20px 4px 0';return a}
 
  
- let ritratto=null;
+ let ritratto=null,proprietarioRitratto=null;
  function apriRitratto(){
+  proprietarioRitratto={codice:api.codice,tentativo:api.dati?.tentativo};
   if(!ritratto){
    ritratto=document.createElement('dialog');ritratto.id='ritratto-demetrio';ritratto.className='avviso-codice ritratto-demetrio';ritratto.setAttribute('aria-labelledby','titolo-ritratto-demetrio');
    ritratto.style.cssText='width:min(760px,calc(100% - 24px));max-height:90vh;max-height:90dvh;overflow-y:auto;overflow-x:hidden';
@@ -38,6 +39,12 @@
    const segnaposto=p('Illustrazione in preparazione');segnaposto.hidden=true;segnaposto.setAttribute('role','status');
    img.addEventListener('error',()=>{img.hidden=true;segnaposto.hidden=false});img.addEventListener('load',()=>{img.hidden=false;segnaposto.hidden=true});figura.append(img,segnaposto);
    contenuto.append(figura,p('Una torre di Bologna, sei sicuro di averla già vista.'));
+   ritratto.addEventListener('close',async()=>{
+    if(!img.complete||img.naturalWidth<=0||api.dati?.interazioni?.illustrazione_demetrio_vista)return;
+    if(api.codice!==proprietarioRitratto?.codice||api.dati?.tentativo!==proprietarioRitratto?.tentativo)return;
+    await window.BorsaNuova.esegui('gioco_osserva_ritratto',{p_codice:api.codice,p_tentativo:api.dati.tentativo,p_richiesta:crypto.randomUUID()});
+    aggiorna();
+   });
    const chiudi=b('Torna ai libri',()=>ritratto.close());centro.append(titolo,contenuto,chiudi);ritratto.append(alto,centro,basso);document.body.append(ritratto);
   }
   if(!ritratto.open)ritratto.showModal();
@@ -97,7 +104,7 @@
      if(letto('riuscita'))area.append(libro('apprendimento','Imparare dagli errori'));
      if(letto('apprendimento'))area.append(libro('occultamento','Il patto dei sette'));
      if(paginaVerbali){const h=document.createElement('h3');h.textContent=paginaVerbali.titolo;area.append(h,p(paginaVerbali.testo))}
-     if(letto('occultamento'))area.append(b('Hai trovato la conferma: concludi l’esplorazione',()=>invia('concludi')));
+     if(letto('occultamento')&&letto('consiglio')&&d.interazioni?.illustrazione_demetrio_vista)area.append(b('Hai trovato la conferma: concludi l’esplorazione',()=>invia('concludi')));else if(letto('occultamento'))area.append(p('Prima di andare via, osserva anche l’illustrazione accanto al ritratto di Demetrio.'),b('Torna agli altri libri',()=>cambiaVista(false)));
     }
     area.append(b('Riponi i verbali e torna agli altri libri',()=>cambiaVista(false)));
    }else{
@@ -109,30 +116,36 @@
      link.addEventListener('click',e=>{e.preventDefault();apriRitratto()});li.append(link);
     }elenco.append(li)}area.append(elenco);
     if(letto('luce'))area.append(s.pergamena_presa?p('Hai riposto la pergamena della luce vigile nella Borsa.'):b('Prendi la pergamena della luce vigile — peso 1',()=>invia('pergamena')));
-    if(letto('occultamento'))area.append(b('Hai trovato la conferma: concludi l’esplorazione',()=>invia('concludi')));
+    if(letto('occultamento')&&letto('consiglio')&&d.interazioni?.illustrazione_demetrio_vista)area.append(b('Hai trovato la conferma: concludi l’esplorazione',()=>invia('concludi')));else if(letto('occultamento'))area.append(p('Prima di andare via, osserva anche l’illustrazione accanto al ritratto di Demetrio.'));
     area.append(b('Torna davanti agli scaffali',()=>invia('scaffali')));
    }
   
 
 }else if(f==='g4_esplora'){
-   for(const [id,t] of [['sgabello','Raddrizza lo sgabello'],['cassa','Apri la vecchia cassa'],['arazzo','Scosta il drappo'],['brocca','Solleva la brocca incrinata']])area.append(b(t+(s.esaminati?.[id]?' · Esaminato':''),()=>invia(id)));
-
    area.append(p('Ti tieni lontano dai libri e osservi il resto della stanza. Vicino alla base di uno scaffale noti una pietra del pavimento leggermente sollevata. Quando la sfiori, si muove.'));
-   if(!s.pietra_sollevata)area.append(b('Solleva la pietra allentata',()=>invia('solleva')));
-   else{
+   const azioniEsplorazione=document.createElement('div');azioniEsplorazione.className='azioni-esplorazione-stanza';
+   for(const [id,t] of [['sgabello','Raddrizza lo sgabello'],['cassa','Apri la vecchia cassa'],['solleva','Solleva la pietra allentata'],['arazzo','Scosta il drappo'],['brocca','Solleva la brocca incrinata']]){
+    const esaminato=id==='solleva'?s.pietra_sollevata:s.esaminati?.[id];
+    const comando=b(t+(esaminato?' · Esaminato':''),()=>invia(id));
+    if(id==='solleva'&&s.pietra_sollevata){comando.disabled=true;comando.setAttribute('data-disabilitato','')}
+    azioniEsplorazione.append(comando);
+   }
+   area.append(azioniEsplorazione);
+   if(s.pietra_sollevata){
     area.append(p('Sotto la pietra trovi un piccolo incavo: due monete d’argento e un’ampolla ancora chiusa. È una pozione curativa media.'));
     if(!s.monete_prese)area.append(b('Prendi le 2 monete d’argento',()=>invia('monete')));else area.append(p('Hai raccolto le due monete.'));
     if(!s.pozione_presa)area.append(b('Prendi la pozione curativa media',()=>invia('pozione')));else area.append(p('Hai raccolto la pozione.'));
    }
-   area.append(b('Torna davanti agli scaffali',()=>invia('scaffali')));
+   const ritorni=document.createElement('div');ritorni.className='ritorni-esplorazione';ritorni.style.cssText='margin-top:32px;padding-top:8px';
+   ritorni.append(b('Torna davanti agli scaffali',()=>invia('scaffali')),b('Torna nei servizi',()=>invia('uscita')));area.append(ritorni);
   }else{
    if(d.stato_partita.custode_sconfitto)area.append(p('Il custode si è dissolto. L’aria torna immobile e gli scaffali non sembrano più sorvegliati.'));
    else area.append(p('Ora puoi guardarti intorno. Davanti a te rimangono gli scaffali e i loro vecchi tomi.'));
    area.append(b('Esplora la stanza',()=>invia('esplora')),b(d.stato_partita.custode_sconfitto?'Consulta i libri':'Prendi un libro dagli scaffali',()=>invia('libri')));
   }
-  if(f!=='g4_tomi')area.append(b('Torna nei servizi',()=>invia('uscita')));
+  if(f!=='g4_tomi'&&f!=='g4_esplora')area.append(b('Torna nei servizi',()=>invia('uscita')));
   if(window.BorsaNuova.errore)area.append(p(window.BorsaNuova.errore));
  }
  
- window.StanzaNascosta={aggiorna};api.onChange(aggiorna);api.ready.then(aggiorna);
+ window.StanzaNascosta={aggiorna,apriRitratto};api.onChange(aggiorna);api.ready.then(aggiorna);
 })();

@@ -94,6 +94,24 @@
     if(!await window.ConfermaPergamena('Hai conservato il codice? Senza di esso non potrai recuperare la partita.'))return;
     memoria.rimuovi(CHIAVE);memoria.rimuovi(SOSPESA);window.location.reload();
   });
+  let confermaCancellazione=false;
+  $('cancella-partita').addEventListener('click',async()=>{
+    if(occupato||!codice||!dati||confermaCancellazione)return;
+    confermaCancellazione=true;
+    const codiceDaCancellare=codice,tentativoDaCancellare=dati.tentativo;
+    try{
+      const confermata=await window.ConfermaPergamena('Cancellerai definitivamente questa partita, compresi progressi, inventario e appunti, su tutti i dispositivi. Il codice non funzionerà più. Potrai riutilizzarlo soltanto creando una nuova partita.',{titolo:'Cancellare questa partita?',conferma:'Cancella definitivamente',annulla:'Mantieni la partita'});
+      if(!confermata)return;
+      await esegui(async()=>{
+        if(codice!==codiceDaCancellare||dati?.tentativo!==tentativoDaCancellare)throw new Error('La partita è cambiata: riapri la Borsa');
+        const risultato=await rpc('gioco_cancella_partita',{p_codice:codiceDaCancellare,p_tentativo:tentativoDaCancellare});
+        if(risultato?.cancellata!==true)throw new Error('Cancellazione non confermata. Riprova.');
+        [CHIAVE,SOSPESA,GIORNO,'ombra-sui-portici.borsa.richiesta.v1','ombra-sui-portici.taccuino.bozza.v1','ombra-sui-portici.scontri.v2','ombra-sui-portici.pozione.v1','ombra-sui-portici.perquisizione.scelta.v1','ombra-sui-portici.fine-giornata.esplora.v1'].forEach(k=>memoria.rimuovi(k));
+        window.Dadi?.pulisci();
+        window.location.assign(risorsa('./'));
+      },$('stato-gestione-codice'));
+    }finally{confermaCancellazione=false}
+  });
   $('salva-nome-personaggio').addEventListener('click',()=>esegui(async()=>{
     const nome=$('nome-personaggio-modifica').value.trim();
     if(Array.from(nome).length>40)throw new Error('Il nome può contenere al massimo 40 caratteri.');

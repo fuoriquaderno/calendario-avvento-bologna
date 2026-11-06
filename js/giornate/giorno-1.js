@@ -174,7 +174,16 @@
     await api.applica(dati,api.codice,{anima:true});
   }
   for(const[id,azione]of[['scelta-paga','paga'],['scelta-favore','favore'],['scelta-reale','enigma']]){
-    $(id).type='button';$(id).addEventListener('click',()=>api.esegui(()=>scegli(azione),messaggio));
+    $(id).type='button';$(id).addEventListener('click',async()=>{
+      if(api.occupato)return;
+      if(azione==='favore'){
+        const codiceProposta=api.codice,tentativoProposta=api.dati?.tentativo;
+        if(api.dati?.stato_partita?.fase!=='galeazzo')return;
+        const accettato=await window.ConfermaPergamena('«Posso procurarti il pass. In cambio, entro il decimo giorno dovrai recuperarmi un piccolo sacchetto che ho nascosto nella casa dei signori Bentivoglio. Si trova sotto una pietra al centro del cortile, vicino al pozzo. Vedi di mantenere la parola.»',{titolo:'Il patto di Galeazzo',conferma:'Accetta il patto',annulla:'Rifiuta e torna alle scelte'});
+        if(!accettato||api.codice!==codiceProposta||api.dati?.tentativo!==tentativoProposta||api.dati?.stato_partita?.fase!=='galeazzo')return;
+      }
+      return api.esegui(()=>scegli(azione),messaggio);
+    });
   }
   $('btn-conferma-reale').type='button';$('btn-conferma-reale').addEventListener('click',()=>api.esegui(()=>scegli('rispondi',$('risposta-reale').value),messaggio));
   const tornaScelte=document.createElement('button');
