@@ -40,6 +40,7 @@
     finally{occupato=false;document.querySelectorAll('button').forEach(b=>b.disabled=b.hasAttribute('data-disabilitato'))}
   }
   function aggiornaHeader(){
+    const livelloHeader=$('livello-personaggio');if(livelloHeader)livelloHeader.textContent=dati?`Liv. ${dati.livello??1}`:'';
     const xpHeader=$('xp-personaggio');if(xpHeader)xpHeader.textContent=dati?`${dati.xp??0} XP`:'';
     $('barra-stato').hidden=!dati;
     $('nome-personaggio').textContent=dati?.nome||'';

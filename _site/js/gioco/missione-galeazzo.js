@@ -39,7 +39,11 @@
   const d=api.dati,s=m(),attiva=!!s.attiva&&!d?.morto;
   promemoria.hidden=!d||String(d.interazioni?.['1'])!=='2';promemoria.textContent=bloccata()?'Favore a Galeazzo: oggi non puoi riprovare. Torna a casa Bentivoglio domani.':s.completata?'Favore a Galeazzo: compiuto.':s.sacchetto?'Sacchetto di Galeazzo: da consegnare fuori Porta Maggiore.':'Favore a Galeazzo: recupera e consegna il sacchetto entro il decimo giorno.';
   main.classList.toggle('missione-galeazzo-attiva',attiva);area.hidden=!attiva;area.replaceChildren();if(!attiva)return;
-  if(!['consegna','conclusa'].includes(s.fase))area.append(illustrazione);
+  const fuoriPorta=['consegna','conclusa'].includes(s.fase);
+  const srcScena=api.risorsa('images/'+(fuoriPorta?'porta_maggiore.png':'pozzo.png'));
+  if(immagine.getAttribute('src')!==srcScena){illustrazione.hidden=false;immagine.src=srcScena}
+  immagine.alt=fuoriPorta?'Porta Maggiore, dove Galeazzo attende il sacchetto.':'Un cortile con il pozzo al centro, fra gli archi di casa Bentivoglio.';
+  area.append(illustrazione);
   const h=document.createElement('h2');h.textContent=s.fase==='consegna'||s.fase==='conclusa'?'Galeazzo fuori Porta Maggiore':'Il favore a Galeazzo';area.append(h);
   const sospesa=window.BorsaNuova.pending();
   if(sospesa){area.append(p('Recupera il risultato prima di proseguire.'),b('Recupera il risultato',async()=>{azioneDelTiro=sospesa.args?.p_azione||null;await window.BorsaNuova.esegui(sospesa.nomeRpc,sospesa.args);aggiorna()}));return}

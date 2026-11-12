@@ -5,15 +5,18 @@
  const figura=document.createElement('figure');figura.className='immagine-schermata';const img=document.createElement('img');img.decoding='async';figura.append(img);
  img.addEventListener('error',()=>figura.hidden=true);img.addEventListener('load',()=>figura.hidden=false);
  let busy=false,versione=0,racconto=null,chiaveRacconto=null,erroreLettura='',bozzaDove='',bozzaIndice='';
- const immagini={locanda_risveglio:'locanda.png',osteria_sole:'locanda.png',piazza_maggiore:'piazza_maggiore.png',mercato:'mercato.png',biblioteca:'biblioteca.png',san_domenico:'san_domenico.png'};
+ const immagini={bottega_indice:'grande_indice.png',tombe_glossatori:'glossatori.png',locanda_risveglio:'locanda.png',osteria_sole:'locanda.png',piazza_maggiore:'piazza_maggiore.png',mercato:'mercato.png',biblioteca:'biblioteca.png',san_domenico:'san_domenico.png'};
  const p=t=>{const e=document.createElement('p');e.textContent=t;return e};
  const b=(t,fn)=>{const e=document.createElement('button');e.type='button';e.textContent=t;e.disabled=busy;e.addEventListener('click',fn);return e};
+ const vociPopup=new Set(['studenti','maestri','biblioteca','passante','bottega','passante_locanda','aiuto','ricerca_errata','indice_trovato','indice_nomi','indice_luce','indice_vago']);
+ function breve(s){return vociPopup.has(s.voce_g6)}
+ function mostraRisposta(r){if(r?.lettura)window.Messaggi.mostra({...r.lettura,pulsante:'Continua'});else if(r?.racconto&&breve(r.partita?.stato_partita||{}))window.Messaggi.mostra({...r.racconto,pulsante:'Continua'})}
  const link=(t,url)=>{const e=document.createElement('a');e.textContent=t;e.href=url;e.target='_blank';e.rel='noopener noreferrer';return e};
  async function invia(azione,testo=null){
   if(busy)return;busy=true;
   try{
    const r=await window.BorsaNuova.esegui('gioco_giorno6',{p_codice:api.codice,p_azione:azione,p_testo:testo,p_richiesta:crypto.randomUUID(),p_tentativo:api.dati.tentativo});
-   if(r?.lettura)window.Messaggi.mostra({...r.lettura,pulsante:'Continua'});
+   mostraRisposta(r);
    if(r&&azione==='cerca')bozzaDove='';if(r&&azione==='ricerca')bozzaIndice='';
   }finally{busy=false;disegna()}
  }
@@ -48,21 +51,23 @@
   if(g.indice_conosciuto&&d.luogo_attuale!=='bottega_indice')area.append(b('Raggiungi la bottega di scrittura',()=>invia('vai_indice')));
   if(g.tombe_scoperte&&d.luogo_attuale!=='tombe_glossatori')area.append(b('Raggiungi il luogo individuato',()=>invia('vai_tombe')));
   area.append(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri()));
+  if(g.in_cammino&&!g.studenti&&!g.consiglio_locanda&&['piazza_maggiore','mercato','porta_maggiore','san_francesco','san_domenico'].includes(d.luogo_attuale))area.append(b('Parla con un passante',()=>invia('passante_locanda')));
+
  }
  function disegna(){
   const d=api.dati,s=d?.stato_partita||{},f=s.fase||'',g=s.g6||{};
   const valida=d?.giorno_corrente===6&&!d.morto&&(f.startsWith('g6_')||f==='fine_giorno6');
-  const piena=valida&&['g6_colazione','g6_dialogo','g6_abbaglio','g6_passante','g6_indice','g6_risultati','g6_tombe'].includes(f);
+  const piena=valida&&!breve(s)&&['g6_colazione','g6_dialogo','g6_abbaglio','g6_passante','g6_indice','g6_risultati','g6_tombe'].includes(f);
   main.classList.toggle('giorno6-attivo',!!piena);area.hidden=!valida;area.replaceChildren();if(!valida)return;
   if(piena&&immagini[d.luogo_attuale]){const src=api.risorsa('images/'+immagini[d.luogo_attuale]);if(img.getAttribute('src')!==src){figura.hidden=false;img.src=src}img.alt='';area.append(figura)}
-  const titolo=document.createElement('h2');titolo.textContent=f==='g6_colazione'?'Il sesto giorno':f==='fine_giorno6'?'Un luogo da esplorare con calma':racconto?.titolo||'Sulle tracce di Samuele';area.append(titolo);
+  const titolo=document.createElement('h2');titolo.textContent=f==='g6_colazione'?'Il sesto giorno':f==='fine_giorno6'?'Un luogo da esplorare con calma':(!breve(s)&&racconto?.titolo)||'Sulle tracce di Samuele';area.append(titolo);
   const sospesa=window.BorsaNuova.pending();if(sospesa){area.append(p('Recupera il risultato prima di proseguire.'),b('Recupera il risultato',async()=>{await window.BorsaNuova.esegui(sospesa.nomeRpc,sospesa.args);await aggiorna()}));return}
   if(f==='fine_giorno6'){area.append(p('Hai raggiunto le tombe dei glossatori, ma oggi non hai trovato una traccia di Samuele. Tornerai domani con più calma.'),b('Termina giornata',()=>window.FineGiornata.apri()));return}
   if(f==='g6_colazione'){
    if(d.luogo_attuale!=='locanda_risveglio'){area.append(p('Devi ancora decidere come cominciare la mattina.'),b('Torna alla locanda',()=>invia('torna_locanda')));return}
    area.append(p('Ti svegli alla locanda con le parole del diario ancora in mente. Al piano di sotto senti i primi clienti e il locandiere che prepara le scodelle.'),b('Fai colazione',()=>invia('colazione')),b('Esci subito',()=>invia('esci')));return;
   }
-  if(racconto?.testo){const testo=p(racconto.testo);testo.setAttribute('role','status');area.append(testo)}
+  if(racconto?.testo&&!breve(s)){const testo=p(racconto.testo);testo.setAttribute('role','status');area.append(testo)}
   if(erroreLettura){area.append(p(erroreLettura),b('Ricarica il racconto',aggiorna))}
   if(f==='g6_tombe'){area.append(b('Torna domani — termina il racconto di oggi',()=>invia('fine')));return}
   if(f==='g6_abbaglio')area.append(b('Riprendi a camminare',()=>invia('continua')));
@@ -75,10 +80,8 @@
    if(g.tombe_scoperte)area.append(b('Raggiungi il luogo trovato',()=>invia('vai_tombe')));
    area.append(b('Riprendi la ricerca in città',()=>invia('continua')));
   }else if(f==='g6_dialogo'){
-   if(s.voce_g6==='studenti'&&!g.nomi)area.append(b('Chiedi agli studenti di legge dei loro grandi maestri',()=>invia('maestri')));
-   if(s.voce_g6==='bottega')area.append(b('Raggiungi la bottega di scrittura',()=>invia('vai_indice')));
-   if(g.tombe_scoperte)area.append(b('Raggiungi il luogo individuato',()=>invia('vai_tombe')));
-   area.append(b('Riprendi la ricerca',()=>invia('continua')));
+   if(s.voce_g6==='passante_locanda')area.append(b('Raggiungi la locanda',()=>invia('vai_locanda')));
+   opzioniIndagine(d,g);
   }else{
    if(!g.in_cammino&&!g.studenti&&!g.biblioteca){
     if(s.colazione_g6==='pagata')area.append(p(s.colazione_ieri==='pagata'?'Paghi la colazione e lasci la locanda. Tutto sommato, di questi tempi una moneta d’argento per un pasto non è male.':'Finisci la colazione e ti alzi. Il locandiere ti ferma: «Una moneta d’argento. Non crederai che fosse offerta?» Paghi e lasci la locanda.'));
@@ -86,6 +89,7 @@
    }
    opzioniIndagine(d,g);
   }
+  if(breve(s)&&racconto?.testo)area.append(b('Rileggi l’ultima risposta',()=>window.Messaggi.mostra({...racconto,pulsante:'Continua'})));
   campo('cerca');appunti(g);social(g);
   if(window.BorsaNuova.errore)area.append(p(window.BorsaNuova.errore));
  }

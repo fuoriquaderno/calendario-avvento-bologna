@@ -27,7 +27,7 @@
     misura.style.font=window.getComputedStyle(popupRisposta).font;
     misura.textContent=testo;document.body.append(misura);
     const larghezzaTesto=misura.getBoundingClientRect().width;misura.remove();
-    const limite=Math.max(0,document.documentElement.clientWidth-24);
+    const limite=Math.max(0,Math.min(1000,document.documentElement.clientWidth-24));
     let larghezza=Math.min(limite,Math.max(520,Math.ceil(larghezzaTesto/3+180)));
     function impostaLarghezza(){popupRisposta.style.width=larghezza+'px';popupRisposta.style.setProperty('--larghezza-messaggio',larghezza+'px')}
     impostaLarghezza();
@@ -38,7 +38,7 @@
     pagineMessaggio=[];paginaMessaggio=0;
     if(entra())pagineMessaggio=[testo];
     else{
-      // Su mobile il testo prosegue per pagine, mantenendo l’altezza fissa.
+      // Raggiunta la larghezza massima, il testo prosegue per pagine su tutti gli schermi.
       const parole=String(testo).split(/(\s+)/);let inizio=0;
       while(inizio<parole.length){
         let basso=inizio+1,alto=parole.length,fine=inizio+1;

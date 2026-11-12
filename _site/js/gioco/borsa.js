@@ -12,7 +12,12 @@
  const nota=document.createElement('textarea');nota.id='taccuino-testo';nota.maxLength=20000;nota.rows=8;nota.setAttribute('aria-label','Appunti personali');nota.style.cssText='width:100%;font:inherit;padding:12px;resize:vertical';
  const salva=document.createElement('button');salva.type='button';salva.textContent='Salva appunti';
  const caricaNote=document.createElement('button');caricaNote.type='button';caricaNote.textContent='Ricarica appunti salvati';
- const statoNote=document.createElement('p');statoNote.setAttribute('role','status');notes.append(titolo,nota,salva,caricaNote,statoNote);
+ function taccuinoInBorsa(){return borsa?.partita?.inventario?.find(id=>{const o=catalogo.find(x=>x.id===id);return (o?.tipo_base||id)==='kit_taccuino'})}
+ const lasciaNote=b('Lascia il taccuino',async()=>{
+  const id=taccuinoInBorsa();if(!id||busy||borsa.in_combattimento||borsa.partita.morto||borsa.partita.giornata_completata)return;
+  if(await window.ConfermaPergamena('Lasciare il taccuino? Gli appunti restano salvati e leggibili, ma per scrivere dovrai procurartene un altro.'))await esegui('gioco_borsa',args('lascia',id,1));
+ });lasciaNote.id='lascia-taccuino';lasciaNote.hidden=true;
+ const statoNote=document.createElement('p');statoNote.setAttribute('role','status');notes.append(titolo,nota,salva,caricaNote,lasciaNote,statoNote);
  function p(t){const e=document.createElement('p');e.textContent=t;return e}
  function b(t,f){const e=document.createElement('button');e.type='button';e.textContent=t;e.addEventListener('click',f);return e}
  function nome(id){const o=catalogo.find(o=>o.id===id);return o?.nomi_classi?.[api.dati?.classe]||o?.nome||id}
@@ -31,7 +36,9 @@
    await api.esegui(async()=>{
      try{
        risultato=await api.rpc(r.nomeRpc,r.args);api.memoria.rimuovi(REQ);
-       if(risultato?.partita)await api.applica(risultato.partita,r.codice,{anima:['gioco_giorno6','gioco_cerca_torre','gioco_giorno5','gioco_missione_guardia','gioco_missione_galeazzo','gioco_iliano','gioco_giorno3'].includes(r.nomeRpc)||(r.nomeRpc==='gioco_sala_lettura'&&['manoscritti','sala','torna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_manoscritti'&&r.args.p_azione!=='documento')||(r.nomeRpc==='gioco_servizi'&&['entra','premi','corridoio','torna','esci'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno4'&&!['parla','passante'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_stanza_nascosta'&&['esplora','scaffali','libri','uscita','torna'].includes(r.args.p_azione))});
+       const fase=risultato?.partita?.stato_partita?.fase;
+       const rispostaBreve=(r.nomeRpc==='gioco_giorno13'&&['parla','libro','bibliotecaria','tiro_manuali','fazzoletto','polvere','riservato','copia','chiedi_accesso','ispeziona','modellino'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno12'&&['ascolta','chi','dove','parla','strumento','misura','aiuto','disponi'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno11'&&['prendi_ritrovamento','studioso','domanda_studioso','studente','rispondi','aiuto','spiegazione','libro','appunti','prendi_pagina'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno10'&&['passante','custode','erudito','favore','ordine','aiuto','consegna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno9'&&(['osserva','esplora','prendi_pozione'].includes(r.args.p_azione)&&fase!=='g9_baule'||r.nomeRpc==='gioco_giorno9'&&r.args.p_azione==='cerca_casa'&&fase==='g9_vicolo'))||(r.nomeRpc==='gioco_giorno8'&&(['parla','scaccia','carezza','lascia_gatto','confronta','accarezza'].includes(r.args.p_azione)||(r.args.p_azione==='esamina'&&fase==='g8_esplora')))||(r.nomeRpc==='gioco_giorno6'&&(['studenti','maestri','biblioteca','bottega','passante_locanda','aiuto','diario','rileggi_nomi','ricerca'].includes(r.args.p_azione)||(r.args.p_azione==='continua'&&fase==='g6_passante')||(r.args.p_azione==='cerca'&&fase==='g6_dialogo')))||(r.nomeRpc==='gioco_giorno7'&&(r.args.p_azione==='esamina_altra'||(r.args.p_azione==='esamina'&&r.args.p_testo!=='base')||(r.args.p_azione==='esplora'&&r.args.p_testo!=='arazzo')||r.args.p_azione==='annota'||(['parola','gesto'].includes(r.args.p_azione)&&fase==='g7_enigma')));
+       if(risultato?.partita)await api.applica(risultato.partita,r.codice,{anima:!rispostaBreve&&(['gioco_giorno13','gioco_giorno12','gioco_giorno11','gioco_giorno10','gioco_giorno9','gioco_giorno8','gioco_giorno7','gioco_giorno6','gioco_cerca_torre','gioco_giorno5','gioco_missione_guardia','gioco_missione_galeazzo','gioco_iliano','gioco_giorno3'].includes(r.nomeRpc)||(r.nomeRpc==='gioco_sala_lettura'&&['manoscritti','sala','torna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_manoscritti'&&r.args.p_azione!=='documento')||(r.nomeRpc==='gioco_servizi'&&['entra','premi','corridoio','torna','esci'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno4'&&!['parla','passante'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_stanza_nascosta'&&['esplora','scaffali','libri','uscita','torna'].includes(r.args.p_azione)))});
        if($('inventario').open)await aggiorna();
      }catch(e){if(!e.message.startsWith('Operazione non riuscita'))api.memoria.rimuovi(REQ);throw e}
    },msg);
@@ -95,6 +102,7 @@
      if(!sporco){const locale=bozza?.codice===api.codice;notesVersion=locale?bozza.versione:appunti.versione;notesBase=locale?(bozza.base??appunti.testo):appunti.testo;nota.value=locale?bozza.testo:appunti.testo;notesOwner=api.codice}
      notes.hidden=!appunti.scrivibile&&!appunti.testo&&!(bozza?.codice===api.codice);
      nota.readOnly=!appunti.scrivibile;salva.disabled=!appunti.scrivibile;
+     lasciaNote.hidden=!taccuinoInBorsa();lasciaNote.disabled=busy||bag.in_combattimento||bag.partita.morto||bag.partita.giornata_completata;
      if(!appunti.scrivibile)statoNote.textContent='Gli appunti restano leggibili. Per scrivere servono pergamena e calamaio.';
      else if(appunti.versione!==notesVersion)statoNote.textContent='Gli appunti sono cambiati altrove. Conserva la tua bozza prima di ricaricarli.';
      else statoNote.textContent=nota.value!==notesBase?'Bozza non salvata.':'Appunti salvati.';

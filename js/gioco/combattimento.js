@@ -25,18 +25,18 @@
  }
  function racconto(){
    if(!vista?.turno)return;
-   let testo=vista.turno.messaggi.map(m=>m.testo+(m.danni?` (${m.danni} HP di danno)`:'')).join('\n\n');
+   let testo=vista.turno.messaggi.map(m=>m.testo+(m.danni?` (${vista.scontro_resistenza&&m.tipo==='attacco_inferto'?'Resistenza ridotta di '+m.danni:m.danni+' HP di danno'})`:'')).join('\n\n');
    if(vista.turno.bonus_percentuale===20)testo='Colpo potente: +20% ai danni.\n\n'+testo;
-   window.Messaggi.mostra({titolo:'Il combattimento',testo,pulsante:'Continua'});
+   window.Messaggi.mostra({titolo:vista.scontro_resistenza?'La resistenza della vecchina':'Il combattimento',testo,pulsante:'Continua'});
  }
  function disegna(){
    area.replaceChildren();$('chiudi-allenamento').disabled=busy;
-   $('titolo-allenamento').textContent=modo==='allenamento'?'Allenamento':'Combattimento';
-   $('regole-scontro').textContent=modo==='allenamento'?'Questa è una prova: vita, oggetti, cura, XP e morti della partita restano invariati. Hai una pozione di prova per tipo.':'Ogni azione consuma un turno. Chiudere questa finestra non equivale a fuggire: lo scontro resta in corso.';
+   $('titolo-allenamento').textContent=modo==='allenamento'?'Allenamento':vista?.scontro_resistenza?'La resistenza della vecchina':'Combattimento';
+   $('regole-scontro').textContent=modo==='allenamento'?'Questa è una prova: vita, oggetti, cura, XP e morti della partita restano invariati. Hai una pozione di prova per tipo.':vista?.scontro_resistenza?'Ogni azione consuma un turno. Devi vincere la sua resistenza, non ucciderla. Poi lei reagisce con un maleficio. Chiudere la finestra non equivale a fuggire.':'Ogni azione consuma un turno. Chiudere questa finestra non equivale a fuggire: lo scontro resta in corso.';
    if(pendente){area.append(p('La richiesta deve essere confermata prima di agire ancora.'),b('Recupera il risultato',()=>richiedi(pendente)));return}
    if(!vista){
      if(modo==='storia'){area.append(p('Lo scontro non è disponibile in questa scena. Chiudi la finestra per continuare la storia.'));return}
-     area.append(p('Scegli l’avversario. Vedi solo i tuoi dadi. Con 1–2 naturali perdi l’azione; con 18–20, se colpisci, +20% danni. Per fuggire devi superare la soglia del nemico con d20 + bonus di fuga della classe.'));
+     area.append(p('Scegli l’avversario. Vedi solo i tuoi dadi. Con 1–2 naturali perdi l’azione e usi anche quella successiva per recuperare l’arma o la concentrazione; con 18–20, se colpisci, +20% danni. Per fuggire devi superare la soglia del nemico con d20 + bonus di fuga della classe.'));
      for(const n of elenco){const h=document.createElement('h3');h.textContent=n.nome;area.append(h,p(n.descrizione),b('Affronta '+n.nome,()=>richiedi({p_codice:api.codice,p_sessione:crypto.randomUUID(),p_azione:'crea',p_avversario:n.codice})))}
      if(!elenco.length)area.append(b('Riprova',()=>apri('allenamento')));return;
    }
@@ -45,17 +45,25 @@
      const t= vista.turno;
      dadi(t.azione==='cura'?'Il tuo tiro di cura':t.azione==='fuga'?'Il tuo tiro di fuga':'Il tuo tiro per colpire',t.tiro);
      dadi('Il tuo dado dei danni',t.danno);
-     if(t.danni_finali>0)area.append(p('Danno finale: '+t.danni_finali+' HP'+(t.bonus_percentuale===20?' · colpo potente +20%':'')+'.'));
-     for(const m of t.messaggi)area.append(p(m.testo+(m.danni?` (${m.danni} HP di danno)`:'')));
+     if(t.danni_finali>0)area.append(p((vista.scontro_resistenza?'Resistenza ridotta di ':'Danno finale: ')+t.danni_finali+(vista.scontro_resistenza?'':' HP')+(t.bonus_percentuale===20?' · colpo potente +20%':'')+'.'));
+     for(const m of t.messaggi)area.append(p(m.testo+(m.danni?` (${vista.scontro_resistenza&&m.tipo==='attacco_inferto'?'Resistenza ridotta di '+m.danni:m.danni+' HP di danno'})`:'')));
      area.append(b('Rileggi il racconto del turno',racconto));
    }
-   if(vista.esito==='in_corso'){
-     area.append(b('Attacco fisico — tira il d20',()=>azione('fisico')),b('Attacco magico — tira il d20',()=>azione('magico')),b('Tenta la fuga — tira il d20',()=>azione('fuga')));
+   if(vista.esito==='in_corso'&&vista.recupero_necessario){
+     const magia=vista.scontro_resistenza||vista.recupero_necessario==='magico';
+     area.append(p(magia?'Devi ritrovare la concentrazione. Questa azione lascia all’avversario un altro attacco.':'Devi riprendere l’arma. Questa azione lascia all’avversario un altro attacco.'),b(magia?'Ritrova la concentrazione — usa il turno':'Riprendi l’arma — usa il turno',()=>azione('recupero')));
+   }else if(vista.esito==='in_corso'){
+     const classe=vista.giocatore.classe;
+     const attacco=vista.scontro_resistenza?
+       ({Guerriero:['Intimidirla — tira il d20','fisico'],Ladro:['Ingannarla — tira il d20','inganno'],Mago:['Contrastare i suoi incanti — tira il d20','magico'],Chierico:['Pronunciare una formula sacra — tira il d20','religione']})[classe]:
+       ({Guerriero:['Attacco fisico — tira il d20','fisico'],Ladro:['Attacco fisico — tira il d20','fisico'],Mago:['Attacco magico — tira il d20','magico'],Chierico:['Attacco fisico — tira il d20','fisico']})[classe];
+     if(attacco)area.append(b(attacco[0],()=>azione(attacco[1])));
+     area.append(b('Tenta la fuga — tira il d20',()=>azione('fuga')));
      for(const a of vista.armi||[])if(a.id!==vista.equipaggiamento?.arma)area.append(b('Cambia arma: '+a.nome+' — usa il turno',()=>azione('cambia_arma',a.id)));
-     if(vista.cura_disponibile){const cura=b('Cura del Chierico — usa il turno',()=>azione('cura'));cura.disabled=busy||vista.giocatore.hp>=vista.giocatore.hp_massimi;area.append(cura)}
+     if(vista.giocatore.classe==='Chierico'&&vista.cura_disponibile){const cura=b('Magia curativa — tira il d12 e usa il turno',()=>azione('cura'));cura.disabled=busy||vista.giocatore.hp>=vista.giocatore.hp_massimi;area.append(cura)}
      for(const o of vista.oggetti||[]){const oggetto=b(`Usa ${o.nome} (${o.quantita}) — usa il turno`,()=>azione('oggetto',o.id));area.append(oggetto)}
    }else{
-     area.append(p(vista.esito==='vittoria'?(api.dati?.interazioni?.missione_galeazzo?.attiva?'L’avversario è stordito.':'Hai vinto!'):vista.esito==='fuga'?'La fuga è riuscita.':'Hai perso lo scontro.'));
+     area.append(p(vista.esito==='vittoria'?(vista.scontro_resistenza?'La vecchina cede. Ora è pronta a parlare.':api.dati?.interazioni?.missione_galeazzo?.attiva?'L’avversario è stordito.':'Hai vinto!'):vista.esito==='fuga'?'La fuga è riuscita.':'Hai perso lo scontro.'));
      if(modo==='allenamento')area.append(p('La partita non è cambiata.'),b('Scegli un nuovo avversario',()=>{vista=null;api.memoria.rimuovi(KEY);disegna()}));
      else if(vista.premio){area.append(p(`Bottino: ${vista.premio.monete} monete d’argento, ${vista.premio.xp} XP.`));for(const id of vista.premio.oggetti||[])area.append(p('Oggetto da scegliere nella Borsa: '+id))}
    }
@@ -74,7 +82,7 @@
        racconto();
      }
    }catch(e){
-     const nonConsuma=['Hai già tutti i punti vita','Cura già usata in questa giornata','Oggetto non disponibile nella borsa','Oggetto non utilizzabile qui','Questa capacità è riservata al Chierico','Azione non disponibile','Combattimento terminato','La partita è cambiata: riapri la Borsa','Nessun combattimento in questa scena'];
+     const nonConsuma=['Azione non disponibile per la tua classe','Hai già tutti i punti vita','Cura già usata in questa giornata','Oggetto non disponibile nella borsa','Oggetto non utilizzabile qui','Questa capacità è riservata al Chierico','Azione non disponibile','Combattimento terminato','La partita è cambiata: riapri la Borsa','Nessun combattimento in questa scena'];
      if(nonConsuma.includes(e.message)){pendente=null;salva()}
      stato.textContent=e.message;
    }finally{busy=false;disegna();if(pendente&&modo==='allenamento')area.append(b('Ricomincia allenamento',()=>{pendente=null;vista=null;api.memoria.rimuovi(KEY);disegna()}))}

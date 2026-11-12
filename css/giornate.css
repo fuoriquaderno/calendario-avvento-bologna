@@ -27,3 +27,84 @@
 #racconto-giorno6 a{display:inline-block;margin:6px 18px 6px 0;color:inherit}
 #racconto-giorno6 .aiuto-giorno6{margin-top:24px;font-size:.9em}
 @media(max-width:600px){#racconto-giorno6 button{width:100%;margin-inline:0}}
+
+/* Giorno 7: eredita font e pergamena del sito. */
+.giorno7-attivo>:not(#racconto-giorno7){display:none!important}
+#racconto-giorno7{border:0;background:none;margin-block:24px}
+#racconto-giorno7 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno7 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno7 form{margin-block:24px}
+#racconto-giorno7 label{display:block;font:inherit}
+#racconto-giorno7 input{display:block;width:100%;box-sizing:border-box;font:inherit;margin-block:10px;padding:12px;border:1px solid #926033;border-radius:4px;background:#f4ead550;color:inherit}
+#racconto-giorno7 .ritorni-giorno7{margin-top:30px}
+#racconto-giorno7 .lettere-giorno7{display:flex;flex-wrap:wrap;gap:.6em;align-items:baseline;margin-block:24px;font-size:1.3em}
+#racconto-giorno7 .lettere-giorno7 span{font-weight:400;opacity:.65}
+#racconto-giorno7 .lettere-giorno7 strong{font-weight:900}
+@media(max-width:600px){#racconto-giorno7 button{width:100%;margin-inline:0}}
+
+/* Giorno 8: farmacie rivali. */
+.giorno8-attivo>:not(#racconto-giorno8){display:none!important}
+.giorno8-attivo.giorno8-commercio>#negozio-citta{display:block!important}
+#racconto-giorno8{border:0;background:none;margin-block:24px}
+#racconto-giorno8 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno8 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno8 .ritorni-giorno8{margin-top:30px}
+.confronto-giorno8{width:min(940px,calc(100vw - 24px));font:inherit}
+.frammenti-giorno8{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;font:inherit;margin-block:24px}
+.frammenti-giorno8 th{font:inherit;font-weight:bold;padding:10px 12px;text-align:left;vertical-align:bottom}
+.frammenti-giorno8 td{font:inherit;text-align:left;vertical-align:top;padding:16px 12px;background:#f4e4bf66;border:0;overflow-wrap:break-word}
+.frammenti-giorno8 td+td{border-left:1px dashed #92603388}
+@media(max-width:600px){#racconto-giorno8 button{width:100%;margin-inline:0}.frammenti-giorno8 td,.frammenti-giorno8 th{padding:10px 7px}.frammenti-giorno8{font-size:.86em}}
+
+/* Giorno 9: usa font, pulsanti e pergamena condivisi. */
+.giorno9-attivo>:not(#racconto-giorno9){display:none!important}
+#racconto-giorno9{border:0;background:none;margin-block:24px}
+#racconto-giorno9 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno9 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno9 form{margin-block:24px}
+#racconto-giorno9 input{display:block;width:100%;font:inherit;padding:12px;margin-block:10px;color:inherit;background:#f4ead550}
+@media(max-width:600px){#racconto-giorno9 button{width:100%;margin-inline:0}}
+
+/* Giorno 10: eredita font, colori e pergamena del sito. */
+.giorno10-attivo>:not(#racconto-giorno10){display:none!important}
+#racconto-giorno10{border:0;background:none;margin-block:24px}
+#racconto-giorno10 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno10 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno10 form{margin-block:24px}
+#racconto-giorno10 input{display:block;width:100%;font:inherit;padding:12px;margin-block:10px;color:inherit;background:#f4ead550}
+#racconto-giorno10 .ordine-fogli-g10{padding-left:1.5em;margin-block:24px}
+@media(max-width:600px){#racconto-giorno10 button{width:100%;margin-inline:0}}
+
+/* Giorno 11: font e pergamena condivisi. */
+.giorno11-attivo>:not(#racconto-giorno11){display:none!important}
+#racconto-giorno11{border:0;background:none;margin-block:24px}
+#racconto-giorno11 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno11 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno11 .frasi-studenti{margin-block:24px}
+#racconto-giorno11 .ruoli-studenti{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;margin-block:24px}
+#racconto-giorno11 select{width:100%;font:inherit;padding:10px;color:inherit;background:#f4ead550}
+#racconto-giorno11 .ruoli-studenti button{grid-column:1/-1}
+#racconto-giorno11 .libri-collegio{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-block:24px}
+#racconto-giorno11 .tomo-collegio{display:flex;flex-direction:column;align-items:stretch}
+#racconto-giorno11 .tomo-collegio button{margin:0 0 8px;width:100%}
+@media(max-width:600px){#racconto-giorno11 button{width:100%;margin-inline:0}#racconto-giorno11 .libri-collegio{grid-template-columns:1fr}#racconto-giorno11 .ruoli-studenti{grid-template-columns:1fr;gap:8px}}
+
+/* Giorno 12: font e pergamena condivisi. */
+.giorno12-attivo>:not(#racconto-giorno12){display:none!important}
+#racconto-giorno12{border:0;background:none;margin-block:24px}
+#racconto-giorno12 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno12 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno12 .quote-scala{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:center;margin-block:24px}
+#racconto-giorno12 select{width:100%;font:inherit;padding:10px;color:inherit;background:#f4ead550}
+#racconto-giorno12 .quote-scala button{grid-column:1/-1}
+@media(max-width:600px){#racconto-giorno12 button{width:100%;margin-inline:0}#racconto-giorno12 .quote-scala{grid-template-columns:1fr;gap:8px}}
+
+/* Giorno 13: stessi font, pulsanti e pergamena del gioco. */
+.giorno13-attivo>:not(#racconto-giorno13){display:none!important}
+#racconto-giorno13{border:0;background:none;margin-block:24px}
+#racconto-giorno13 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno13 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno13 .scelte-goffredo{margin-block:24px}
+#racconto-giorno13 .tiro-goffredo{margin-block:16px;font-size:.95em}
+#racconto-giorno13 .goffredo-notte{filter:brightness(.75)}
+@media(max-width:600px){#racconto-giorno13 button{width:100%;margin-inline:0}}
