@@ -108,3 +108,72 @@
 #racconto-giorno13 .tiro-goffredo{margin-block:16px;font-size:.95em}
 #racconto-giorno13 .goffredo-notte{filter:brightness(.75)}
 @media(max-width:600px){#racconto-giorno13 button{width:100%;margin-inline:0}}
+
+/* Giorno 14: stessi caratteri e pulsanti del sito. */
+.giorno14-attivo>:not(#racconto-giorno14){display:none!important}
+#racconto-giorno14{border:0;background:none;margin-block:24px}
+#racconto-giorno14 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno14 button:disabled{opacity:.5;cursor:default}
+@media(max-width:600px){#racconto-giorno14 button{width:100%;margin-inline:0}}
+
+/* Sette e mezzo, carte native nello stesso carattere del sito. */
+#racconto-giorno14 .carte-g14{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 22px}
+#racconto-giorno14 .carta-g14{width:96px;min-height:148px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:8px;border:2px solid #79502c;border-radius:7px;color:#61381e;background:#f5e5c2;box-shadow:2px 3px 5px #52301835;font:inherit}
+#racconto-giorno14 .carta-g14 strong{font:inherit;font-weight:bold;align-self:flex-start}
+#racconto-giorno14 .carta-g14 small{font:inherit;font-size:.7em}
+#racconto-giorno14 .seme-g14{width:45px;height:60px;display:block}
+#racconto-giorno14 .seme-g14 svg{width:100%;height:100%}
+#racconto-giorno14 .carta-g14-coperta{justify-content:center;color:#ebd0a1;background:repeating-linear-gradient(45deg,#80462f,#80462f 5px,#935b39 5px,#935b39 8px);font-size:2em}
+#racconto-giorno14 .carta-g14-coperta p{margin:0}
+#racconto-giorno14 form{display:grid;gap:12px;margin-block:20px}
+#racconto-giorno14 input{box-sizing:border-box;width:100%;font:inherit;color:inherit;background:#f7e8cb88;border:1px solid #79502c;padding:12px}
+#racconto-giorno14 a{font:inherit;color:inherit;display:inline-block;margin:8px 20px 8px 0}
+@media(max-width:480px){#racconto-giorno14 .carta-g14{width:78px;min-height:124px}#racconto-giorno14 .carte-g14{gap:8px}}
+
+/* Ricerca del gettone: griglia 9x9. */
+#racconto-giorno14 .griglia-gettone14{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:3px;width:100%;max-width:486px;margin:20px auto;padding:6px;box-sizing:border-box;background:#9b704a;border:2px solid #79502c;border-radius:4px}
+#racconto-giorno14 button.casella-gettone14{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:100%;min-width:0;min-height:0;aspect-ratio:1;padding:0;margin:0;border:1px solid #79502c;border-radius:2px;font:inherit;font-size:clamp(14px,2.5vw,23px);font-weight:bold;line-height:1;background:#d7b17c;color:#4b2e1a;box-shadow:inset 2px 2px #fae5bf88,inset -2px -2px #79502c55}
+#racconto-giorno14 button.casella-gettone14.aperta{background:#f0ddba;box-shadow:none}
+#racconto-giorno14 button.casella-gettone14.segnata{color:#8b261b;background:#e4c491}
+#racconto-giorno14 button.casella-gettone14.fragile{color:#f7ead5;background:#8b261b;box-shadow:none}
+#racconto-giorno14 button.casella-gettone14.colpita{outline:2px solid #f8dda5;outline-offset:-4px}
+#racconto-giorno14 button.casella-gettone14:disabled{opacity:1;cursor:default}
+#racconto-giorno14 .comandi-gettone14{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+#racconto-giorno14 .comandi-gettone14 button{width:auto;min-width:110px;margin:0}
+#racconto-giorno14 .comandi-gettone14 button[aria-pressed="true"]{outline:2px solid #79502c;outline-offset:3px}
+#racconto-giorno14 button.casella-gettone14:focus-visible{outline:3px solid #3d2416;outline-offset:1px;position:relative;z-index:1}
+
+/* Giorno 15: solo le prove di Fiorenza. */
+.giorno15-attivo>:not(#racconto-giorno15){display:none!important}
+#racconto-giorno15{border:0;background:none;margin-block:24px}
+#racconto-giorno15 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno15 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno15 .tessere-fiorenza{display:flex;flex-wrap:wrap;gap:8px;margin-block:12px}
+#racconto-giorno15 .tessere-fiorenza button{margin:0}
+#racconto-giorno15 button[aria-pressed="true"]{outline:2px solid #79502c;outline-offset:3px}
+#racconto-giorno15 .medaglione-fiorenza{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0}
+#racconto-giorno15 .luna-fiorenza{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:16px;color:#79502c}
+#racconto-giorno15 .luna-fiorenza svg{width:70px;height:70px}
+#racconto-giorno15 .luna-fiorenza p{font-size:1.5em}
+#racconto-giorno15 button.cartiglio-fiorenza{margin:0;display:flex;flex-direction:column;justify-content:space-between;gap:15px;text-align:left;background:#f2ddb48c;color:#4b2e1a;border-color:#79502c}
+#racconto-giorno15 .cartiglio-fiorenza strong{color:#8b261b}
+#racconto-giorno15 details{margin-block:18px}
+#racconto-giorno15 summary{cursor:pointer;text-decoration:underline}
+#racconto-giorno15 form{display:grid;gap:12px;margin-block:20px}
+#racconto-giorno15 textarea{box-sizing:border-box;width:100%;font:inherit;color:inherit;background:#f7e8cb88;border:1px solid #79502c;padding:12px;resize:vertical}
+@media(max-width:600px){#racconto-giorno15 button{width:100%;margin-inline:0}#racconto-giorno15 .tessere-fiorenza button{width:auto;flex:1 1 110px}#racconto-giorno15 .medaglione-fiorenza{grid-template-columns:1fr}}
+
+#racconto-giorno15 input{box-sizing:border-box;width:100%;font:inherit;color:inherit;background:#f7e8cb88;border:1px solid #79502c;padding:12px}
+#racconto-giorno15 a{font:inherit;color:inherit;display:inline-block;margin:8px 20px 8px 0}
+
+/* Giorno 16: font e comandi già usati nel gioco. */
+.giorno16-attivo>:not(#racconto-giorno16):not(#stato-fine-giornata){display:none!important}
+#racconto-giorno16{border:0;background:none;margin-block:24px}
+#racconto-giorno16 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno16 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno16 form{display:grid;gap:12px;margin-block:20px}
+#racconto-giorno16 textarea{box-sizing:border-box;width:100%;font:inherit;color:inherit;background:#f7e8cb88;border:1px solid #79502c;padding:12px;resize:vertical}
+#racconto-giorno16 details{margin-block:18px}
+#racconto-giorno16 summary{cursor:pointer;text-decoration:underline}
+#racconto-giorno16 a{font:inherit;color:inherit;display:inline-block;margin:8px 20px 8px 0}
+@media(max-width:600px){#racconto-giorno16 button{width:100%;margin-inline:0}}
