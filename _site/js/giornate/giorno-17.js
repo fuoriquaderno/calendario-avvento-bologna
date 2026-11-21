@@ -23,18 +23,21 @@
  const laterale=document.createElement('aside');laterale.className='legenda-pianta-reale';laterale.append(scelte,elenco,notaNumeri);const contenuto=document.createElement('div');contenuto.className='contenuto-pianta-reale';contenuto.append(superficie,laterale);
  const chiudi=b('Chiudi mappa',()=>mappa.close());chiudi.className='chiudi-pianta-reale';mappa.append(titolo,introduzione,contenuto,chiudi);document.body.append(mappa);
  function disegnaMappa(){
- const d=api.dati,s=d?.stato_partita||{},f=s.fase,g=s.g17||{},giorno18=d?.giorno_corrente===18;
- const corrente=giorno18&&d?.luogo_attuale==='sette_chiese_2'?2:1;
- const fasi=giorno18?['g18_scala','g18_cripta','g18_immagini','g18_lastra','g18_risolto','g18_stella','fine_giorno18']:['g17_navata','g17_stelle','fine_giorno17'];
- const bloccato=busy||window.Giorno18?.occupato?.()||d?.morto||!dentro()||!fasi.includes(f)||d?.giornata_completata;
- for(const e of [...piano.querySelectorAll('button'),...elenco.querySelectorAll('button')]){const n=Number(e.dataset.stanza);e.disabled=bloccato||n===corrente||n>3;e.setAttribute('aria-current',n===corrente?'location':'false')}
- scelte.replaceChildren(p(corrente===2?'Ti trovi nella cripta (2), la Chiesa del Trifoglio di Samuele.':'Ti trovi nella Chiesa del Crocifisso (1), legata alla stella di Iliano.'));
- if(giorno18){if(s.g18?.passaggio_verificato)scelte.append(p('Il passaggio verso il Santo Sepolcro (3) è aperto.'));}
+ const d=api.dati,s=d?.stato_partita||{},f=s.fase,g=s.g17||{},giorno18=d?.giorno_corrente===18,giorno19=d?.giorno_corrente===19,giorno20=d?.giorno_corrente===20;
+ const corrente=(giorno19||giorno20)?Number(String(d?.luogo_attuale||'').split('_').pop())||1:giorno18&&d?.luogo_attuale==='sette_chiese_2'?2:1;
+ const fasi=giorno20?['g20_serpente','g20_ritorno','g20_navata','g20_apparizioni','g20_specchi','g20_dopocustode','fine_giorno20']:giorno19?['g19_stella','g19_cripta','g19_chiesa','g19_guardiani','g19_sepolcro','g19_fessura','fine_giorno19']:giorno18?['g18_scala','g18_cripta','g18_immagini','g18_lastra','g18_risolto','g18_stella','fine_giorno18']:['g17_navata','g17_stelle','fine_giorno17'];
+ const piccolo=giorno19&&s.g19?.taglia==='piccolo',bloccato=busy||window.Giorno18?.occupato?.()||window.Giorno19?.occupato?.()||window.Giorno20?.occupato?.()||d?.morto||!dentro()||!fasi.includes(f)||d?.giornata_completata||piccolo;
+ for(const e of [...piano.querySelectorAll('button'),...elenco.querySelectorAll('button')]){const n=Number(e.dataset.stanza);e.disabled=bloccato||n===corrente||n>(giorno20?5:giorno19?4:3);e.setAttribute('aria-current',n===corrente?'location':'false')}
+ scelte.replaceChildren(p(corrente===4?'Ti trovi in Santi Vitale e Agricola (4), la Chiesa del Sole di Alano.':corrente===3?'Ti trovi nel Santo Sepolcro (3), la Chiesa del Serpente di Giosuè.':corrente===2?'Ti trovi nella cripta (2), la Chiesa del Trifoglio di Samuele.':'Ti trovi nella Chiesa del Crocifisso (1), legata alla stella di Iliano.'));
+ if(giorno20){if(s.g20?.passaggio_verificato)scelte.append(p('Il passaggio verso il Cortile di Pilato (5) è aperto. Lo attraverserai nella prossima giornata.'));}
+ else if(giorno19){if(piccolo)scelte.append(p('Sei ancora minuscolo: non puoi percorrere le chiese.'));if(s.g19?.passaggio_verificato)scelte.append(p('Il passaggio verso Santi Vitale e Agricola (4) è aperto.'));}
+ else if(giorno18){if(s.g18?.passaggio_verificato)scelte.append(p('Il passaggio verso il Santo Sepolcro (3) è aperto.'));}
  else if(g.porta_due_aperta)scelte.append(p('Il passaggio verso la cripta (2) è aperto. La attraverserai nella prossima giornata.'));
- if(bloccato&&!d?.giornata_completata)scelte.append(p('Concludi la scena o lo scontro prima di cercare un passaggio.'));
+ if(bloccato&&!piccolo&&!d?.giornata_completata)scelte.append(p('Concludi la scena o lo scontro prima di cercare un passaggio.'));
  }
  async function passaggio(n){
- if(api.dati?.giorno_corrente===18){if(window.Giorno18?.occupato?.())return;mappa.close();await window.Giorno18?.passaggio(n);disegnaMappa();return}
+ const controller=api.dati?.giorno_corrente===20?window.Giorno20:api.dati?.giorno_corrente===19?window.Giorno19:api.dati?.giorno_corrente===18?window.Giorno18:null;
+ if(controller){if(controller.occupato?.())return;mappa.close();await controller.passaggio(n);disegnaMappa();return}
  if(busy)return;const r=await invia('passaggio',String(n));if(r&&api.dati?.stato_partita?.fase==='g17_stelle')mappa.close();
  }
  function apriMappa(){if(!dentro())return;img.src=api.risorsa('images/map_reale.png');disegnaMappa();$('inventario')?.close();if(!mappa.open)mappa.showModal()}

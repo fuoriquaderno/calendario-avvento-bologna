@@ -1,82 +1,57 @@
-
-    dialog.messaggio-orizzontale[open]{animation:apertura-pergamena-laterale 850ms cubic-bezier(.22,.7,.25,1) both}
-
-    dialog.messaggio-orizzontale{
-      --altezza-messaggio:min(320px,90dvh);
-      --rotolo:calc(var(--altezza-messaggio) / 5);
-      --corsa-rotolo:calc((min(var(--larghezza-messaggio),100vw - 24px) - var(--rotolo)) / 2);
-      height:var(--altezza-messaggio);max-height:none;
-      max-width:calc(100vw - 24px);box-sizing:border-box;
-      overflow:hidden;padding:0;
-    }
-    dialog.messaggio-orizzontale .scroll-top,
-    dialog.messaggio-orizzontale .scroll-bottom{
-      position:absolute;top:var(--altezza-messaggio);left:0;
-      width:var(--altezza-messaggio);height:var(--rotolo);
-      aspect-ratio:auto;transform:rotate(-90deg);transform-origin:0 0;
-      pointer-events:none;z-index:2;
-    }
-    dialog.messaggio-orizzontale .scroll-bottom{left:calc(100% - var(--rotolo))}
-    dialog.messaggio-orizzontale[open] .scroll-top{animation:rotolo-sinistro 850ms cubic-bezier(.22,.7,.25,1) both}
-    dialog.messaggio-orizzontale[open] .scroll-bottom{animation:rotolo-destro 850ms cubic-bezier(.22,.7,.25,1) both}
-    @keyframes rotolo-sinistro{from{transform:translateX(var(--corsa-rotolo)) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
-    @keyframes rotolo-destro{from{transform:translateX(calc(-1 * var(--corsa-rotolo))) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
-    @media(prefers-reduced-motion:reduce){
-      dialog.messaggio-orizzontale[open] .scroll-top,dialog.messaggio-orizzontale[open] .scroll-bottom{animation:none}
-    }
-    dialog.messaggio-orizzontale .scroll-middle{
-      position:absolute;inset:0 var(--rotolo);width:auto;height:100%;
-      padding:22px 12px;box-sizing:border-box;background:none;
-      display:flex;flex-direction:column;justify-content:center;gap:12px;
-      isolation:isolate;
-    }
-    dialog.messaggio-orizzontale .scroll-middle::before{
-      content:'';position:absolute;z-index:-1;
-      top:50%;left:50%;width:var(--altezza-messaggio);height:calc(100cqw + 56px);
-      background:url('../images/middle-pergamena.png') center top/100% auto repeat-y;
-      transform:translate(-50%,-50%) rotate(-90deg);pointer-events:none;
-    }
-    dialog.messaggio-orizzontale .scroll-middle{container-type:inline-size}
-    dialog.messaggio-orizzontale .scroll-middle p{
-      margin:0;overflow:auto;min-height:0;line-height:1.45;
-    }
-    dialog.messaggio-orizzontale .scroll-middle h2{flex-shrink:0;font-size:22px}
-    dialog.messaggio-orizzontale .scroll-middle button{flex-shrink:0;margin:0;padding:8px}
-    @media(max-width:420px){
-      dialog.messaggio-orizzontale{font-size:16px}
-      dialog.messaggio-orizzontale .scroll-middle{padding:16px 6px;gap:8px}
-      dialog.messaggio-orizzontale .scroll-middle h2{font-size:19px}
-    }
-    @keyframes apertura-pergamena-laterale{
-      from{clip-path:inset(0 49.5%);opacity:0}
-      15%{opacity:1}
-      to{clip-path:inset(0 0);opacity:1}
-    }
-    @media(prefers-reduced-motion:reduce){dialog.messaggio-orizzontale[open]{animation:none}}
-  
-    /* Su mobile torna la pergamena verticale, come nella storia. */
-    @media(max-width:600px){
-      dialog.messaggio-orizzontale{
-        width:calc(100vw - 24px)!important;height:auto;max-height:calc(100dvh - 24px);
-        overflow:hidden;
-      }
-      dialog.messaggio-orizzontale[open]{display:flex;flex-direction:column;animation:apertura-pergamena-verticale 850ms ease-out both}
-      dialog.messaggio-orizzontale .scroll-top,
-      dialog.messaggio-orizzontale .scroll-bottom{
-        position:static;inset:auto;width:100%;height:auto;aspect-ratio:5/1;
-        flex-shrink:0;transform:none!important;animation:none!important;
-      }
-      dialog.messaggio-orizzontale .scroll-middle{
-        position:relative;inset:auto;width:100%;height:auto;min-height:0;flex:1 1 auto;
-        padding:0 10%;container-type:normal;
-        background:url('../images/middle-pergamena.png') center top/100% auto repeat-y;
-      }
-      dialog.messaggio-orizzontale .scroll-middle::before{display:none}
-    }
-    @keyframes apertura-pergamena-verticale{
-      from{clip-path:inset(49.5% 0);opacity:0}to{clip-path:inset(0);opacity:1}
-    }
-    @media(prefers-reduced-motion:reduce){dialog.messaggio-orizzontale[open]{animation:none}}
+/* Pergamene: larghezza scelta dal testo, altezza naturale. */
+dialog.avviso-codice.messaggio-orizzontale{
+ --altezza-messaggio:260px;--rotolo:48px;
+ --corsa-rotolo:calc((min(var(--larghezza-messaggio,460px),100vw - 24px) - var(--rotolo)) / 2);
+ width:var(--larghezza-messaggio,460px);height:fit-content;min-height:0;
+ max-width:min(1000px,calc(100vw - 24px));max-height:calc(100dvh - 24px);
+ box-sizing:border-box;margin:auto;padding:0;border:0;overflow:hidden;
+}
+dialog.messaggio-orizzontale[open]{animation:apertura-pergamena-laterale 650ms cubic-bezier(.22,.7,.25,1) both}
+dialog.avviso-codice.messaggio-orizzontale .scroll-top,
+dialog.avviso-codice.messaggio-orizzontale .scroll-bottom{
+ position:absolute;top:var(--altezza-messaggio);left:0;width:var(--altezza-messaggio);height:var(--rotolo);
+ aspect-ratio:auto;transform:rotate(-90deg);transform-origin:0 0;pointer-events:none;z-index:2;
+}
+dialog.avviso-codice.messaggio-orizzontale .scroll-bottom{left:calc(100% - var(--rotolo))}
+dialog.messaggio-orizzontale[open] .scroll-top{animation:rotolo-sinistro 650ms cubic-bezier(.22,.7,.25,1) both}
+dialog.messaggio-orizzontale[open] .scroll-bottom{animation:rotolo-destro 650ms cubic-bezier(.22,.7,.25,1) both}
+dialog.avviso-codice.messaggio-orizzontale .scroll-middle{
+ position:relative;inset:auto;width:auto;height:auto;min-height:0;max-height:calc(100dvh - 24px);
+ margin:0 var(--rotolo);padding:22px 12px;box-sizing:border-box;background:none;
+ display:flex;flex-direction:column;justify-content:flex-start;gap:12px;isolation:isolate;container-type:inline-size;
+ overflow:visible;
+}
+dialog.avviso-codice.messaggio-orizzontale .scroll-middle::before{
+ content:'';position:absolute;z-index:-1;top:50%;left:50%;width:var(--altezza-messaggio);height:calc(100cqw + 56px);
+ background:url('../images/middle-pergamena.png') center top/100% auto no-repeat round;
+ transform:translate(-50%,-50%) rotate(-90deg);pointer-events:none;
+}
+dialog.avviso-codice.messaggio-orizzontale .scroll-middle>p{margin:0;min-height:0;flex:0 1 auto;overflow:auto;line-height:1.45}
+dialog.avviso-codice.messaggio-orizzontale .scroll-middle>h2{flex-shrink:0;margin:0;font-size:22px;line-height:1.4}
+dialog.avviso-codice.messaggio-orizzontale .scroll-middle>button{flex-shrink:0;margin:0;padding:8px;min-height:44px}
+dialog.avviso-codice.messaggio-orizzontale .scroll-middle>.azioni-fine-giornata{flex-shrink:0}
+@keyframes apertura-pergamena-laterale{from{clip-path:inset(0 49.5%);opacity:0}15%{opacity:1}to{clip-path:inset(0);opacity:1}}
+@keyframes rotolo-sinistro{from{transform:translateX(var(--corsa-rotolo)) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
+@keyframes rotolo-destro{from{transform:translateX(calc(-1 * var(--corsa-rotolo))) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
+@media(max-width:600px){
+ dialog.avviso-codice.messaggio-orizzontale{width:calc(100vw - 24px)!important;height:fit-content;min-height:0;font-size:16px}
+ dialog.avviso-codice.messaggio-orizzontale[open]{display:flex;flex-direction:column;animation:apertura-pergamena-verticale 650ms ease-out both}
+ dialog.avviso-codice.messaggio-orizzontale .scroll-top,dialog.avviso-codice.messaggio-orizzontale .scroll-bottom{
+ position:relative;inset:auto;width:100%;height:auto;aspect-ratio:5/1;flex-shrink:0;transform:none!important;animation:none!important;
+ }
+ dialog.avviso-codice.messaggio-orizzontale .scroll-top{margin-bottom:-3px}
+ dialog.avviso-codice.messaggio-orizzontale .scroll-bottom{margin-top:-3px}
+ dialog.avviso-codice.messaggio-orizzontale .scroll-middle{
+ margin:0;position:relative;inset:auto;width:100%;height:auto;max-height:none;min-height:0;flex:0 1 auto;
+ padding:8px 10%;container-type:normal;overflow-y:auto;
+ background:url('../images/middle-pergamena.png') center top/100% auto no-repeat round;
+ }
+ dialog.avviso-codice.messaggio-orizzontale .scroll-middle::before{display:none}
+ dialog.avviso-codice.messaggio-orizzontale .scroll-middle>p{flex-shrink:0}
+ dialog.avviso-codice.messaggio-orizzontale .scroll-middle>h2{font-size:20px}
+}
+@keyframes apertura-pergamena-verticale{from{clip-path:inset(49.5% 0);opacity:0}to{clip-path:inset(0);opacity:1}}
+@media(prefers-reduced-motion:reduce){dialog.messaggio-orizzontale[open],dialog.messaggio-orizzontale[open] .scroll-top,dialog.messaggio-orizzontale[open] .scroll-bottom{animation:none}}
 
 /* Borsa: chiusura subito in alto, visibile anche scorrendo un inventario lungo. */
 #inventario #chiudi-borsa{position:sticky;top:8px;z-index:5;display:block;width:auto;min-width:88px;min-height:44px;margin:0 0 12px auto;padding:10px 18px;box-shadow:0 2px 6px #0003}
@@ -96,28 +71,3 @@
 #contenuto-allenamento .scheda-oggetto-scontro>p{margin:8px 0}
 #borsa-extra .appunti-conservati-borsa{margin-block:16px}
 
-/* Mobile: la pergamena cresce con il contenuto, senza riempire lo schermo. */
-@media(max-width:600px){
- dialog.avviso-codice.messaggio-orizzontale{height:fit-content;min-height:0;max-height:calc(100dvh - 24px);margin:auto}
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle{flex:0 1 auto;min-height:0;height:auto;justify-content:flex-start;overflow-y:auto;padding-block:8px}
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle>h2,
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle>p,
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle>button,
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle>.azioni-fine-giornata{flex-shrink:0}
-}
-
-/* Dimensioni adattive: desktop fino a 1000 px, mobile secondo il testo. */
-dialog.avviso-codice.messaggio-orizzontale{max-width:min(1000px,calc(100vw - 24px))}
-@media(min-width:601px){
- dialog.avviso-codice.messaggio-orizzontale{width:var(--larghezza-messaggio,760px)}
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle{justify-content:flex-start}
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle>p{flex:1 1 auto;min-height:0}
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle>h2,dialog.avviso-codice.messaggio-orizzontale .scroll-middle>button,dialog.avviso-codice.messaggio-orizzontale .scroll-middle>.azioni-fine-giornata{flex-shrink:0}
-}
-@media(max-width:600px){
- dialog.avviso-codice.messaggio-orizzontale{height:fit-content;min-height:0;max-height:calc(100dvh - 24px);margin:auto}
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle{height:auto;min-height:0;flex:0 1 auto;justify-content:flex-start;overflow-y:auto;padding-block:8px;background-repeat:no-repeat round}
- dialog.avviso-codice.messaggio-orizzontale .scroll-middle>h2,dialog.avviso-codice.messaggio-orizzontale .scroll-middle>p,dialog.avviso-codice.messaggio-orizzontale .scroll-middle>button,dialog.avviso-codice.messaggio-orizzontale .scroll-middle>.azioni-fine-giornata{flex-shrink:0}
- dialog.avviso-codice.messaggio-orizzontale .scroll-top{margin-bottom:-3px;position:relative;z-index:1}
- dialog.avviso-codice.messaggio-orizzontale .scroll-bottom{margin-top:-3px;position:relative;z-index:1}
-}

@@ -274,3 +274,31 @@ dialog.sette-chiese-dialog{width:min(940px,96vw);max-height:94dvh;padding:14px;o
  #racconto-giorno18 .iscrizione-visiva18{font-size:16px;line-height:1.4}
 }
 @media(prefers-reduced-motion:reduce){#racconto-giorno18 .riguarda-samuele18{animation:none}}
+
+/* Giorno 19: Serpente, evangelisti e stanza minuscola. */
+.giorno19-attivo>:not(#racconto-giorno19):not(#stato-fine-giornata){display:none!important}
+#racconto-giorno19{border:0;background:none;margin-block:24px}
+#racconto-giorno19 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer}
+#racconto-giorno19 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno19 details{margin-block:16px}#racconto-giorno19 summary{cursor:pointer;text-decoration:underline}
+#racconto-giorno19 .abbinamenti-evangelisti19{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+#racconto-giorno19 fieldset{min-width:0;display:grid;gap:8px;border:1px solid #79502c;padding:14px;background:#f7e8cb33}
+#racconto-giorno19 legend{padding-inline:8px;font:inherit;font-weight:bold}
+#racconto-giorno19 select{box-sizing:border-box;min-width:0;width:100%;font:inherit;color:inherit;background:#f7e8cb88;border:1px solid #79502c;padding:10px}
+#racconto-giorno19 .boccette-giosue19{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px}
+#racconto-giorno19 .boccette-giosue19 details{margin:0;padding:12px 0;border-top:1px solid #79502c66}
+#racconto-giorno19 a{font:inherit;color:inherit;display:inline-block;margin:8px 20px 8px 0}
+@media(max-width:600px){#racconto-giorno19 button{width:100%;margin-inline:0}#racconto-giorno19 .abbinamenti-evangelisti19,#racconto-giorno19 .boccette-giosue19{grid-template-columns:1fr}}
+
+/* Giorno 20: luce, ombre e verifica delle apparenze. */
+.giorno20-attivo>:not(#racconto-giorno20):not(#stato-fine-giornata){display:none!important}
+#racconto-giorno20{border:0;background:none;margin-block:24px;min-width:0}
+#racconto-giorno20 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer;min-height:44px}
+#racconto-giorno20 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno20 svg{display:block;width:100%;height:auto;max-width:none}
+#racconto-giorno20 .scorri-specchi20{width:100%;max-height:70dvh;overflow:auto;margin-block:18px}
+#racconto-giorno20 .tavola-specchi20{min-width:0}
+#racconto-giorno20 .rotazioni-specchi20{display:flex;flex-wrap:wrap;gap:6px}
+#racconto-giorno20 .rotazioni-specchi20 button{flex:1 1 90px;margin:0}
+#racconto-giorno20 svg [role=button]:focus-visible{outline:3px solid #8b261b;outline-offset:3px}
+@media(max-width:600px){#racconto-giorno20 button{width:100%;margin-inline:0}#racconto-giorno20 .rotazioni-specchi20 button{width:auto}}

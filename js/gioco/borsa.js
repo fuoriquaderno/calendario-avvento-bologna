@@ -64,6 +64,9 @@
      const quanti=(eq.arma===id?1:0)+(eq.difesa===id?1:0)+eq.accessori.filter(x=>x===id).length;
      const box=document.createElement('div');box.className='comandi-borsa';
      box.append(p(`Peso per copia: ${o?.peso??1}`+(quanti?` · Equipaggiati: ${quanti}`:'')));
+     if(borsa.partita.giorno_corrente===19&&!borsa.in_combattimento&&!borsa.partita.morto&&!borsa.partita.giornata_completata&&['boccetta_giosue','boccetta_misura_g19'].includes(id)){
+       const bevi=b('Bevi',()=>window.Giorno19?.usaOggetto(id));bevi.disabled=!window.Giorno19?.puoUsare(id);box.append(bevi);
+     }
      if(!borsa.in_combattimento&&!borsa.partita.morto&&!borsa.partita.giornata_completata){
        if(o?.tipo==='arma'||o?.tipo==='difesa')box.append(b(eq[o.tipo]===id?'Rimuovi dall’equipaggiamento':'Equipaggia',()=>cambia(o.tipo,id)));
        if(o?.tipo==='accessorio'){

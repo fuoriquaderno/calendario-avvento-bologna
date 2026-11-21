@@ -15,7 +15,7 @@
  const indicazioni=document.createElement('dialog');indicazioni.className='avviso-codice luoghi-dialog';indicazioni.setAttribute('aria-labelledby','titolo-indicazioni');
  indicazioni.innerHTML='<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-indicazioni">Chiedi indicazioni</h2><div id="destinazioni-indicazioni"></div><p id="testo-indicazioni" aria-live="polite"></p><div id="segui-indicazioni"></div><p id="stato-indicazioni" role="status"></p><button type="button" id="chiudi-indicazioni">Chiudi</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
  document.body.append(indicazioni);
- const mappa=document.createElement('dialog');mappa.className='mappa-dialog';mappa.setAttribute('aria-labelledby','titolo-mappa');
+ const mappa=document.createElement('dialog');mappa.className='mappa-dialog mappa-bologna-dialog';mappa.setAttribute('aria-labelledby','titolo-mappa');
  mappa.innerHTML='<h2 id="titolo-mappa">Bologna</h2><p id="regole-mappa"></p><div class="strumenti-mappa"><div id="comandi-mappa"></div><span id="scala-mappa" aria-live="polite">100%</span></div><div class="contenuto-mappa"><div id="superficie-mappa" tabindex="0" role="region" aria-label="Mappa scorrevole di Bologna"><div id="piano-mappa"><img id="immagine-mappa" alt="Veduta illustrata di Bologna senza etichette." draggable="false"><div id="punti-mappa"></div></div></div><aside id="scheda-luogo-mappa" aria-live="polite"></aside></div><div id="altri-luoghi-mappa"></div><div id="azioni-mappa"></div><p id="stato-mappa" role="status"></p><button type="button" id="chiudi-mappa">Chiudi mappa</button>';
  document.body.append(mappa);
  function p(t){const e=document.createElement('p');e.textContent=t;return e}
@@ -83,6 +83,7 @@
  }
  let zoom=1,selezionati=[],trascinamento=null;
  const viewport=$('superficie-mappa'),piano=$('piano-mappa'),punti=$('punti-mappa'),scheda=$('scheda-luogo-mappa');
+ function mostraScheda(){if(window.matchMedia?.('(max-width:700px)').matches)scheda.scrollIntoView?.({block:'nearest',behavior:'smooth'})}
  function schedaLuogo(l){
   selezionati=[l.id];scheda.replaceChildren();
   const h=document.createElement('h3');h.textContent=l.nome;
@@ -93,24 +94,25 @@
   if(l.indicazione)scheda.append(b('Rileggi le indicazioni',()=>{apriIndicazioni();$('testo-indicazioni').textContent=l.indicazione.testo}));
  }
  function scegliGruppo(gruppo){
-  if(gruppo.length===1){schedaLuogo(gruppo[0]);return}
+  if(gruppo.length===1){schedaLuogo(gruppo[0]);mostraScheda();return}
   selezionati=gruppo.map(l=>l.id);scheda.replaceChildren(p('In questa zona ci sono più luoghi. Quale vuoi raggiungere?'));
-  for(const l of gruppo)scheda.append(b(l.nome+(l.id===dati.corrente.id?' · Sei qui':''),()=>schedaLuogo(l)));
+  for(const l of gruppo)scheda.append(b(l.nome+(l.id===dati.corrente.id?' · Sei qui':''),()=>{schedaLuogo(l);mostraScheda()}));
+  mostraScheda();
  }
  function disegnaMappa(){
   if(!dati)return;
   $('regole-mappa').textContent=dati.ha_mappa?'La mappa mostra i luoghi pubblici e quelli che hai scoperto. I luoghi segreti restano nascosti.':'Non hai la mappa nella Borsa: riconosci soltanto i riferimenti sicuri e i luoghi già conosciuti.';
-  punti.replaceChildren();const gruppi=[],larghezza=piano.clientWidth||900;
+  punti.replaceChildren();const gruppi=[],larghezza=piano.clientWidth||900,altezza=piano.clientHeight||larghezza*2/3;
   for(const l of dati.luoghi){
    const x=Number(l.mappa_x),y=Number(l.mappa_y);
    if(l.mappa_x==null||l.mappa_y==null||!Number.isFinite(x)||!Number.isFinite(y))continue;
-   const vicino=gruppi.find(g=>Math.hypot((x-g.x)*larghezza/100,(y-g.y)*larghezza*2/300)<42);
+   const vicino=gruppi.find(g=>Math.hypot((x-g.x)*larghezza/100,(y-g.y)*altezza/100)<42);
    if(vicino)vicino.luoghi.push(l);else gruppi.push({x,y,luoghi:[l]});
   }
   for(const g of gruppi){
    const nomi=g.luoghi.map(l=>l.nome).join(', '),comando=b('',()=>scegliGruppo(g.luoghi));
    comando.className='punto-mappa';comando.style.left=g.x+'%';comando.style.top=g.y+'%';
-   comando.setAttribute('aria-label',g.luoghi.length>1?g.luoghi.length+' luoghi: '+nomi:nomi);comando.title=nomi;
+   comando.setAttribute('aria-label',g.luoghi.length>1?g.luoghi.length+' luoghi: '+nomi:nomi);
    if(g.luoghi.some(l=>l.id===dati.corrente.id)){comando.classList.add('punto-mappa-attuale');comando.setAttribute('aria-current','location')}
    const simbolo=document.createElement('span');simbolo.className='punto-mappa-simbolo';simbolo.textContent=g.luoghi.length>1?String(g.luoghi.length):'●';simbolo.setAttribute('aria-hidden','true');
    const nome=document.createElement('span');nome.className='punto-mappa-nome';nome.textContent=g.luoghi.length>1?'Più luoghi':nomi;comando.append(simbolo,nome);punti.append(comando);

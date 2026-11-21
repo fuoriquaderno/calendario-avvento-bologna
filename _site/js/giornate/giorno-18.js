@@ -45,16 +45,8 @@
  const immagini=[['La madre con il bambino',225,0],['Il santo con il libro',535,null],['Il crocifisso',1515,1],['La santa con il ramo',1815,2]];
  immagini.forEach(([nome,x,posizione],n)=>{
  const scheda=document.createElement('figure');scheda.className='immagine-iscritta18';
- const ritaglio=document.createElementNS(ns,'svg');ritaglio.classList.add('ritaglio-icona18');ritaglio.setAttribute('viewBox',x+' 245 140 240');ritaglio.setAttribute('role','img');ritaglio.setAttribute('aria-label',nome);ritaglio.setAttribute('preserveAspectRatio','xMidYMid meet');
- // Sagome esterne delle cornici: la parete circostante non viene visualizzata.
- const contorni=[
- 'M11 48 L25 43 L29 32 L48 32 L53 25 L61 23 L66 14 L73 10 L80 17 L83 26 L94 30 L99 39 L123 43 L128 50 L125 57 L125 218 L120 227 L112 225 L20 225 L11 229 L7 221 L10 214 Z',
- 'M7 59 L13 52 L30 53 L41 51 L47 46 L60 45 L64 39 L72 43 L78 49 L100 52 L118 52 L128 59 L129 68 L126 74 L126 199 L130 205 L124 214 L112 210 L22 211 L10 216 L4 207 L8 199 Z',
- 'M10 67 L17 57 L35 55 L48 48 L60 44 L65 36 L72 33 L80 42 L81 49 L101 54 L118 56 L131 62 L135 71 L131 80 L130 196 L134 204 L127 212 L116 208 L25 208 L12 212 L6 204 L11 197 Z',
- 'M11 56 L23 49 L40 48 L53 44 L61 38 L69 33 L76 37 L82 45 L101 46 L116 43 L128 50 L132 58 L128 67 L127 210 L130 217 L122 225 L113 220 L26 220 L13 225 L7 217 L11 207 Z'
- ];
- const defs=document.createElementNS(ns,'defs'),clip=document.createElementNS(ns,'clipPath'),sagoma=document.createElementNS(ns,'path');const idClip='cornice-samuele18-'+n;clip.setAttribute('id',idClip);clip.setAttribute('clipPathUnits','userSpaceOnUse');sagoma.setAttribute('d',contorni[n]);sagoma.setAttribute('transform','translate('+x+' 245)');clip.append(sagoma);defs.append(clip);ritaglio.append(defs);
- const disegno=document.createElementNS(ns,'image');disegno.setAttribute('clip-path','url(#'+idClip+')');disegno.setAttribute('href',api.risorsa('images/chiesa2.png'));disegno.setAttribute('width','2172');disegno.setAttribute('height','724');ritaglio.append(disegno);
+ const ritaglio=document.createElementNS(ns,'svg');ritaglio.classList.add('ritaglio-icona18');ritaglio.setAttribute('viewBox',(n*543+60)+' 20 430 660');ritaglio.setAttribute('role','img');ritaglio.setAttribute('aria-label',nome);ritaglio.setAttribute('preserveAspectRatio','xMidYMid meet');
+ const disegno=document.createElementNS(ns,'image');disegno.setAttribute('href',api.risorsa('images/icone_cripta.png'));disegno.setAttribute('width','2172');disegno.setAttribute('height','724');ritaglio.append(disegno);
  const frase=document.createElement('figcaption');frase.className='iscrizione-visiva18';frase.textContent=posizione===null?'La memoria custodisce ciò che il tempo disperde.':mobili[(posizione+rotazione)%3];
  scheda.append(ritaglio,frase);elenco.append(scheda);
  });area.append(elenco);

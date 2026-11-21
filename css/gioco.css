@@ -29,3 +29,25 @@ dialog.mappa-dialog{width:min(1280px,96vw);max-width:96vw;max-height:94dvh;box-s
 #scheda-luogo-mappa p{margin:0 0 12px}#scheda-luogo-mappa button{display:block;width:100%;box-sizing:border-box;margin:8px 0}
 #altri-luoghi-mappa,#azioni-mappa{margin-top:12px}
 @media(max-width:700px){.contenuto-mappa{grid-template-columns:1fr;gap:10px}.mappa-dialog #superficie-mappa{height:49dvh}#scheda-luogo-mappa{min-height:90px}#scheda-luogo-mappa button{display:inline-block;width:auto;margin:4px 8px 4px 0}.mappa-dialog{padding:10px}}
+
+/* Mappa di Bologna: dimensioni intrinseche e comandi raggiungibili al tocco. */
+dialog.mappa-bologna-dialog{max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto}
+.mappa-bologna-dialog .contenuto-mappa{min-width:0}
+.mappa-bologna-dialog #superficie-mappa{min-width:0;width:100%;box-sizing:border-box}
+.mappa-bologna-dialog #piano-mappa{min-width:100%;max-width:none}
+.mappa-bologna-dialog #immagine-mappa{width:100%;height:auto;max-width:none}
+dialog.mappa-bologna-dialog button.punto-mappa[type=button]{box-sizing:border-box;position:absolute;width:44px!important;height:44px!important;min-height:44px;max-width:44px;padding:0!important;margin:0!important;transform:translate(-50%,-50%)!important;border:0;background:transparent!important;box-shadow:none;touch-action:manipulation}
+.mappa-bologna-dialog #comandi-mappa{display:flex;gap:6px;min-width:0;align-items:center}
+.mappa-bologna-dialog #comandi-mappa button{width:auto;margin:0;flex:0 0 auto}
+@media(max-width:700px){
+ dialog.mappa-bologna-dialog{width:calc(100vw - 24px);padding:12px;margin:auto}
+ .mappa-bologna-dialog .contenuto-mappa{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;width:100%}
+ .mappa-bologna-dialog #superficie-mappa{height:auto;max-height:48dvh;overflow:auto}
+ .mappa-bologna-dialog .strumenti-mappa{display:flex;flex-wrap:wrap;gap:8px}
+ .mappa-bologna-dialog #comandi-mappa{flex:1 1 auto}
+ .mappa-bologna-dialog #comandi-mappa button{padding:8px 10px}
+ .mappa-bologna-dialog #scheda-luogo-mappa{width:100%;box-sizing:border-box;min-height:0;scroll-margin-block:12px}
+ .mappa-bologna-dialog #scheda-luogo-mappa button{display:block;width:100%;min-height:44px;margin:8px 0}
+ .mappa-bologna-dialog .punto-mappa-nome{display:none!important}
+ .mappa-bologna-dialog #chiudi-mappa{min-height:44px}
+}
