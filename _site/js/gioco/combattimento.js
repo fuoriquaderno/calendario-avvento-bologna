@@ -3,7 +3,7 @@
  'use strict';
  const api=window.Partita,$=id=>document.getElementById(id);
  const KEY='ombra-sui-portici.scontri.v2';
- let vista=null,modo='allenamento',elenco=[],busy=false,pendente=null,owner=null;
+ let vista=null,modo='allenamento',elenco=[],busy=false,pendente=null,owner=null,menuOggetti=false,oggettoAperto=null,catalogoOggetti=[];
  const prova=document.createElement('button');prova.type='button';prova.textContent='Allenamento';prova.id='apri-allenamento';
  const combatti=document.createElement('button');combatti.type='button';combatti.textContent='Riprendi combattimento';combatti.hidden=true;
  const livelli=document.createElement('p');livelli.id='progressione-personaggio';
@@ -23,6 +23,15 @@
    if(window.Dadi)window.Dadi.mostraRisultato(a,totale,r,'combattimento');else totale.textContent=`${r.valori.join(' + ')} + ${r.bonus} = ${r.totale}`;
    area.append(h,a,totale);
  }
+
+ function oggettiUtilizzabili(){
+   const oggetti=[...(vista?.oggetti||[])];
+   if(vista?.facchino&&vista.corda_disponibile){
+     const quantita=(api.dati?.inventario||[]).filter(id=>id==='corda_gancio'||catalogoOggetti.find(o=>o.id===id)?.tipo_base==='corda_gancio').length;
+     oggetti.push({id:'corda_gancio',nome:'Corda corta e gancio',quantita:Math.max(1,quantita),azione:'corda'});
+   }
+   return oggetti;
+ }
  function racconto(){
    if(!vista?.turno)return;
    let testo=vista.turno.messaggi.map(m=>m.testo+(m.danni?` (${(vista.scontro_resistenza||vista.facchino)&&m.tipo==='attacco_inferto'?'Resistenza ridotta di '+m.danni:m.danni+' HP di danno'})`:'')).join('\n\n');
@@ -41,6 +50,19 @@
      if(!elenco.length)area.append(b('Riprova',()=>apri('allenamento')));return;
    }
    area.append(p(`${vista.giocatore.nome} · ${vista.giocatore.classe} · Livello ${vista.giocatore.livello||1} · ${vista.giocatore.xp||0} XP · ${vista.giocatore.hp}/${vista.giocatore.hp_massimi} HP`),p(vista.avversario.nome));
+
+   if(vista.esito==='in_corso'&&!vista.recupero_necessario&&menuOggetti){
+     const titolo=document.createElement('h3');titolo.textContent='Oggetti utilizzabili';area.append(titolo,p('Scegli un oggetto per leggere la descrizione. Aprire o chiudere questo elenco non consuma il turno.'));
+     for(const o of oggettiUtilizzabili()){
+       const scheda=document.createElement('details'),nome=document.createElement('summary');scheda.className='scheda-oggetto-scontro';scheda.open=oggettoAperto===o.id;nome.textContent=o.nome+' × '+o.quantita;
+       const dato=catalogoOggetti.find(x=>x.id===o.id),descrizione=dato?.descrizione||o.descrizione||'Oggetto utilizzabile durante questo scontro.';
+       const usa=b('Utilizza — usa il turno',()=>{menuOggetti=false;oggettoAperto=null;return azione(o.azione||'oggetto',o.azione==='corda'?null:o.id)});
+       usa.disabled=busy||(dato?.effetto?.tipo==='cura_percentuale'&&vista.giocatore.hp>=vista.giocatore.hp_massimi);
+       scheda.append(nome,p(descrizione));if(o.azione==='corda')scheda.append(p('Provi a immobilizzare il facchino: tiri il d20 e usi il turno.'));scheda.append(usa);scheda.addEventListener('toggle',()=>{if(scheda.open){oggettoAperto=o.id;for(const altra of area.querySelectorAll('.scheda-oggetto-scontro'))if(altra!==scheda)altra.open=false}else if(oggettoAperto===o.id)oggettoAperto=null});area.append(scheda);
+     }
+     if(!oggettiUtilizzabili().length)area.append(p('Non hai oggetti utilizzabili in questo scontro.'));
+     area.append(b('Torna alle azioni',()=>{menuOggetti=false;oggettoAperto=null;disegna()}));return;
+   }
    if(vista.turno){
      const t= vista.turno;
      dadi(t.azione==='cura'?'Il tuo tiro di cura':t.azione==='fuga'?'Il tuo tiro di fuga':t.azione==='corda'?'Il tuo tiro per legarlo':vista.facchino?'Il tuo tiro per disattivarlo':'Il tuo tiro per colpire',t.tiro);
@@ -57,12 +79,11 @@
      const attacco=vista.facchino?({Guerriero:['Blocca gli snodi — tira il d20','fisico'],Ladro:['Allenta i giunti — tira il d20','fisico'],Mago:['Sciogli i legami magici — tira il d20','magico'],Chierico:['Interrompi i movimenti — tira il d20','fisico']})[classe]:vista.scontro_resistenza?
        ({Guerriero:['Intimidirla — tira il d20','fisico'],Ladro:['Ingannarla — tira il d20','inganno'],Mago:['Contrastare i suoi incanti — tira il d20','magico'],Chierico:['Pronunciare una formula sacra — tira il d20','religione']})[classe]:
        ({Guerriero:['Attacco fisico — tira il d20','fisico'],Ladro:['Attacco fisico — tira il d20','fisico'],Mago:['Attacco magico — tira il d20','magico'],Chierico:['Attacco fisico — tira il d20','fisico']})[classe];
-     if(vista.facchino&&vista.corda_disponibile)area.append(b('Lega il facchino con la corda — tira il d20 e usa il turno',()=>azione('corda')));
      if(attacco)area.append(b(attacco[0],()=>azione(attacco[1])));
      area.append(b('Tenta la fuga — tira il d20',()=>azione('fuga')));
      for(const a of vista.armi||[])if(a.id!==vista.equipaggiamento?.arma)area.append(b('Cambia arma: '+a.nome+' — usa il turno',()=>azione('cambia_arma',a.id)));
      if(vista.giocatore.classe==='Chierico'&&vista.cura_disponibile){const cura=b('Magia curativa — tira il d12 e usa il turno',()=>azione('cura'));cura.disabled=busy||vista.giocatore.hp>=vista.giocatore.hp_massimi;area.append(cura)}
-     for(const o of vista.oggetti||[]){const oggetto=b(`Usa ${o.nome} (${o.quantita}) — usa il turno`,()=>azione('oggetto',o.id));area.append(oggetto)}
+     const oggetti=b('Usa un oggetto',()=>{menuOggetti=true;oggettoAperto=null;disegna()});oggetti.disabled=busy||!oggettiUtilizzabili().length;area.append(oggetti);
    }else{
      area.append(p(vista.esito==='vittoria'?(vista.facchino_distruzione?'Il facchino è distrutto. Il padrone chiama le guardie e vieni arrestato.':vista.facchino?'Hai disattivato il facchino senza romperlo.':vista.scontro_resistenza?'La vecchina cede. Ora è pronta a parlare.':api.dati?.interazioni?.missione_galeazzo?.attiva?'L’avversario è stordito.':'Hai vinto!'):vista.esito==='fuga'?'La fuga è riuscita.':vista.facchino?'Il facchino si rompe. Il padrone chiama le guardie e vieni arrestato.':'Hai perso lo scontro.'));
      if(modo==='allenamento')area.append(p('La partita non è cambiata.'),b('Scegli un nuovo avversario',()=>{vista=null;api.memoria.rimuovi(KEY);disegna()}));
@@ -94,9 +115,10 @@
    return richiedi(r);
  }
  async function apri(scelta){
-   if(busy||!api.dati)return;owner=api.codice;modo=scelta;vista=null;pendente=null;
+   if(busy||!api.dati)return;owner=api.codice;modo=scelta;vista=null;pendente=null;menuOggetti=false;oggettoAperto=null;
    $('inventario').close();if(!dialogo.open)dialogo.showModal();busy=true;disegna();stato.textContent='Caricamento…';
    try{
+     try{const cat=await api.rpc('gioco_catalogo_oggetti',{});catalogoOggetti=Array.isArray(cat)?cat:[]}catch{catalogoOggetti=[]}
      let mem;try{mem=JSON.parse(api.memoria.leggi(KEY))}catch{}
      if(mem?.codice===api.codice&&mem.modo===modo)pendente=mem.pendente;
      if(modo==='allenamento'){
@@ -118,7 +140,7 @@
    const n=++revisione;prova.hidden=!api.dati;livelli.hidden=!api.dati;
    livelli.textContent=api.dati?`Livello ${api.dati.livello||1} · ${api.dati.xp||0} XP · prossimo livello a ${((api.dati.livello||1)*10)} XP`:'';
    combatti.hidden=true;nellaStoria.hidden=true;
-   if(owner&&owner!==api.codice){vista=null;pendente=null;dialogo.close()}
+   if(owner&&owner!==api.codice){vista=null;pendente=null;menuOggetti=false;oggettoAperto=null;dialogo.close()}
    if(!api.dati)return;
    let sospesa;try{sospesa=JSON.parse(api.memoria.leggi(KEY))}catch{}
    if(sospesa?.codice===api.codice&&sospesa.modo==='storia'&&sospesa.pendente){
@@ -126,7 +148,7 @@
      nellaStoria.hidden=false;nellaStoria.textContent='Recupera esito del combattimento';
    }else combatti.textContent='Riprendi combattimento';
    if(api.dati.morto)return;
-   try{const s=await api.rpc('gioco_scontro',{p_codice:api.codice,p_azione:'disponibile'});if(n!==revisione)return;if(s&&!s.terminato){combatti.hidden=false;nellaStoria.hidden=!$('schermata-gioco')||['g4_fantasma','g16_facchino_prova','g16_facchino_attacco'].includes(api.dati.stato_partita?.fase);nellaStoria.textContent='Inizia il combattimento'}}
+   try{const s=await api.rpc('gioco_scontro',{p_codice:api.codice,p_azione:'disponibile'});if(n!==revisione)return;if(s&&!s.terminato){combatti.hidden=false;nellaStoria.hidden=!$('schermata-gioco')||['g4_fantasma','g16_facchino_prova','g16_facchino_attacco','g17_guardiano','g17_effigi'].includes(api.dati.stato_partita?.fase);nellaStoria.textContent='Inizia il combattimento'}}
    catch{/* La borsa resta utilizzabile quando la verifica dello scontro fallisce. */}
  }
  window.AzioniGioco={apriScontro:()=>apri('storia'),async usaPozione(id){

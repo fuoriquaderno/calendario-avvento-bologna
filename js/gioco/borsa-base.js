@@ -3,7 +3,7 @@
  'use strict';
  const api=window.Partita,$=id=>document.getElementById(id);
  const {rpc,esegui,applica,stato}=api;
- let dati=api.dati,codice=api.codice;
+ let dati=api.dati,codice=api.codice,proprietarioElenco=null;
  api.onChange((nuovi,nuovoCodice)=>{dati=nuovi;codice=nuovoCodice});
   const OGGETTI={
     pozione_blanda:{nome:'Pozione blanda',descrizione:'Cura il 25% degli HP massimi attuali, arrotondato per eccesso.'},
@@ -85,7 +85,7 @@
         try{
           const durata=window.matchMedia('(prefers-reduced-motion: reduce)').matches?Promise.resolve():new Promise(resolve=>setTimeout(resolve,850));
           const [aggiornati]=await Promise.all([rpc('gioco_cura',{p_codice:codice,p_tentativo:tentativo}),durata]);
-          await applica(aggiornati,codice,{anima:false});disegnaBorsa();
+          await applica(aggiornati,codice,{anima:false});if(window.BorsaNuova)await window.BorsaNuova.aggiorna();else disegnaBorsa();
         }catch(errore){
           if(errore.message.startsWith('Operazione non riuscita'))throw new Error('Non riesco a confermare la cura. Potrebbe essere già stata salvata: riprova o riapri la Borsa per recuperare l’esito senza curarti due volte.');
           throw errore;
@@ -110,6 +110,7 @@
   }
   function disegnaBorsa(){
     const inGioco=!!$('schermata-gioco');
+    const aperti=proprietarioElenco===codice?new Set([...document.querySelectorAll('#borsa-elenco details[open]')].map(e=>e.dataset.oggetto)):new Set();proprietarioElenco=codice;
     $('borsa-stato').textContent='';$('borsa-elenco').replaceChildren();
     $('borsa-argento').textContent=dati?`Argento disponibile: ${dati.oro_rimanente}`:'';
     $('borsa-contesto').textContent=dati?(inGioco?'Gli oggetti si consumano solo dopo la conferma e lo sblocco riuscito.':'La Borsa è consultabile anche qui. Torna alla storia per usare gli oggetti.'):'Entra nel gioco per aprire una partita.';
@@ -121,15 +122,17 @@
     if(!q.size){const li=document.createElement('li');li.textContent='La Borsa non contiene oggetti.';$('borsa-elenco').append(li)}
     for(const [id,n]of q){
       const oggetto=Object.hasOwn(OGGETTI,id)?OGGETTI[id]:{nome:id,descrizione:'Oggetto conservato nella Borsa. Non è ancora previsto un utilizzo.'};
-      const li=document.createElement('li'),h=document.createElement('h3'),p=document.createElement('p');li.dataset.oggetto=id;
-      h.textContent=`${oggetto.nome} × ${n}`;p.textContent=oggetto.descrizione;li.append(h,p);
+      const li=document.createElement('li'),scheda=document.createElement('details'),h=document.createElement('summary'),p=document.createElement('p'),contenuto=document.createElement('div');li.dataset.oggetto=id;
+      scheda.className='scheda-oggetto-borsa';scheda.dataset.oggetto=id;scheda.open=aperti.has(id);contenuto.className='contenuto-oggetto-borsa';
+      h.textContent=oggetto.nome+' × '+n;p.textContent=oggetto.descrizione;contenuto.append(p);scheda.append(h,contenuto);li.append(scheda);
+      scheda.addEventListener('toggle',()=>{if(scheda.open)for(const altra of document.querySelectorAll('#borsa-elenco details[open]'))if(altra!==scheda)altra.open=false});
       if(!dati.morto&&(id.startsWith('pozione_')||oggetto.effetto?.tipo==='cura_percentuale')&&!window.BorsaNuova?.inCombattimento&&Object.hasOwn(OGGETTI,id)){
         const usa=document.createElement('button');usa.type='button';usa.textContent='Usa pozione';usa.disabled=dati.hp_attuali>=dati.hp_massimi;
-        usa.addEventListener('click',()=>window.AzioniGioco.usaPozione(id));li.append(usa);
+        usa.addEventListener('click',()=>window.AzioniGioco.usaPozione(id));contenuto.append(usa);
       }else if(inGioco&&!dati.morto&&dati.hp_attuali>0&&(id==='pergamena_chiarezza'||oggetto.tipo_base==='pergamena_chiarezza')&&dati.stato_partita?.fase==='enigma'){
         const usa=document.createElement('button');usa.type='button';usa.textContent='Usa sull’enigma di Galeazzo';
-        usa.addEventListener('click',()=>confermaUso(li,usa));li.append(usa);
-      }else if(['pergamena_chiarezza','grimaldello'].includes(id)){const nota=document.createElement('p');nota.textContent='Non utilizzabile in questa pagina o scena. L’oggetto resta nella Borsa.';li.append(nota)}
+        usa.addEventListener('click',()=>confermaUso(li,usa));contenuto.append(usa);
+      }else if(['pergamena_chiarezza','grimaldello'].includes(id)){const nota=document.createElement('p');nota.textContent='Non utilizzabile in questa pagina o scena. L’oggetto resta nella Borsa.';contenuto.append(nota)}
       $('borsa-elenco').append(li);
     }
   }
@@ -144,7 +147,7 @@
       const aggiornati=await rpc('gioco_usa_oggetto',{p_codice:codice,p_oggetto:li.dataset.oggetto,p_bersaglio:'enigma_galeazzo'});
       $('inventario').close();await applica(aggiornati,codice,{anima:true});stato('Pergamena utilizzata: consumo e sblocco salvati.');
     },$('borsa-stato')));
-    box.append(p,si,no);li.append(box);si.focus();
+    box.append(p,si,no);(li.querySelector('.contenuto-oggetto-borsa')||li).append(box);si.focus();
   }
   async function apriBorsa(){
     if(api.occupato)return;

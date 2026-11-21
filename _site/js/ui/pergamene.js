@@ -28,12 +28,13 @@
     misura.textContent=testo;document.body.append(misura);
     const larghezzaTesto=misura.getBoundingClientRect().width;misura.remove();
     const limite=Math.max(0,Math.min(1000,document.documentElement.clientWidth-24));
-    let larghezza=Math.min(limite,Math.max(520,Math.ceil(larghezzaTesto/3+180)));
+    let larghezza=Math.min(limite,Math.max(760,Math.ceil(larghezzaTesto/3+180)));
     function impostaLarghezza(){popupRisposta.style.width=larghezza+'px';popupRisposta.style.setProperty('--larghezza-messaggio',larghezza+'px')}
     impostaLarghezza();
     if(!popupRisposta.open)popupRisposta.showModal();
     // Misura il testo nell’altezza effettivamente disponibile, senza barre di scorrimento.
-    const entra=()=>testoMessaggio.scrollHeight<=testoMessaggio.clientHeight+1;
+    const mobile=()=>document.documentElement.clientWidth<=600;
+    const entra=()=>mobile()||testoMessaggio.scrollHeight<=testoMessaggio.clientHeight+1;
     while(!entra()&&larghezza<limite){larghezza=Math.min(limite,larghezza+40);impostaLarghezza()}
     pagineMessaggio=[];paginaMessaggio=0;
     if(entra())pagineMessaggio=[testo];
@@ -73,8 +74,8 @@ window.ConfermaPergamena=(testo,{titolo='Confermi?',conferma='Conferma',annulla=
      frase.textContent=testo;frase.style.overflow='hidden';si.textContent=conferma;no.textContent=annulla;
      const misura=document.createElement('span');misura.style.cssText='position:fixed;visibility:hidden;white-space:pre;pointer-events:none';
      misura.style.font=window.getComputedStyle(dialogo).font;misura.textContent=testo;document.body.append(misura);
-     const limite=document.documentElement.clientWidth-24;
-     let larghezza=Math.min(limite,Math.max(600,Math.ceil(misura.getBoundingClientRect().width/3+180)));misura.remove();
+     const limite=Math.max(0,Math.min(1000,document.documentElement.clientWidth-24));
+     let larghezza=Math.min(limite,Math.max(760,Math.ceil(misura.getBoundingClientRect().width/3+180)));misura.remove();
      function dimensiona(){dialogo.style.width=larghezza+'px';dialogo.style.setProperty('--larghezza-messaggio',larghezza+'px')}
      dimensiona();
      const positivo=()=>{accettata=true;dialogo.close()},negativo=()=>{accettata=false;dialogo.close()};

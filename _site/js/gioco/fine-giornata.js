@@ -20,6 +20,7 @@
  function mostra(){
    if(busy||!api.dati?.giornata_da_confermare||api.dati.morto)return;
    
+   $('esplora-fine-giornata').textContent=api.dati.interazioni?.dimensione_alternativa?'Esplora le Sette Chiese':'Gira per la città';
    $('esplora-fine-giornata').hidden=api.dati.giorno_corrente<2||api.dati.stato_partita?.esplorazione_consentita===false;
    $('titolo-conferma-giornata').textContent=`Giornata ${api.dati.giorno_corrente}: vuoi confermare?`;
    $('riepilogo-conferma-giornata').textContent=`${api.dati.hp_attuali}/${api.dati.hp_massimi} HP · ${api.dati.xp||0} XP · ${api.dati.oro_rimanente} monete d’argento`;

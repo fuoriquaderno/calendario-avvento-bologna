@@ -47,6 +47,8 @@
    lista($('elenco-luoghi'));window.MissioneGaleazzo?.azioniLuogo($('elenco-luoghi'),dati);window.MissioneGuardia?.azioniLuogo($('elenco-luoghi'),dati);if(mappa.open)disegnaMappa();
  }
  async function aggiorna(){
+   if(api.dati?.interazioni?.dimensione_alternativa){++richiesta;dati=null;owner=api.codice;scena.hidden=true;pulsante.hidden=false;pulsante.textContent='Mappa delle Sette Chiese';apriMappa.hidden=true;if(mappa.open)mappa.close();return}
+   pulsante.textContent='Mappa e luoghi';
    const n=++richiesta;if(owner!==api.codice){dati=null;owner=api.codice}
    if(!api.dati){if(mappa.open)mappa.close();scena.hidden=true;pulsante.hidden=true;apriMappa.hidden=true;return}
    try{const r=await api.rpc('gioco_luoghi',{p_codice:api.codice});if(n!==richiesta)return;dati=r;disegna()}
@@ -127,6 +129,7 @@
   $('scala-mappa').textContent=Math.round(zoom*100)+'%';disegnaMappa();
  }
  async function apriCartina(){
+  if(api.dati?.interazioni?.dimensione_alternativa){return window.SetteChiese?.apri()}
   $('inventario').close();await aggiorna();if(!dati)return;
   selezionati=[];piano.style.width='100%';zoom=1;$('scala-mappa').textContent='100%';$('immagine-mappa').src=mappaUrl;
   if(!mappa.open)mappa.showModal();viewport.scrollLeft=0;viewport.scrollTop=0;disegnaMappa();

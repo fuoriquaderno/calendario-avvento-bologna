@@ -7,7 +7,7 @@
  info.id='borsa-peso-equip';extra.id='borsa-extra';$('borsa-elenco').before(info);$('borsa-elenco').after(extra);
  const peso=document.createElement('p'),equip=document.createElement('p'),bonus=document.createElement('p'),msg=document.createElement('p'),riprendi=document.createElement('button');
  msg.setAttribute('role','status');riprendi.type='button';riprendi.textContent='Recupera la richiesta in sospeso';riprendi.hidden=true;info.append(peso,equip,bonus,msg,riprendi);
- const loot=document.createElement('section'),shop=document.createElement('section'),notes=document.createElement('section');extra.append(loot,shop,notes);
+ const loot=document.createElement('section'),shop=document.createElement('section'),notes=document.createElement('section');const appuntiConservati=document.createElement('details'),titoloAppunti=document.createElement('summary');appuntiConservati.className='appunti-conservati-borsa';titoloAppunti.textContent='Appunti salvati';appuntiConservati.append(titoloAppunti,notes);extra.append(loot,shop,appuntiConservati);
  const titolo=document.createElement('h3');titolo.textContent='Taccuino';
  const nota=document.createElement('textarea');nota.id='taccuino-testo';nota.maxLength=20000;nota.rows=8;nota.setAttribute('aria-label','Appunti personali');nota.style.cssText='width:100%;font:inherit;padding:12px;resize:vertical';
  const salva=document.createElement('button');salva.type='button';salva.textContent='Salva appunti';
@@ -73,11 +73,12 @@
        if(n>quanti){
          const q=document.createElement('input');q.type='number';q.min='1';q.max=String(n-quanti);q.value='1';q.setAttribute('aria-label','Quantità di '+nome(id));q.style.width='80px';
          function numero(){const v=Number(q.value);if(!Number.isInteger(v)||v<1||v>n-quanti){msg.textContent='Scegli una quantità valida.';return null}return v}
-         box.append(q,b('Lascia',async()=>{const qta=numero();if(qta&&await window.ConfermaPergamena(`Abbandonare definitivamente ${qta} × ${nome(id)}?`))return esegui('gioco_borsa',args('lascia',id,qta))}));
+         box.append(q,b('Lascia',async()=>{const qta=numero();if(qta&&await window.ConfermaPergamena((o?.tipo_base||id)==='kit_taccuino'?'Lasciare il taccuino? Gli appunti restano salvati e leggibili, ma per scrivere dovrai procurartene un altro.':`Abbandonare definitivamente ${qta} × ${nome(id)}?`))return esegui('gioco_borsa',args('lascia',id,qta))}));
          if(borsa.mercante&&o?.prezzo_vendita>0)box.append(b(`Vendi (${o.prezzo_vendita} monete ciascuno)`,async()=>{const qta=numero();if(qta&&await window.ConfermaPergamena(`Vendere ${qta} × ${nome(id)}?`))return esegui('gioco_borsa',args('vendi',id,qta))}));
        }
      }
-     li.append(box);
+     const contenuto=li.querySelector('.contenuto-oggetto-borsa')||li;contenuto.append(box);
+     if((o?.tipo_base||id)==='kit_taccuino')contenuto.append(notes);
    }
  }
  function mostraBottino(dati){
@@ -94,6 +95,7 @@
      const [bag,cat,bottino,appunti]=await Promise.all([
        api.rpc('gioco_borsa',{p_codice:api.codice}),api.rpc('gioco_catalogo_oggetti',{}),api.rpc('gioco_bottino',{p_codice:api.codice}),api.rpc('gioco_taccuino',{p_codice:api.codice})]);
      if(n!==revision)return;borsa=bag;catalogo=cat;
+     appuntiConservati.append(notes);
      // Il ridisegno rimuove i controlli delle righe precedenti.
      api.ridisegnaBorsa();comandi();mostraBottino(bottino);shop.replaceChildren();
      if(bag.mercante){const h=document.createElement('h3');h.textContent='Dal mercante';shop.append(h);for(const [id,prezzo] of Object.entries(bag.catalogo_mercante))shop.append(b(`Compra ${nome(id)} — ${prezzo} monete`,async()=>{if(await window.ConfermaPergamena(`Comprare ${nome(id)} per ${prezzo} monete?`))return esegui('gioco_borsa',args('compra',id))}))}
@@ -102,7 +104,8 @@
      if(!sporco){const locale=bozza?.codice===api.codice;notesVersion=locale?bozza.versione:appunti.versione;notesBase=locale?(bozza.base??appunti.testo):appunti.testo;nota.value=locale?bozza.testo:appunti.testo;notesOwner=api.codice}
      notes.hidden=!appunti.scrivibile&&!appunti.testo&&!(bozza?.codice===api.codice);
      nota.readOnly=!appunti.scrivibile;salva.disabled=!appunti.scrivibile;
-     lasciaNote.hidden=!taccuinoInBorsa();lasciaNote.disabled=busy||bag.in_combattimento||bag.partita.morto||bag.partita.giornata_completata;
+     appuntiConservati.hidden=!!taccuinoInBorsa()||notes.hidden;
+     lasciaNote.hidden=true;lasciaNote.disabled=busy||bag.in_combattimento||bag.partita.morto||bag.partita.giornata_completata;
      if(!appunti.scrivibile)statoNote.textContent='Gli appunti restano leggibili. Per scrivere servono pergamena e calamaio.';
      else if(appunti.versione!==notesVersion)statoNote.textContent='Gli appunti sono cambiati altrove. Conserva la tua bozza prima di ricaricarli.';
      else statoNote.textContent=nota.value!==notesBase?'Bozza non salvata.':'Appunti salvati.';
