@@ -51,3 +51,11 @@ dialog.mappa-bologna-dialog button.punto-mappa[type=button]{box-sizing:border-bo
  .mappa-bologna-dialog .punto-mappa-nome{display:none!important}
  .mappa-bologna-dialog #chiudi-mappa{min-height:44px}
 }
+
+/* Solo il simbolo circolare resta visibile; il bersaglio tattile è trasparente. */
+dialog.mappa-dialog button.punto-mappa[type=button],
+dialog.mappa-dialog button.punto-mappa[type=button]:hover,
+dialog.mappa-dialog button.punto-mappa[type=button]:active{border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;outline:none}
+dialog.mappa-dialog button.punto-mappa[type=button]::before,
+dialog.mappa-dialog button.punto-mappa[type=button]::after{display:none!important}
+dialog.mappa-dialog button.punto-mappa[type=button]:focus-visible .punto-mappa-simbolo{outline:3px solid #342416;outline-offset:3px}
