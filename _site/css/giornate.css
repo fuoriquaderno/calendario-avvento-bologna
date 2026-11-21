@@ -302,3 +302,52 @@ dialog.sette-chiese-dialog{width:min(940px,96vw);max-height:94dvh;padding:14px;o
 #racconto-giorno20 .rotazioni-specchi20 button{flex:1 1 90px;margin:0}
 #racconto-giorno20 svg [role=button]:focus-visible{outline:3px solid #8b261b;outline-offset:3px}
 @media(max-width:600px){#racconto-giorno20 button{width:100%;margin-inline:0}#racconto-giorno20 .rotazioni-specchi20 button{width:auto}}
+
+/* Giorno 21: il catino e le proporzioni. */
+.giorno21-attivo>:not(#racconto-giorno21):not(#stato-fine-giornata){display:none!important}
+#racconto-giorno21{border:0;background:none;margin-block:24px;min-width:0}
+#racconto-giorno21 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer;min-height:44px}
+#racconto-giorno21 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno21 form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-block:20px}
+#racconto-giorno21 label{display:grid;gap:8px;min-width:0}
+#racconto-giorno21 input{box-sizing:border-box;width:100%;min-width:0;font:inherit;color:inherit;background:#f7e8cb88;border:1px solid #79502c;padding:12px}
+#racconto-giorno21 form>button{grid-column:1/-1;margin:0}
+@media(max-width:600px){#racconto-giorno21 button{width:100%;margin-inline:0}#racconto-giorno21 form{grid-template-columns:minmax(0,1fr)}}
+
+/* Giorno 22: numeri primi e marchingegni. */
+.giorno22-attivo>:not(#racconto-giorno22):not(#stato-fine-giornata){display:none!important}
+#racconto-giorno22{border:0;background:none;margin-block:24px;min-width:0}
+#racconto-giorno22 button{font:inherit;line-height:1.4;padding:12px 18px;margin:6px 8px 6px 0;border:1px solid #631810;border-radius:3px;background:#8b261b;color:#f4ead5;cursor:pointer;min-height:44px}
+#racconto-giorno22 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno22 details{margin-block:18px}#racconto-giorno22 summary{cursor:pointer;text-decoration:underline}
+#racconto-giorno22 .pulsanti-primi22{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-block:20px}
+#racconto-giorno22 .pulsanti-primi22 button{margin:0;min-width:0;padding:12px 4px;background:#f5dfb7;color:#593a25;border:2px solid #79502c;border-radius:50%;aspect-ratio:1;font-weight:bold}
+#racconto-giorno22 .pulsanti-primi22 button[aria-pressed=true]{background:#79502c;color:#fff0cf;box-shadow:inset 0 0 0 4px #b58b56}
+#racconto-giorno22 .pulsanti-primi22 button:focus-visible{outline:3px solid #8b261b;outline-offset:3px}
+#racconto-giorno22 .ruote-demetrio22{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-block:20px}
+#racconto-giorno22 fieldset{min-width:0;display:grid;gap:12px;border:1px solid #79502c;padding:12px;background:#f7e8cb33}
+#racconto-giorno22 legend{padding-inline:6px;font-weight:bold}#racconto-giorno22 label{display:grid;gap:8px;min-width:0}
+#racconto-giorno22 select{box-sizing:border-box;width:100%;min-width:0;font:inherit;color:inherit;background:#f7e8cb88;border:1px solid #79502c;padding:10px}
+#racconto-giorno22 form>button{grid-column:1/-1;margin:0}
+@media(max-width:700px){#racconto-giorno22 .ruote-demetrio22{grid-template-columns:minmax(0,1fr)}#racconto-giorno22 .pulsanti-primi22{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){#racconto-giorno22 button{width:100%;margin-inline:0}#racconto-giorno22 .pulsanti-primi22 button{width:100%;min-height:44px}}
+
+/* Il ragno e le tessere sostituiscono la scatola numerata. */
+#racconto-giorno22 .ragno-meccanico22{display:block;width:100%;height:auto;max-width:720px;margin:16px auto}
+#racconto-giorno22 .tessere-ragno22{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;max-width:600px;margin-block:18px}
+#racconto-giorno22 .tessere-ragno22 button{width:100%;min-width:0;min-height:44px;margin:0;padding:10px 4px;background:#f5dfb7;color:#593a25;border:2px solid #79502c;font-weight:bold}
+@media(max-width:380px){#racconto-giorno22 .tessere-ragno22{gap:6px}}
+
+/* Scatola con dentature e colori, tre soli alloggiamenti. */
+#racconto-giorno22 .scatola-ingranaggi137{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px 10px;padding:16px;border:2px solid #79502c;border-radius:5px;background:#a87c3c15;margin-block:20px}
+#racconto-giorno22 .ingranaggio-catalogo137{margin:0;min-width:0;text-align:center}
+#racconto-giorno22 .ingranaggio-catalogo137 svg{display:block;width:100%;height:auto;max-width:100px;margin:auto}
+#racconto-giorno22 .ingranaggio-catalogo137 figcaption{font-size:16px;line-height:1.3;margin-top:6px;overflow-wrap:anywhere}
+#racconto-giorno22 .anteprima-ingranaggio137 svg{display:block;width:100%;max-width:100px;height:auto;margin:auto}
+#racconto-giorno22 .anteprima-ingranaggio137 p{font-size:16px;text-align:center;margin:6px 0}
+@media(max-width:700px){#racconto-giorno22 .scatola-ingranaggi137{grid-template-columns:repeat(3,minmax(0,1fr));padding:10px;gap:14px 8px}}
+@media(max-width:380px){#racconto-giorno22 .scatola-ingranaggi137{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Novanta tessere come nel sacchetto della tombola. */
+#racconto-giorno22 .tessere-ragno22{grid-template-columns:repeat(10,minmax(0,1fr));max-width:760px;max-height:45dvh;overflow:auto;box-sizing:border-box;padding:6px;border:1px solid #79502c;border-radius:4px;gap:8px;overscroll-behavior:contain}
+@media(max-width:700px){#racconto-giorno22 .tessere-ragno22{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}}
