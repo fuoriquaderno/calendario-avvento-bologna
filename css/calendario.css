@@ -22,3 +22,42 @@
 @media(max-width:600px){.calendario-griglia{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.casella-calendario{min-height:136px;padding:12px 4px}.calendario-ripresa{flex-direction:column;text-align:center}.calendario-continua{width:100%}.calendario-accesso form{grid-template-columns:1fr}.calendario-intestazione{margin-bottom:20px}}
 @media(max-width:380px){.calendario-griglia{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.casella-calendario{transition:none}}
+
+/* Caselle e legenda condividono la stessa tavolozza.
+   Le regole specifiche prevalgono sui pulsanti rossi globali del sito. */
+.calendario-avvento{
+ --cal-disponibile:linear-gradient(110deg,#f9e9c8,#e8bf7d);
+ --cal-corso:linear-gradient(120deg,#a43a27,#7c241b);
+ --cal-conclusa:linear-gradient(110deg,#e6dfbd,#c4c59e);
+ --cal-chiusa:#dfc79e50;
+}
+.calendario-avvento .calendario-griglia button.casella-calendario{
+ padding:14px 6px!important;border:1px solid #926033!important;
+ border-radius:5px!important;color:#5e4630!important;
+ background:var(--cal-chiusa)!important;
+ box-shadow:inset 0 0 0 4px #f8e9c950,0 2px 4px #4c2c1b16!important;
+ line-height:normal!important;
+}
+.calendario-avvento .calendario-griglia button.casella-calendario[data-stato="disponibile"]{
+ color:#75251a!important;border-color:#8b261b!important;background:var(--cal-disponibile)!important;
+}
+.calendario-avvento .calendario-griglia button.casella-calendario[data-stato="in_corso"]{
+ color:#f4ead5!important;border-color:#631810!important;background:var(--cal-corso)!important;
+}
+.calendario-avvento .calendario-griglia button.casella-calendario[data-stato="conclusa"]{
+ color:#475034!important;border-color:#6f7650!important;background:var(--cal-conclusa)!important;
+}
+.calendario-avvento .calendario-griglia button.casella-calendario[aria-disabled="true"]{
+ color:#77634d!important;background:var(--cal-chiusa)!important;opacity:1!important;cursor:default;
+}
+.calendario-avvento .calendario-griglia button.casella-calendario[data-stato="conclusa"]::before{border-color:#6f765060}
+.calendario-avvento .calendario-griglia button.casella-calendario:not([aria-disabled="true"]):hover{
+ transform:translateY(-3px)!important;box-shadow:0 5px 12px #4c2c1b30!important;
+}
+.calendario-avvento .calendario-griglia button.casella-calendario:not([aria-disabled="true"]):active{transform:translateY(-1px)!important}
+.calendario-avvento .calendario-legenda li::before{background:var(--cal-chiusa);border-color:#926033}
+.calendario-avvento .calendario-legenda [data-stato="disponibile"]::before{background:var(--cal-disponibile);border-color:#8b261b}
+.calendario-avvento .calendario-legenda [data-stato="in_corso"]::before{background:var(--cal-corso);border-color:#631810}
+.calendario-avvento .calendario-legenda [data-stato="conclusa"]::before{background:var(--cal-conclusa);border-color:#6f7650}
+@media(max-width:600px){.calendario-avvento .calendario-griglia button.casella-calendario{padding:12px 4px!important}}
+@media(prefers-reduced-motion:reduce){.calendario-avvento .calendario-griglia button.casella-calendario:not([aria-disabled="true"]):hover{transform:none!important}}

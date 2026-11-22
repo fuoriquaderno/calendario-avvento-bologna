@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>I Cancelli di Bologna - L&#39;Ombra sui Portici</title>
+<link rel="stylesheet" href="https://glispisotti.github.io/consent/consent.css">
 <link rel="icon" type="image/png" href="/calendario-avvento-bologna/images/favicon1.png">
 <link rel="stylesheet" href="/calendario-avvento-bologna/style.css">
 <link rel="stylesheet" href="/calendario-avvento-bologna/immagini-schermate.css">
@@ -11,6 +12,7 @@
 <link rel="stylesheet" href="/calendario-avvento-bologna/css/finestre.css">
 <link rel="stylesheet" href="/calendario-avvento-bologna/css/gioco.css">
 <link rel="stylesheet" href="/calendario-avvento-bologna/css/giornate.css">
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/giorno23.css">
 <link rel="stylesheet" href="/calendario-avvento-bologna/css/biblioteca.css">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer src="/calendario-avvento-bologna/js/ui/pergamene.js"></script>
@@ -63,8 +65,40 @@
 <script defer src="/calendario-avvento-bologna/js/giornate/giorno-20.js"></script>
 <script defer src="/calendario-avvento-bologna/js/giornate/giorno-21.js"></script>
 <script defer src="/calendario-avvento-bologna/js/giornate/giorno-22.js"></script>
+<script defer src="/calendario-avvento-bologna/js/giornate/giorno-23.js"></script>
+<script defer src="/calendario-avvento-bologna/js/gioco/oggetti-pozzo.js"></script>
+<link rel="stylesheet" href="/calendario-avvento-bologna/css/giorno24.css"><script defer src="/calendario-avvento-bologna/js/giornate/giorno-24.js"></script>
 <script defer src="/calendario-avvento-bologna/js/avvio.js"></script>
 </head>
+<script>
+window.SpisottiConsentConfig = {
+    version: "1.0",
+    privacyUrl: "/calendario-avvento-bologna/privacy.html",
+    
+    supabaseStorageKey: "ombra-sui-portici.codice-segreto.v2",
+    
+    services: [
+        
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                
+                "supabase"
+                
+            
+        
+    ]
+};
+</script>
+<script src="https://glispisotti.github.io/consent/consent.js"></script>
+
 <body>
 <header class="site-header">
   <a class="site-brand" href="/calendario-avvento-bologna/">L'Ombra <span>sui Portici</span></a>
@@ -287,6 +321,7 @@
                  alt="Gli Spisotti"
                  width="110">
         </a>
+        <button type="button" id="spisotti-consent-settings">Preferenze cookie</button>
     </div>
 </footer>
 </body>

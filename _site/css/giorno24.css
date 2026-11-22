@@ -1,0 +1,27 @@
+.giorno24-attivo>:not(#racconto-giorno24):not(#stato-fine-giornata){display:none!important}
+#racconto-giorno24{min-width:0;margin-block:24px}
+#racconto-giorno24 button,#racconto-giorno24 a{font:inherit;padding:12px 18px;min-height:44px;line-height:1.4;margin:6px 8px 6px 0;border:1px solid #631810;background:#8b261b;color:#f4ead5;border-radius:3px;cursor:pointer;box-sizing:border-box}
+#racconto-giorno24 a{display:inline-block;text-decoration:none}
+#racconto-giorno24 button:disabled{opacity:.5;cursor:default}
+#racconto-giorno24 details{margin-block:18px}
+#racconto-giorno24 summary{cursor:pointer;text-decoration:underline}
+#racconto-giorno24 .risposta-scritta24{display:grid;gap:12px;max-width:620px;margin-block:20px}
+#racconto-giorno24 input{font:inherit;box-sizing:border-box;min-width:0;width:100%;padding:12px;border:1px solid #79502c;background:#f7e8cb88;color:inherit}
+#racconto-giorno24 .risposta-scritta24 button{margin:0}
+#racconto-giorno24 .sigilli-serratura24{display:block;width:min(100%,340px);height:auto;max-height:none;margin:20px auto;background:transparent;border:0}
+#racconto-giorno24 .lettere-samuele24{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+#racconto-giorno24 .lettere-samuele24 span{border:1px solid #79502c;padding:6px 10px;color:#593a25;background:#c69b5e25}
+#racconto-giorno24 .posizioni-modello24,#racconto-giorno24 .rotazioni-modello24,#racconto-giorno24 .comandi-labirinto24,#racconto-giorno24 .frecce-labirinto24{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-block:14px}
+#racconto-giorno24 .posizioni-modello24 button,#racconto-giorno24 .rotazioni-modello24 button,#racconto-giorno24 .comandi-labirinto24 button,#racconto-giorno24 .frecce-labirinto24 button{margin:0;width:auto}
+#racconto-giorno24 button[aria-pressed=true]{outline:3px solid #79502c;outline-offset:2px}
+#racconto-giorno24 .pianta-modellino24{position:relative;width:110px;height:100px;box-sizing:border-box;border:8px solid #79502c;margin:34px auto;background:#ae895623}
+#racconto-giorno24 .pianta-modellino24::after{content:'';position:absolute;bottom:-9px;left:29px;width:36px;height:12px;background:#eddbb6;border-inline:2px solid #79502c}
+#racconto-giorno24 .stanza-interna24{position:absolute;inset:22px;border:4px solid #79502c}
+#racconto-giorno24 .scorri-labirinto24{width:100%;max-height:72dvh;overflow:auto;overscroll-behavior:contain;margin-block:14px}
+#racconto-giorno24 .tavola-labirinto24{position:relative;line-height:0;max-width:none}
+#racconto-giorno24 .tavola-labirinto24>img{display:block;width:100%;height:auto;max-width:none;pointer-events:none}
+#racconto-giorno24 button.tocca-labirinto24{position:absolute;inset:0;width:100%;height:100%;max-width:none;margin:0;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;cursor:crosshair}
+#racconto-giorno24 .giocatore-labirinto24{position:absolute;transform:translate(-50%,-50%);width:14px;height:14px;border:2px solid #f4ead5;box-shadow:0 0 0 1px #593a25;border-radius:50%;background:#8b261b;pointer-events:none}
+#racconto-giorno24 .ingredienti-giosue24{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-block:20px}
+#racconto-giorno24 .ingredienti-giosue24 button{margin:0;min-width:0}
+@media(max-width:600px){#racconto-giorno24 button{width:100%;margin-inline:0}#racconto-giorno24 .ingredienti-giosue24{grid-template-columns:minmax(0,1fr)}#racconto-giorno24 .comandi-labirinto24 button,#racconto-giorno24 .frecce-labirinto24 button{width:auto;min-width:44px}}

@@ -16,3 +16,30 @@ exclude:
   - README.md
   - supabase
   - privato
+
+consent:
+
+  version: "1.0"
+
+  # Inserisci questa riga SOLO se il sito usa Supabase per salvare il codice partita:
+  supabase_storage_key: "ombra-sui-portici.codice-segreto.v2"
+
+  privacy_template:
+    url: "https://raw.githubusercontent.com/glispisotti/glispisotti/main/consent/privacy.html"
+
+  privacy:
+    titolare: "Laura Porceddu"
+    sede: ""
+    email: "glispisotti@gmail.com"
+    pec: ""
+
+  hosting:
+    provider: "GitHub Pages"
+    privacy_url: "https://docs.github.com/it/site-policy/privacy-policies/github-general-privacy-statement"
+
+  services:
+    analytics: false
+    youtube: false
+    googlemaps: false
+    brevo: false
+    supabase: true

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page.title | default: site.title | escape }}</title>
+<link rel="stylesheet" href="https://glispisotti.github.io/consent/consent.css">
 <link rel="icon" type="image/png" href="{{ '/images/favicon1.png' | relative_url }}">
 <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/immagini-schermate.css' | relative_url }}">
@@ -11,6 +12,7 @@
 <link rel="stylesheet" href="{{ '/css/finestre.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/css/gioco.css' | relative_url }}">
 <link rel="stylesheet" href="{{ '/css/giornate.css' | relative_url }}">
+{% if page.gioco %}<link rel="stylesheet" href="{{ '/css/giorno23.css' | relative_url }}">{% endif %}
 <link rel="stylesheet" href="{{ '/css/biblioteca.css' | relative_url }}">
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script defer src="{{ '/js/ui/pergamene.js' | relative_url }}"></script>
@@ -66,8 +68,32 @@
 {% if page.gioco %}<script defer src="{{ '/js/giornate/giorno-20.js' | relative_url }}"></script>{% endif %}
 {% if page.gioco %}<script defer src="{{ '/js/giornate/giorno-21.js' | relative_url }}"></script>{% endif %}
 {% if page.gioco %}<script defer src="{{ '/js/giornate/giorno-22.js' | relative_url }}"></script>{% endif %}
+{% if page.gioco %}<script defer src="{{ '/js/giornate/giorno-23.js' | relative_url }}"></script>{% endif %}
+<script defer src="{{ '/js/gioco/oggetti-pozzo.js' | relative_url }}"></script>
+{% if page.gioco %}<link rel="stylesheet" href="{{ '/css/giorno24.css' | relative_url }}"><script defer src="{{ '/js/giornate/giorno-24.js' | relative_url }}"></script>{% endif %}
 <script defer src="{{ '/js/avvio.js' | relative_url }}"></script>
 </head>
+<script>
+window.SpisottiConsentConfig = {
+    version: {{ site.consent.version | jsonify }},
+    privacyUrl: {{ "/privacy.html" | relative_url | jsonify }},
+    {% if site.consent.supabase_storage_key %}
+    supabaseStorageKey: {{ site.consent.supabase_storage_key | jsonify }},
+    {% endif %}
+    services: [
+        {% assign first_service = true %}
+        {% for service in site.consent.services %}
+            {% if service[1] == true %}
+                {% unless first_service %},{% endunless %}
+                {{ service[0] | jsonify }}
+                {% assign first_service = false %}
+            {% endif %}
+        {% endfor %}
+    ]
+};
+</script>
+<script src="https://glispisotti.github.io/consent/consent.js"></script>
+
 <body>
 {% include header.html %}
 <main class="site-main" id="contenuto">
