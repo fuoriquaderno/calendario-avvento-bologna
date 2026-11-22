@@ -682,6 +682,28 @@ title: Informativa privacy
     </section>
 
     <!-- =========================================================
+     CLOUDFLARE ANALYTICS
+    ========================================================== -->
+    {% if site.consent.services.cloudflare_analytics %}
+    <section
+        class="spisotti-privacy-section"
+        id="cloudflare-analytics"
+    >
+        <h2>Statistiche di traffico (Cloudflare Web Analytics)</h2>
+        <p>
+            Questo sito utilizza <strong>Cloudflare Web Analytics</strong> per raccogliere statistiche aggregate
+            sulle visite e sulle prestazioni tecniche delle pagine. Il servizio funziona senza cookie,
+            senza memorizzazione locale sul dispositivo dell'utente e senza profilazione individuale.
+        </p>
+        <p>
+            I dati tecnici strettamente necessari alla misurazione (come l'indirizzo IP della richiesta,
+            l'URL visitato e le informazioni tecniche del browser) sono trattati da Cloudflare Inc. secondo la
+            <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">relativa informativa sulla privacy</a>.
+        </p>
+    </section>
+    {% endif %}
+
+    <!-- =========================================================
          SUPABASE
     ========================================================== -->
 
@@ -1109,6 +1131,16 @@ title: Informativa privacy
             e gestire le relative comunicazioni.
         </p>
 
+        {% if site.consent.services.cloudflare_analytics %}
+        <p>
+            <strong>Misurazione statistica aggregata (Cloudflare Web Analytics):</strong>
+            i dati tecnici strettamente necessari al conteggio anonimo e aggregato delle visite
+            e al monitoraggio delle prestazioni del sito sono trattati sulla base del legittimo
+            interesse del titolare al miglioramento tecnico e editoriale dei contenuti
+            (art. 6, par. 1, lett. f GDPR), senza utilizzo di cookie né profilazione dell'utente.
+        </p>
+        {% endif %}
+
         {% if site.consent.services.supabase %}
         <p>
             I progressi di gioco associati al codice alfanumerico
@@ -1167,6 +1199,14 @@ title: Informativa privacy
             e alla pubblicazione del sito,
             nei limiti delle rispettive funzioni.
         </p>
+
+        {% if site.consent.services.cloudflare_analytics %}
+        <p>
+            <strong>Cloudflare Inc.:</strong> fornitore del servizio Cloudflare Web Analytics,
+            che tratta i dati tecnici della richiesta HTTP per l'elaborazione delle statistiche aggregate
+            (<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">informativa privacy di Cloudflare</a>).
+        </p>
+        {% endif %}
 
         {% if site.consent.services.supabase %}
         <p>
@@ -1238,6 +1278,24 @@ title: Informativa privacy
             servizi utilizzati avvengono secondo le rispettive 
             condizioni, informative sulla privacy e gli 
             strumenti previsti dalla normativa applicabile.
+        </p>
+
+    </section>
+
+    {% elsif site.consent.services.cloudflare_analytics %}
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Trasferimenti di dati verso Paesi terzi
+        </h2>
+
+        <p>
+            L'utilizzo di <strong>Cloudflare Web Analytics</strong> comporta la trasmissione dei dati tecnici
+            della richiesta di navigazione a Cloudflare Inc., società con sede negli Stati Uniti,
+            che può trattare tali informazioni anche su infrastrutture situate al di fuori dello Spazio
+            Economico Europeo secondo le garanzie previste dalla normativa applicabile e indicate nella
+            <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">propria informativa sulla privacy</a>.
         </p>
 
     </section>
