@@ -11,9 +11,10 @@
   const INFO='ombra-sui-portici.avviso-codice.v1';
   let codice=null,dati=null,occupato=false;
   const ascoltatori=[];
+  const consenso=()=>window.SpisottiConsent?.has('supabase')===true;
   const memoria={
-    leggi(k){try{return localStorage.getItem(k)}catch{return null}},
-    scrivi(k,v){try{localStorage.setItem(k,v);return true}catch{return false}},
+    leggi(k){if(!consenso())return null;try{return localStorage.getItem(k)}catch{return null}},
+    scrivi(k,v){if(!consenso())return false;try{localStorage.setItem(k,v);return true}catch{return false}},
     rimuovi(k){try{localStorage.removeItem(k)}catch{}}
   };
   let ultimoGiorno=memoria.leggi(GIORNO)||'';

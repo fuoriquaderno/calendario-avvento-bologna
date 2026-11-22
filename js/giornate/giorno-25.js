@@ -3,7 +3,7 @@
 'use strict';
 const api=window.Partita,$=id=>document.getElementById(id);if(!$('schermata-gioco'))return;
 const main=document.querySelector('main .scroll-middle'),area=document.createElement('section');area.id='racconto-giorno25';area.hidden=true;main.append(area);
-let busy=false,errore='',anteprima=null,proprietarioAnteprima='';
+let busy=false,errore='';
 const epiloghi={
  tenere:{titolo:'Il peso del tomo',immagine:'finale_tomo_custodito',alt:'Il tomo custodito dal protagonista, con Bologna oltre la finestra.',paragrafi:[
   'Il mattino di Natale Bologna si sveglia sotto un cielo freddo. Le campane chiamano dai tetti e, fra i portici, ricominciano i passi e le voci. Il tomo è con te, lontano dagli sguardi. Studi le sue pagine e impari a riconoscere gli incanti che stanno sfuggendo al controllo di chi li ha creati.',
@@ -25,7 +25,7 @@ const p=t=>{const e=document.createElement('p');e.textContent=t;return e;};
 function b(t,f){const e=document.createElement('button');e.type='button';e.textContent=t;e.disabled=busy;e.addEventListener('click',f);return e;}
 function link(t,url){const e=document.createElement('a');e.textContent=t;e.href=url;e.target='_blank';e.rel='noopener noreferrer';return e;}
 async function concludi(pendente=null){
- if(busy||anteprima!==null)return;busy=true;errore='';disegna();
+ if(busy)return;busy=true;errore='';disegna();
  try{
   const r=await window.BorsaNuova.esegui(pendente?.nomeRpc||'gioco_giorno25',pendente?.args||{p_codice:api.codice,p_azione:'concludi',p_richiesta:crypto.randomUUID(),p_tentativo:api.dati.tentativo});
   if(!r)errore=window.BorsaNuova.errore||'Non è stato possibile salvare la conclusione. Riprova.';
@@ -35,22 +35,17 @@ async function concludi(pendente=null){
 function disegna(){
  const d=api.dati,f=d?.stato_partita?.fase,attivo=d?.giorno_corrente===25&&['g25_epilogo','fine_giorno25'].includes(f);
  area.replaceChildren();area.hidden=!attivo;main.classList.toggle('giorno25-attivo',!!attivo);if(!attivo)return;
- const proprietario=api.codice+':'+d.tentativo;if(proprietarioAnteprima!==proprietario){proprietarioAnteprima=proprietario;anteprima=null;}
- const selettore=document.createElement('section'),titoloAnteprima=document.createElement('h3');titoloAnteprima.textContent='Anteprima temporanea dei finali';selettore.append(titoloAnteprima,p('Puoi leggere tutti e tre gli scenari. La scelta della partita rimane invariata.'));
- const pulsanti=document.createElement('div');pulsanti.className='social-spisotti25';
- for(const[id,testo]of [['tenere','Anteprima: tieni il tomo'],['distruggere','Anteprima: cancella la magia nuova'],['iliano','Anteprima: consegna a Iliano']]){const btn=b(testo,()=>{anteprima=id;errore='';disegna();});btn.setAttribute('aria-pressed',String(anteprima===id));pulsanti.append(btn);}selettore.append(pulsanti);
- if(anteprima!==null)selettore.append(b('Torna al finale della tua partita',()=>{anteprima=null;disegna();}));area.append(selettore);
- const scelta=anteprima||d.stato_partita?.g25?.scelta_tomo,epilogo=epiloghi[scelta];
+ const scelta=d.stato_partita?.g25?.scelta_tomo,epilogo=epiloghi[scelta];
  if(!epilogo){area.append(p('Non è stato possibile ritrovare la scelta del tomo. Ricarica la partita.'));return;}
  const figura=document.createElement('figure'),img=document.createElement('img');figura.className='immagine-schermata';img.src=api.risorsa('images/'+epilogo.immagine+'.png');img.alt=epilogo.alt;img.decoding='async';figura.append(img);area.append(figura);
  const titolo=document.createElement('h2');titolo.textContent=epilogo.titolo;area.append(titolo);
  for(const testo of epilogo.paragrafi)area.append(p(testo));
+ const statistiche=document.createElement('section');statistiche.className='statistiche-finali';area.append(statistiche);window.StatisticheGioco?.mostraFinali(statistiche);
  const saluti=document.createElement('section');saluti.className='saluti-spisotti25';const h=document.createElement('h2');h.textContent='Grazie per aver giocato';
  saluti.append(h,p('Gli Spisotti ti ringraziano per aver giocato a L’ombra sui Portici e per averci accompagnato fra i portici, i misteri e le magie di Bologna.'),p('Seguici per scoprire le prossime iniziative e altre avventure da giocare insieme.'),p('Buon Natale a tutte e a tutti, dagli Spisotti!'));
  const social=document.createElement('div');social.className='social-spisotti25';social.append(link('Seguici su Facebook','https://www.facebook.com/profile.php?id=61594558125926'),link('Seguici su Instagram','https://www.instagram.com/glispisotti/'));social.append(link('Scopri il progetto','https://glispisotti.github.io/progetti/calendario-avvento-bologna/'));saluti.append(social);area.append(saluti);
  const pending=window.BorsaNuova.pending?.();
- if(anteprima!==null)area.append(p('Questa è soltanto un’anteprima: nessuna scelta è stata modificata.'),b('Chiudi l’anteprima',()=>{anteprima=null;disegna();}));
- else if(pending)area.append(p('Recupera il risultato dell’ultima azione per completare il salvataggio.'),b('Recupera il risultato',()=>concludi(pending)));
+ if(pending)area.append(p('Recupera il risultato dell’ultima azione per completare il salvataggio.'),b('Recupera il risultato',()=>concludi(pending)));
  else if(d.giornata_completata)area.append(p('La tua avventura è conclusa. Puoi tornare a leggere questo finale quando vuoi.'));
  else area.append(b(d.giornata_da_confermare?'Salva la conclusione dell’avventura':'Concludi l’avventura',()=>d.giornata_da_confermare?window.FineGiornata.apri():concludi()));
  if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e);}
