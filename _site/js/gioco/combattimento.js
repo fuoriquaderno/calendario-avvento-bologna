@@ -3,7 +3,7 @@
  'use strict';
  const api=window.Partita,$=id=>document.getElementById(id);
  const KEY='ombra-sui-portici.scontri.v2';
- let vista=null,modo='allenamento',elenco=[],busy=false,pendente=null,owner=null,menuOggetti=false,oggettoAperto=null,catalogoOggetti=[];
+ let vista=null,modo='allenamento',elenco=[],busy=false,pendente=null,owner=null,menuOggetti=false,menuBersagli=false,oggettoAperto=null,catalogoOggetti=[];
  const prova=document.createElement('button');prova.type='button';prova.textContent='Allenamento';prova.id='apri-allenamento';
  const combatti=document.createElement('button');combatti.type='button';combatti.textContent='Riprendi combattimento';combatti.hidden=true;
  const livelli=document.createElement('p');livelli.id='progressione-personaggio';
@@ -51,17 +51,25 @@
    }
    area.append(p(`${vista.giocatore.nome} · ${vista.giocatore.classe} · Livello ${vista.giocatore.livello||1} · ${vista.giocatore.xp||0} XP · ${vista.giocatore.hp}/${vista.giocatore.hp_massimi} HP`),p(vista.avversario.nome));
 
+   if(vista.cerbero){for(const testa of vista.teste_cerbero||[])if(!testa.attiva)area.append(p(testa.nome+': rimane inerte e non attacca più.'));}
+   if(vista.cerbero&&vista.esito==='in_corso'&&!vista.recupero_necessario&&menuBersagli){
+     area.append(p('Dove indirizzi il tuo attacco?'));
+     const tipo=vista.giocatore.classe==='Mago'?'magico':'fisico';
+     area.append(b('Attacca il corpo — tira il d20',()=>{menuBersagli=false;return azione(tipo,'corpo')}));
+     for(const testa of vista.teste_cerbero||[])if(testa.attiva)area.append(b('Attacca la '+testa.nome.toLowerCase()+' — tira il d20',()=>{menuBersagli=false;return azione(tipo,testa.id)}));
+     area.append(b('Torna alle azioni',()=>{menuBersagli=false;disegna()}));return;
+   }
    if(vista.esito==='in_corso'&&!vista.recupero_necessario&&menuOggetti){
      const titolo=document.createElement('h3');titolo.textContent='Oggetti utilizzabili';area.append(titolo,p('Scegli un oggetto per leggere la descrizione. Aprire o chiudere questo elenco non consuma il turno.'));
      for(const o of oggettiUtilizzabili()){
        const scheda=document.createElement('details'),nome=document.createElement('summary');scheda.className='scheda-oggetto-scontro';scheda.open=oggettoAperto===o.id;nome.textContent=o.nome+' × '+o.quantita;
        const dato=catalogoOggetti.find(x=>x.id===o.id),descrizione=dato?.descrizione||o.descrizione||'Oggetto utilizzabile durante questo scontro.';
-       const usa=b('Utilizza — usa il turno',()=>{menuOggetti=false;oggettoAperto=null;return azione(o.azione||'oggetto',o.azione==='corda'?null:o.id)});
+       const usa=b('Utilizza — usa il turno',()=>{menuOggetti=false;menuBersagli=false;oggettoAperto=null;return azione(o.azione||'oggetto',o.azione==='corda'?null:o.id)});
        usa.disabled=busy||(dato?.effetto?.tipo==='cura_percentuale'&&vista.giocatore.hp>=vista.giocatore.hp_massimi);
        scheda.append(nome,p(descrizione));if(o.azione==='corda')scheda.append(p('Provi a immobilizzare il facchino: tiri il d20 e usi il turno.'));scheda.append(usa);scheda.addEventListener('toggle',()=>{if(scheda.open){oggettoAperto=o.id;for(const altra of area.querySelectorAll('.scheda-oggetto-scontro'))if(altra!==scheda)altra.open=false}else if(oggettoAperto===o.id)oggettoAperto=null});area.append(scheda);
      }
      if(!oggettiUtilizzabili().length)area.append(p('Non hai oggetti utilizzabili in questo scontro.'));
-     area.append(b('Torna alle azioni',()=>{menuOggetti=false;oggettoAperto=null;disegna()}));return;
+     area.append(b('Torna alle azioni',()=>{menuOggetti=false;menuBersagli=false;oggettoAperto=null;disegna()}));return;
    }
    if(vista.turno){
      const t= vista.turno;
@@ -79,7 +87,7 @@
      const attacco=vista.facchino?({Guerriero:['Blocca gli snodi — tira il d20','fisico'],Ladro:['Allenta i giunti — tira il d20','fisico'],Mago:['Sciogli i legami magici — tira il d20','magico'],Chierico:['Interrompi i movimenti — tira il d20','fisico']})[classe]:vista.scontro_resistenza?
        ({Guerriero:['Intimidirla — tira il d20','fisico'],Ladro:['Ingannarla — tira il d20','inganno'],Mago:['Contrastare i suoi incanti — tira il d20','magico'],Chierico:['Pronunciare una formula sacra — tira il d20','religione']})[classe]:
        ({Guerriero:['Attacco fisico — tira il d20','fisico'],Ladro:['Attacco fisico — tira il d20','fisico'],Mago:['Attacco magico — tira il d20','magico'],Chierico:['Attacco fisico — tira il d20','fisico']})[classe];
-     if(attacco)area.append(b(attacco[0],()=>azione(attacco[1])));
+     if(attacco)area.append(vista.cerbero?b('Attacca — scegli il bersaglio',()=>{menuBersagli=true;menuOggetti=false;disegna()}):b(attacco[0],()=>azione(attacco[1])));
      area.append(b('Tenta la fuga — tira il d20',()=>azione('fuga')));
      for(const a of vista.armi||[])if(a.id!==vista.equipaggiamento?.arma)area.append(b('Cambia arma: '+a.nome+' — usa il turno',()=>azione('cambia_arma',a.id)));
      if(vista.giocatore.classe==='Chierico'&&vista.cura_disponibile){const cura=b('Magia curativa — tira il d12 e usa il turno',()=>azione('cura'));cura.disabled=busy||vista.giocatore.hp>=vista.giocatore.hp_massimi;area.append(cura)}
@@ -115,7 +123,7 @@
    return richiedi(r);
  }
  async function apri(scelta){
-   if(busy||!api.dati)return;owner=api.codice;modo=scelta;vista=null;pendente=null;menuOggetti=false;oggettoAperto=null;
+   if(busy||!api.dati)return;owner=api.codice;modo=scelta;vista=null;pendente=null;menuOggetti=false;menuBersagli=false;oggettoAperto=null;
    $('inventario').close();if(!dialogo.open)dialogo.showModal();busy=true;disegna();stato.textContent='Caricamento…';
    try{
      try{const cat=await api.rpc('gioco_catalogo_oggetti',{});catalogoOggetti=Array.isArray(cat)?cat:[]}catch{catalogoOggetti=[]}
@@ -140,7 +148,7 @@
    const n=++revisione;prova.hidden=!api.dati;livelli.hidden=!api.dati;
    livelli.textContent=api.dati?`Livello ${api.dati.livello||1} · ${api.dati.xp||0} XP · prossimo livello a ${((api.dati.livello||1)*10)} XP`:'';
    combatti.hidden=true;nellaStoria.hidden=true;
-   if(owner&&owner!==api.codice){vista=null;pendente=null;menuOggetti=false;oggettoAperto=null;dialogo.close()}
+   if(owner&&owner!==api.codice){vista=null;pendente=null;menuOggetti=false;menuBersagli=false;oggettoAperto=null;dialogo.close()}
    if(!api.dati)return;
    let sospesa;try{sospesa=JSON.parse(api.memoria.leggi(KEY))}catch{}
    if(sospesa?.codice===api.codice&&sospesa.modo==='storia'&&sospesa.pendente){

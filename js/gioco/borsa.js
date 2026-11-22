@@ -68,6 +68,7 @@
        const bevi=b('Bevi',()=>window.Giorno19?.usaOggetto(id));bevi.disabled=!window.Giorno19?.puoUsare(id);box.append(bevi);
      }
      if(!borsa.in_combattimento&&!borsa.partita.morto&&!borsa.partita.giornata_completata){
+       if(borsa.partita.giorno_corrente===24&&borsa.partita.stato_partita?.fase!=='fine_giorno24'){const prova=b('Prova a usarlo',()=>window.Giorno24?.usaOggetto(id));prova.disabled=!window.Giorno24?.usaOggetto||window.Giorno24.occupato();box.append(prova);}
        if(o?.tipo==='arma'||o?.tipo==='difesa')box.append(b(eq[o.tipo]===id?'Rimuovi dall’equipaggiamento':'Equipaggia',()=>cambia(o.tipo,id)));
        if(o?.tipo==='accessorio'){
          if(eq.accessori.length<2&&quanti<n)box.append(b('Indossa un accessorio',()=>cambia('accessorio',id,true)));
