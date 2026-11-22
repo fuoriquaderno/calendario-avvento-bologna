@@ -1,0 +1,1646 @@
+---
+layout: null
+title: Informativa privacy
+---
+
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <title>
+        Informativa privacy{% if site.title %} — {{ site.title }}{% endif %}
+    </title>
+
+
+    <style>
+
+        /* =========================================================
+           SPISOTTI PRIVACY
+           Stile neutro e indipendente dal sito
+        ========================================================= */
+
+
+        /* =========================================================
+           BASE
+        ========================================================= */
+
+        *,
+        *::before,
+        *::after {
+
+            box-sizing: border-box;
+
+        }
+
+
+        html {
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            color: #222222;
+            background: #ffffff;
+
+            line-height: 1.6;
+
+        }
+
+
+        body {
+
+            margin: 0;
+
+            padding: 0;
+
+            background: #ffffff;
+            color: #222222;
+
+        }
+
+
+        /* =========================================================
+           PAGINA
+        ========================================================= */
+
+        .spisotti-privacy-page {
+
+            width: min(
+                820px,
+                calc(100% - 40px)
+            );
+
+            margin: 0 auto;
+
+            padding:
+                60px
+                0
+                80px;
+
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .spisotti-privacy-header {
+
+            margin-bottom: 45px;
+
+            padding-bottom: 25px;
+
+            border-bottom:
+                1px
+                solid
+                #dddddd;
+
+        }
+
+
+        .spisotti-privacy-header h1 {
+
+            margin:
+                0
+                0
+                12px;
+
+            font-size:
+                clamp(
+                    1.8rem,
+                    5vw,
+                    2.4rem
+                );
+
+            line-height: 1.2;
+
+            font-weight: 700;
+
+            color: #1f1f1f;
+
+        }
+
+
+        .spisotti-privacy-header p {
+
+            margin: 0;
+
+            color: #666666;
+
+            font-size: 0.95rem;
+
+        }
+
+
+        /* =========================================================
+           SEZIONI
+        ========================================================= */
+
+        .spisotti-privacy-section {
+
+            margin:
+                0
+                0
+                38px;
+
+        }
+
+
+        .spisotti-privacy-section h2 {
+
+            margin:
+                0
+                0
+                14px;
+
+            font-size: 1.25rem;
+
+            line-height: 1.3;
+
+            font-weight: 650;
+
+            color: #1f1f1f;
+
+        }
+
+
+        .spisotti-privacy-section h3 {
+
+            margin:
+                24px
+                0
+                10px;
+
+            font-size: 1.05rem;
+
+            line-height: 1.35;
+
+            font-weight: 650;
+
+            color: #292929;
+
+        }
+
+
+        .spisotti-privacy-section p {
+
+            margin:
+                0
+                0
+                14px;
+
+        }
+
+
+        .spisotti-privacy-section ul {
+
+            margin:
+                10px
+                0
+                15px;
+
+            padding-left: 24px;
+
+        }
+
+
+        .spisotti-privacy-section li {
+
+            margin-bottom: 7px;
+
+        }
+
+
+        /* =========================================================
+           LINK
+        ========================================================= */
+
+        .spisotti-privacy-page a {
+
+            color: #222222;
+
+            text-decoration: underline;
+
+            text-underline-offset: 2px;
+
+        }
+
+
+        .spisotti-privacy-page a:hover {
+
+            text-decoration-thickness: 2px;
+
+        }
+
+
+        .spisotti-privacy-page a:focus-visible {
+
+            outline:
+                2px
+                solid
+                currentColor;
+
+            outline-offset: 3px;
+
+        }
+
+
+        /* =========================================================
+           BOX INFORMATIVI
+        ========================================================= */
+
+        .spisotti-privacy-box {
+
+            margin:
+                18px
+                0;
+
+            padding:
+                18px
+                20px;
+
+            background: #f7f7f7;
+
+            border:
+                1px
+                solid
+                #dddddd;
+
+            border-radius: 8px;
+
+        }
+
+
+        .spisotti-privacy-box p:last-child {
+
+            margin-bottom: 0;
+
+        }
+
+
+        /* =========================================================
+           DATI TITOLARE
+        ========================================================= */
+
+        .spisotti-privacy-contact {
+
+            margin:
+                15px
+                0;
+
+            padding:
+                18px
+                20px;
+
+            border-left:
+                4px
+                solid
+                #333333;
+
+            background: #f7f7f7;
+
+        }
+
+
+        .spisotti-privacy-contact p {
+
+            margin:
+                4px
+                0;
+
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        .spisotti-privacy-footer {
+
+            margin-top: 55px;
+
+            padding-top: 25px;
+
+            border-top:
+                1px
+                solid
+                #dddddd;
+
+            font-size: 0.88rem;
+
+            color: #666666;
+
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 600px) {
+
+            .spisotti-privacy-page {
+
+                width:
+                    calc(
+                        100% - 30px
+                    );
+
+                padding:
+                    35px
+                    0
+                    55px;
+
+            }
+
+
+            .spisotti-privacy-header {
+
+                margin-bottom: 35px;
+
+            }
+
+
+            .spisotti-privacy-section {
+
+                margin-bottom: 32px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<main class="spisotti-privacy-page">
+
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header class="spisotti-privacy-header">
+
+        <h1>
+            Informativa privacy
+        </h1>
+
+        <p>
+            Informazioni sul trattamento dei dati personali,
+            sui cookie e sui servizi di terze parti utilizzati
+            da questo sito.
+        </p>
+
+    </header>
+
+
+
+    <!-- =========================================================
+         INTRODUZIONE
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Informazioni generali
+        </h2>
+
+        <p>
+            La presente informativa descrive le modalità
+            di trattamento dei dati personali degli utenti
+            che visitano questo sito web.
+        </p>
+
+        <p>
+            Il trattamento dei dati personali avviene nel rispetto
+            del Regolamento (UE) 2016/679
+            («Regolamento generale sulla protezione dei dati»
+            o «GDPR») e della normativa nazionale applicabile
+            in materia di protezione dei dati personali.
+        </p>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         TITOLARE
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Titolare del trattamento
+        </h2>
+
+        <p>
+            Il titolare del trattamento dei dati personali è:
+        </p>
+
+        <div class="spisotti-privacy-contact">
+
+            <p>
+                <strong>
+                    {{ site.consent.privacy.titolare | default: "Titolare del trattamento" }}
+                </strong>
+            </p>
+
+
+            {% assign privacy_sede = site.consent.privacy.sede | default: "" | strip %}
+
+            {% unless privacy_sede == "" %}
+            <p>
+                {{ privacy_sede }}
+            </p>
+            {% endunless %}
+
+
+            {% assign privacy_email = site.consent.privacy.email | default: "" | strip %}
+
+            {% unless privacy_email == "" %}
+            <p>
+                E-mail:
+                <a href="mailto:{{ privacy_email }}">
+                    {{ privacy_email }}
+                </a>
+            </p>
+            {% endunless %}
+
+
+            {% assign privacy_pec = site.consent.privacy.pec | default: "" | strip %}
+
+            {% unless privacy_pec == "" %}
+            <p>
+                PEC:
+                <a href="mailto:{{ privacy_pec }}">
+                    {{ privacy_pec }}
+                </a>
+            </p>
+            {% endunless %}
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         DATI DI NAVIGAZIONE
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Dati di navigazione
+        </h2>
+
+        <p>
+            Durante la normale navigazione,
+            i sistemi informatici e i servizi utilizzati
+            per rendere disponibile il sito possono acquisire
+            alcune informazioni tecniche la cui trasmissione
+            è implicita nell'utilizzo dei protocolli
+            di comunicazione di Internet.
+        </p>
+
+        <p>
+            Tali informazioni possono comprendere,
+            ad esempio, l'indirizzo IP del dispositivo,
+            il tipo di browser e il sistema operativo utilizzati,
+            la data e l'ora della richiesta,
+            le risorse richieste e altre informazioni tecniche
+            relative alla connessione.
+        </p>
+
+        <p>
+            Tali dati possono essere trattati
+            per consentire il corretto funzionamento
+            e la sicurezza del sito,
+            diagnosticare eventuali problemi tecnici
+            e prevenire utilizzi illeciti o dannosi
+            dei servizi.
+        </p>
+
+        <p>
+        {% assign hosting_provider = site.consent.hosting.provider | default: "" | strip %}
+        {% assign hosting_privacy_url = site.consent.hosting.privacy_url | default: "" | strip %}
+
+        {% unless hosting_provider == "" %}
+
+        <p>
+            Il sito è pubblicato mediante
+            <strong>{{ hosting_provider }}</strong>.
+            Il fornitore dell'infrastruttura può trattare
+            alcuni dati tecnici di navigazione,
+            come l'indirizzo IP e le informazioni relative
+            alle richieste effettuate ai server,
+            per consentire l'erogazione,
+            la sicurezza e il corretto funzionamento
+            del servizio.
+        </p>
+
+        <p>
+            Il titolare del presente sito
+            non dispone necessariamente di accesso diretto
+            a tali dati tecnici.
+            Per i trattamenti effettuati autonomamente
+            dal fornitore dell'infrastruttura
+            si applicano le condizioni
+            e l'informativa sulla privacy
+            del relativo fornitore.
+        </p>
+
+        {% unless hosting_privacy_url == "" %}
+
+        <p>
+            Ulteriori informazioni
+            sul trattamento dei dati
+            da parte di {{ hosting_provider }}
+            sono disponibili nella
+            <a
+                href="{{ hosting_privacy_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                relativa informativa sulla privacy
+            </a>.
+        </p>
+
+        {% endunless %}
+
+        {% endunless %}
+        </p>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         DATI FORNITI VOLONTARIAMENTE
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Dati forniti volontariamente dall'utente
+        </h2>
+
+        <p>
+            L'eventuale invio volontario di comunicazioni
+            agli indirizzi indicati nel sito comporta
+            l'acquisizione dei dati necessari
+            per rispondere alla richiesta,
+            quali l'indirizzo e-mail del mittente
+            e le informazioni contenute nel messaggio.
+        </p>
+
+        <p>
+            Tali dati vengono utilizzati
+            per gestire la comunicazione ricevuta
+            e fornire il riscontro richiesto,
+            salvo ulteriori obblighi previsti dalla legge.
+        </p>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         COOKIE TECNICI
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Cookie e strumenti tecnici
+        </h2>
+
+        <p>
+            Il sito utilizza strumenti tecnici necessari al 
+            proprio funzionamento e alla gestione delle 
+            preferenze privacy dell'utente.
+        </p>
+
+        <p>
+            Le scelte relative al consenso vengono memorizzate 
+            localmente nel browser del dispositivo utilizzato 
+            dall'utente. Insieme alle preferenze possono essere 
+            conservate alcune informazioni tecniche necessarie a 
+            verificarne la validità, come la versione del sistema di 
+            consenso e la data e l'ora in cui la scelta è stata registrata.
+        </p>
+
+        <p>
+            Quando l'utente visita il sito, il sistema consulta tali 
+            informazioni per ricordare le scelte già effettuate e stabilire 
+            quali servizi facoltativi, come per esempio Google Analytics, 
+            YouTube o Google Maps, possono essere attivati.
+        </p>
+
+        <p>
+            Le preferenze rimangono quindi memorizzate sul dispositivo 
+            dell'utente e non costituiscono, tramite questo sistema, 
+            un archivio delle scelte conservato dal titolare sul 
+            server del sito.
+        </p>
+
+        <p>
+            L'utente può modificare le proprie preferenze in qualsiasi 
+            momento tramite il pannello privacy del sito. Può inoltre 
+            cancellare le informazioni memorizzate localmente 
+            attraverso le impostazioni del proprio browser.
+        </p>
+
+        <p>
+            Gli strumenti strettamente necessari alla memorizzazione 
+            e alla gestione di queste preferenze non richiedono il 
+            consenso preventivo dell'utente.
+        </p>
+
+    </section>
+
+    <!-- =========================================================
+         SUPABASE
+    ========================================================== -->
+
+    {% if site.consent.services.supabase %}
+
+    <section
+        class="spisotti-privacy-section"
+        id="supabase"
+    >
+
+        <h2>
+            Supabase e salvataggio dei progressi di gioco
+        </h2>
+
+        <p>
+            Il sito utilizza <strong>Supabase</strong>
+            come infrastruttura database cloud per memorizzare
+            e recuperare i progressi di gioco.
+        </p>
+
+        <p>
+            Alla generazione del personaggio viene creato un
+            <strong>codice alfanumerico</strong>
+            (oppure scelto direttamente dall'utente secondo
+            le modalità indicate sul sito) che costituisce
+            l'unica chiave per associare e recuperare
+            lo stato di avanzamento della partita.
+            Il sistema non raccoglie dati personali
+            identificativi dell'utente (quali nome,
+            indirizzo e-mail o password).
+        </p>
+
+        <p>
+            Per consentire il caricamento automatico della partita,
+            il codice alfanumerico può essere memorizzato
+            nell'archiviazione locale del browser
+            (<code>localStorage</code>).
+            L'utente può tuttavia scegliere di annotarsi
+            manualmente il codice e impedire il salvataggio
+            nel <code>localStorage</code>: il recupero
+            della partita continuerà a funzionare normalmente
+            inserendo il codice.
+        </p>
+
+        <p>
+            Una volta espressa la scelta di non memorizzare
+            il codice nel browser, tale preferenza viene
+            conservata localmente per <strong>6 mesi</strong>
+            e non verrà richiesta nuovamente alle visite successive,
+            ferma restando la possibilità di modificarla
+            in qualsiasi momento tramite il pannello
+            delle preferenze privacy del sito.
+        </p>
+
+        <div class="spisotti-privacy-box">
+
+            <p>
+                <strong>
+                    Avviso sulla non recuperabilità dell'account
+                </strong>
+            </p>
+
+            <p>
+                Poiché il sito non raccoglie alcun dato personale
+                né recapito associato al giocatore,
+                <strong>in caso di smarrimento del codice alfanumerico
+                l'account e i progressi di gioco non saranno
+                in alcun modo recuperabili</strong>.
+            </p>
+
+        </div>
+
+        <p>
+            Durante il salvataggio o il recupero dei progressi,
+            il browser stabilisce una connessione con i sistemi
+            di Supabase trasmettendo i dati tecnici strettamente
+            necessari alla comunicazione di rete (come l'indirizzo IP).
+            Ulteriori informazioni sul trattamento effettuato
+            dal fornitore sono disponibili nella
+            <a
+                href="https://supabase.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Informativa sulla privacy di Supabase
+            </a>.
+        </p>
+
+    </section>
+
+    {% endif %}
+
+    <!-- =========================================================
+         GOOGLE ANALYTICS
+    ========================================================== -->
+
+    {% if site.consent.services.analytics %}
+
+    <section
+        class="spisotti-privacy-section"
+        id="google-analytics"
+    >
+
+        <h2>
+            Google Analytics
+        </h2>
+
+        <p>
+            Questo sito utilizza Google Analytics,
+            un servizio di misurazione
+            e analisi statistica fornito da Google.
+        </p>
+
+        <p>
+            Google Analytics consente di ottenere
+            informazioni statistiche sull'utilizzo del sito,
+            quali visite e sessioni,
+            pagine consultate,
+            modalità di interazione con il sito
+            e informazioni tecniche
+            relative al dispositivo
+            e al browser utilizzati.
+        </p>
+
+        <p>
+            Il servizio può utilizzare cookie
+            o altri identificatori
+            per distinguere utenti e sessioni
+            e per elaborare le informazioni raccolte.
+        </p>
+
+        <div class="spisotti-privacy-box">
+
+            <p>
+                <strong>
+                    Google Analytics non viene attivato
+                    prima che l'utente abbia espresso
+                    il proprio consenso.
+                </strong>
+            </p>
+
+            <p>
+                In assenza di consenso,
+                il sito non inizializza
+                il servizio Google Analytics.
+            </p>
+
+        </div>
+
+        <p>
+            La base giuridica del trattamento
+            effettuato attraverso questo servizio
+            è il consenso dell'interessato.
+        </p>
+
+        <p>
+            Il consenso può essere revocato
+            in qualsiasi momento
+            modificando le preferenze privacy del sito.
+        </p>
+
+        <p>
+            Ulteriori informazioni
+            sul trattamento dei dati da parte di Google
+            sono disponibili nella
+            <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Normativa sulla privacy di Google
+            </a>.
+        </p>
+
+    </section>
+
+    {% endif %}
+
+
+
+    <!-- =========================================================
+         YOUTUBE
+    ========================================================== -->
+
+    {% if site.consent.services.youtube %}
+
+    <section
+        class="spisotti-privacy-section"
+        id="youtube"
+    >
+
+        <h2>
+            YouTube
+        </h2>
+
+        <p>
+            Alcune pagine del sito possono contenere
+            video forniti tramite YouTube,
+            servizio appartenente a Google.
+        </p>
+
+        <p>
+            I video vengono incorporati utilizzando
+            la modalità di privacy avanzata
+            messa a disposizione da YouTube
+            tramite il dominio
+            <strong>youtube-nocookie.com</strong>.
+        </p>
+
+        <p>
+            Tale modalità limita l'utilizzo
+            della visualizzazione del video incorporato
+            per finalità di personalizzazione
+            dell'esperienza dell'utente su YouTube
+            e della pubblicità.
+        </p>
+
+        <p>
+            L'utilizzo di
+            <strong>youtube-nocookie.com</strong>
+            costituisce quindi una misura aggiuntiva
+            di tutela della privacy,
+            ma non significa che il caricamento
+            del player YouTube avvenga
+            senza alcun trattamento di dati.
+        </p>
+
+        <p>
+            Quando il player viene effettivamente caricato,
+            il browser dell'utente stabilisce infatti
+            una connessione con i sistemi di Google
+            e possono essere trasmesse informazioni tecniche
+            relative alla connessione,
+            al browser e al dispositivo utilizzato,
+            nonché informazioni relative
+            all'interazione con il contenuto.
+        </p>
+
+        <div class="spisotti-privacy-box">
+
+            <p>
+                <strong>
+                    Il player YouTube viene mantenuto
+                    completamente bloccato
+                    fino a quando l'utente
+                    non presta il relativo consenso.
+                </strong>
+            </p>
+
+            <p>
+                Prima del consenso viene visualizzato
+                un contenuto sostitutivo locale
+                e l'iframe di YouTube
+                non viene caricato.
+            </p>
+
+            <p>
+                Soltanto dopo il consenso
+                viene creato il collegamento
+                al player tramite
+                <strong>youtube-nocookie.com</strong>.
+            </p>
+
+        </div>
+
+        <p>
+            La base giuridica del trattamento
+            connesso all'attivazione del player
+            è il consenso dell'interessato.
+        </p>
+
+        <p>
+            L'utente può autorizzare YouTube
+            tramite il pannello delle preferenze oppure,
+            quando previsto,
+            direttamente dal riquadro
+            del contenuto bloccato.
+        </p>
+
+        <p>
+            Il consenso può essere revocato
+            in qualsiasi momento
+            modificando le preferenze privacy del sito.
+        </p>
+
+        <p>
+            Ulteriori informazioni
+            sul trattamento dei dati da parte di Google
+            sono disponibili nella
+            <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Normativa sulla privacy di Google
+            </a>.
+        </p>
+
+        <p>
+            Ulteriori informazioni
+            sulla modalità di privacy avanzata
+            sono disponibili nella
+            <a
+                href="https://support.google.com/youtube/answer/171780?hl=it"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                documentazione ufficiale di YouTube
+            </a>.
+        </p>
+
+    </section>
+
+    {% endif %}
+
+
+
+    <!-- =========================================================
+         GOOGLE MAPS
+    ========================================================== -->
+
+    {% if site.consent.services.googlemaps %}
+
+    <section
+        class="spisotti-privacy-section"
+        id="google-maps"
+    >
+
+        <h2>
+            Google Maps
+        </h2>
+
+        <p>
+            Alcune pagine del sito possono contenere
+            mappe interattive fornite tramite Google Maps,
+            servizio appartenente a Google.
+        </p>
+
+        <p>
+            Il caricamento di una mappa comporta
+            una connessione ai sistemi di Google
+            e può comportare il trattamento
+            di informazioni tecniche
+            relative alla connessione,
+            al browser e al dispositivo utilizzato,
+            nonché delle informazioni generate
+            dall'interazione con il servizio.
+        </p>
+
+        <div class="spisotti-privacy-box">
+
+            <p>
+                <strong>
+                    Google Maps viene mantenuto bloccato
+                    fino a quando l'utente
+                    non esprime il relativo consenso.
+                </strong>
+            </p>
+
+            <p>
+                Prima del consenso
+                la mappa esterna non viene caricata
+                e viene visualizzato,
+                quando previsto,
+                un contenuto sostitutivo locale.
+            </p>
+
+        </div>
+
+        <p>
+            La base giuridica del trattamento
+            connesso all'attivazione di Google Maps
+            è il consenso dell'interessato.
+        </p>
+
+        <p>
+            Il consenso può essere revocato
+            in qualsiasi momento
+            modificando le preferenze privacy del sito.
+        </p>
+
+        <p>
+            Ulteriori informazioni
+            sul trattamento dei dati da parte di Google
+            sono disponibili nella
+            <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Normativa sulla privacy di Google
+            </a>.
+        </p>
+
+    </section>
+
+    {% endif %}
+
+
+
+    <!-- =========================================================
+         BASE GIURIDICA
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Finalità e basi giuridiche del trattamento
+        </h2>
+
+        <p>
+            I dati tecnici necessari
+            alla corretta erogazione del sito,
+            alla sicurezza dei sistemi
+            e alla prevenzione di utilizzi illeciti
+            sono trattati nella misura necessaria
+            a rendere disponibile il servizio
+            e a garantirne la corretta gestione tecnica.
+        </p>
+
+        <p>
+            I dati eventualmente forniti volontariamente
+            dall'utente vengono trattati
+            per rispondere alle richieste ricevute
+            e gestire le relative comunicazioni.
+        </p>
+
+        {% if site.consent.services.supabase %}
+        <p>
+            I progressi di gioco associati al codice alfanumerico
+            sono trattati esclusivamente per erogare la funzionalità
+            di salvataggio e recupero della partita richiesta
+            dall'utente; la memorizzazione del codice nel
+            <code>localStorage</code> del browser avviene secondo
+            la preferenza espressa dall'utente.
+        </p>
+        {% endif %}
+
+        {% if site.consent.services.analytics %}
+        <p>
+            Google Analytics viene attivato
+            esclusivamente sulla base
+            del consenso dell'utente.
+        </p>
+        {% endif %}
+
+        {% if site.consent.services.youtube %}
+        <p>
+            YouTube viene attivato
+            esclusivamente sulla base
+            del consenso dell'utente.
+        </p>
+        {% endif %}
+
+        {% if site.consent.services.googlemaps %}
+        <p>
+            Google Maps viene attivato
+            esclusivamente sulla base
+            del consenso dell'utente.
+        </p>
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =========================================================
+         DESTINATARI
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Destinatari dei dati
+        </h2>
+
+        <p>
+            I dati personali possono essere trattati
+            dal titolare,
+            da eventuali soggetti autorizzati
+            e dai fornitori dei servizi tecnici
+            necessari al funzionamento
+            e alla pubblicazione del sito,
+            nei limiti delle rispettive funzioni.
+        </p>
+
+        {% if site.consent.services.supabase %}
+        <p>
+            Per il salvataggio cloud dei progressi di gioco,
+            i dati tecnici di connessione e i dati di gioco
+            sono trattati tramite l'infrastruttura di Supabase
+            secondo la relativa informativa sulla privacy.
+        </p>
+        {% endif %}
+
+        {% if site.consent.services.analytics %}
+        <p>
+            In caso di consenso a Google Analytics,
+            alcune informazioni possono essere trattate
+            da Google secondo la propria
+            informativa sulla privacy.
+        </p>
+        {% endif %}
+
+        {% if site.consent.services.youtube %}
+        <p>
+            In caso di consenso a YouTube,
+            alcune informazioni possono essere trattate
+            da Google secondo la propria
+            informativa sulla privacy.
+        </p>
+        {% endif %}
+
+        {% if site.consent.services.googlemaps %}
+        <p>
+            In caso di consenso a Google Maps,
+            alcune informazioni possono essere trattate
+            da Google secondo la propria
+            informativa sulla privacy.
+        </p>
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =========================================================
+         TRASFERIMENTI
+    ========================================================== -->
+
+    {% if site.consent.services.analytics %}
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Trasferimenti di dati verso Paesi terzi
+        </h2>
+
+        <p>
+            Quando vengono utilizzati servizi forniti 
+            da soggetti internazionali, come Google o 
+            il fornitore dell'infrastruttura di hosting, 
+            alcuni dati tecnici possono essere trattati 
+            dai relativi fornitori anche su sistemi situati 
+            al di fuori dello Spazio Economico Europeo.
+        </p>
+
+        <p>
+            Il titolare del presente sito non effettua 
+            direttamente trasferimenti di dati verso Paesi 
+            terzi attraverso il sistema di gestione del 
+            consenso. Gli eventuali trattamenti o trasferimenti 
+            internazionali effettuati dai fornitori dei 
+            servizi utilizzati avvengono secondo le rispettive 
+            condizioni, informative sulla privacy e gli 
+            strumenti previsti dalla normativa applicabile.
+        </p>
+
+    </section>
+
+    {% elsif site.consent.services.supabase %}
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Trasferimenti di dati verso Paesi terzi
+        </h2>
+
+        <p>
+            L'utilizzo di servizi forniti
+            da soggetti internazionali,
+            come Supabase,
+            può comportare il trattamento
+            o il trasferimento di dati tecnici
+            anche al di fuori
+            dello Spazio Economico Europeo.
+        </p>
+
+        <p>
+            In tali casi,
+            gli eventuali trasferimenti
+            avvengono secondo gli strumenti
+            previsti dalla normativa applicabile
+            e secondo quanto indicato
+            dal relativo fornitore
+            nella propria documentazione
+            sulla protezione dei dati personali.
+        </p>
+
+    </section>
+
+    {% elsif site.consent.services.youtube %}
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Trasferimenti di dati verso Paesi terzi
+        </h2>
+
+        <p>
+            L'utilizzo di servizi forniti
+            da soggetti appartenenti
+            a gruppi internazionali,
+            come Google,
+            può comportare il trattamento
+            o il trasferimento di dati
+            anche al di fuori
+            dello Spazio Economico Europeo.
+        </p>
+
+        <p>
+            In tali casi,
+            gli eventuali trasferimenti
+            avvengono secondo gli strumenti
+            previsti dalla normativa applicabile
+            e secondo quanto indicato
+            dal relativo fornitore
+            nella propria documentazione
+            sulla protezione dei dati personali.
+        </p>
+
+    </section>
+
+    {% elsif site.consent.services.googlemaps %}
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Trasferimenti di dati verso Paesi terzi
+        </h2>
+
+        <p>
+            L'utilizzo di servizi forniti
+            da soggetti appartenenti
+            a gruppi internazionali,
+            come Google,
+            può comportare il trattamento
+            o il trasferimento di dati
+            anche al di fuori
+            dello Spazio Economico Europeo.
+        </p>
+
+        <p>
+            In tali casi,
+            gli eventuali trasferimenti
+            avvengono secondo gli strumenti
+            previsti dalla normativa applicabile
+            e secondo quanto indicato
+            dal relativo fornitore
+            nella propria documentazione
+            sulla protezione dei dati personali.
+        </p>
+
+    </section>
+
+    {% endif %}
+
+
+
+    <!-- =========================================================
+         CONSERVAZIONE
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Conservazione dei dati
+        </h2>
+
+        <p>
+            I dati personali vengono conservati
+            per il tempo necessario
+            al perseguimento delle finalità
+            per le quali sono stati raccolti
+            e, quando applicabile,
+            per gli ulteriori periodi
+            previsti da obblighi di legge.
+        </p>
+
+        <p>
+            Le preferenze relative al consenso
+            vengono memorizzate localmente
+            nel browser dell'utente,
+            insieme alle informazioni necessarie
+            a verificarne la validità.
+        </p>
+
+        <p>
+            Le preferenze possono cessare
+            di essere valide quando viene raggiunto
+            il termine previsto dal sistema,
+            quando cambia la versione
+            della configurazione del consenso
+            oppure quando l'utente
+            cancella i dati memorizzati
+            nel proprio browser.
+        </p>
+
+        {% if site.consent.services.supabase %}
+        <p>
+            La scelta di non memorizzare il codice di gioco
+            nel <code>localStorage</code> ha validità di 6 mesi
+            dalla registrazione della preferenza, salvo revoca
+            o cancellazione dei dati del browser da parte dell'utente.
+        </p>
+        {% endif %}
+
+        {% if site.consent.services.analytics %}
+
+        <p>
+            Per i dati trattati
+            tramite Google Analytics
+            si applicano inoltre
+            i periodi di conservazione
+            configurati nel relativo servizio.
+        </p>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =========================================================
+         DIRITTI
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Diritti dell'interessato
+        </h2>
+
+        <p>
+            Nei casi previsti dalla normativa,
+            l'interessato può esercitare
+            i diritti riconosciuti
+            dagli articoli 15 e seguenti
+            del GDPR.
+        </p>
+
+        <p>
+            In particolare,
+            l'interessato può:
+        </p>
+
+        <ul>
+
+            <li>
+                ottenere conferma dell'esistenza
+                o meno di dati personali
+                che lo riguardano;
+            </li>
+
+            <li>
+                ottenere l'accesso
+                ai propri dati personali;
+            </li>
+
+            <li>
+                chiedere la rettifica
+                dei dati inesatti
+                o l'integrazione
+                di quelli incompleti;
+            </li>
+
+            <li>
+                chiedere la cancellazione
+                dei dati,
+                quando ne ricorrono
+                i presupposti;
+            </li>
+
+            <li>
+                chiedere la limitazione
+                del trattamento;
+            </li>
+
+            <li>
+                opporsi al trattamento
+                nei casi previsti
+                dalla normativa;
+            </li>
+
+            <li>
+                esercitare,
+                quando applicabile,
+                il diritto alla portabilità
+                dei dati;
+            </li>
+
+            <li>
+                revocare in qualsiasi momento
+                il consenso precedentemente
+                prestato.
+            </li>
+
+        </ul>
+
+        <p>
+            La revoca del consenso
+            non pregiudica la liceità
+            del trattamento effettuato
+            prima della revoca.
+        </p>
+
+
+        {% if site.consent.privacy.email != blank %}
+
+        <p>
+            Per esercitare i propri diritti
+            è possibile contattare il titolare
+            all'indirizzo
+            <a href="mailto:{{ site.consent.privacy.email }}">
+                {{ site.consent.privacy.email }}
+            </a>.
+        </p>
+
+        {% elsif site.consent.privacy.pec != blank %}
+
+        <p>
+            Per esercitare i propri diritti
+            è possibile contattare il titolare
+            all'indirizzo PEC
+            <a href="mailto:{{ site.consent.privacy.pec }}">
+                {{ site.consent.privacy.pec }}
+            </a>.
+        </p>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =========================================================
+         REVOCA CONSENSO
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Modifica e revoca del consenso
+        </h2>
+
+        <p>
+            L'utente può modificare
+            o revocare in qualsiasi momento
+            i consensi relativi
+            ai servizi facoltativi
+            utilizzando il comando
+            dedicato alle preferenze privacy
+            presente nel sito.
+        </p>
+
+        <p>
+            La revoca impedisce
+            i successivi caricamenti
+            dei servizi interessati,
+            salvo che l'utente
+            esprima nuovamente il consenso.
+        </p>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         RECLAMO
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Reclamo all'Autorità di controllo
+        </h2>
+
+        <p>
+            L'interessato ha inoltre
+            il diritto di proporre reclamo
+            al Garante per la protezione
+            dei dati personali
+            qualora ritenga che
+            il trattamento dei propri dati
+            avvenga in violazione
+            della normativa applicabile.
+        </p>
+
+        <p>
+            Ulteriori informazioni
+            sono disponibili sul sito
+            del
+            <a
+                href="https://www.garanteprivacy.it/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Garante per la protezione dei dati personali
+            </a>.
+        </p>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         MODIFICHE
+    ========================================================== -->
+
+    <section class="spisotti-privacy-section">
+
+        <h2>
+            Modifiche alla presente informativa
+        </h2>
+
+        <p>
+            La presente informativa
+            può essere aggiornata nel tempo,
+            ad esempio in caso di modifica
+            dei servizi utilizzati dal sito,
+            delle modalità di trattamento
+            o della normativa applicabile.
+        </p>
+
+
+        {% if site.consent.version %}
+
+        <p>
+            Versione dell'informativa:
+            <strong>
+                {{ site.consent.version }}
+            </strong>.
+        </p>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer class="spisotti-privacy-footer">
+
+        {% if site.title %}
+
+        <p>
+            {{ site.title }}
+        </p>
+
+        {% endif %}
+
+    </footer>
+
+
+</main>
+
+</body>
+
+</html>
