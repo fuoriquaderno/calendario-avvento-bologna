@@ -792,6 +792,64 @@ title: Informativa privacy
             </a>.
         </p>
 
+    
+
+    {% if site.consent.supabase_stats %}
+
+        <h3>
+            Conteggi pubblici in forma aggregata
+        </h3>
+
+        <p>
+            Il sito può mostrare contatori pubblici in forma esclusivamente
+            aggregata (ad esempio il numero complessivo delle partite salvate).
+            Tale valore viene ricavato dal semplice conteggio totale dei record
+            anonimi presenti nel database <strong>Supabase</strong>, senza
+            alcun tracciamento individuale, senza l'uso di cookie o
+            memorizzazione locale nel browser e senza possibilità di
+            risalire all'identità dei singoli utenti.
+        </p>
+
+        {% endif %}
+
+    </section>
+
+    {% elsif site.consent.supabase_stats %}
+
+    <section
+        class="spisotti-privacy-section"
+        id="supabase-stats"
+    >
+
+        <h2>
+            Conteggi pubblici in forma aggregata (Supabase)
+        </h2>
+
+        <p>
+            Il sito utilizza l'infrastruttura database <strong>Supabase</strong>
+            per mostrare contatori pubblici in forma esclusivamente aggregata
+            (ad esempio il numero complessivo delle partite salvate).
+        </p>
+
+        <p>
+            Il dato visualizzato deriva dal semplice conteggio totale dei
+            record anonimi presenti nel database: non comporta alcuna
+            raccolta di dati personali identificativi, non utilizza cookie
+            o archiviazione locale nel browser e non consente in alcun modo
+            di risalire ai singoli visitatori. Durante il caricamento del
+            contatore, il browser effettua una richiesta tecnica ai sistemi
+            di Supabase trasmettendo i soli dati necessari alla connessione
+            di rete (come l'indirizzo IP). Ulteriori informazioni sono
+            disponibili nella
+            <a
+                href="https://supabase.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Informativa sulla privacy di Supabase
+            </a>.
+        </p>
+
     </section>
 
     {% endif %}
@@ -1152,6 +1210,17 @@ title: Informativa privacy
         </p>
         {% endif %}
 
+        {% if site.consent.supabase_stats %}
+        <p>
+            <strong>Conteggi pubblici in forma aggregata:</strong>
+            i dati tecnici strettamente necessari al recupero dei contatori
+            anonimi e aggregati dal database sono trattati sulla base del
+            legittimo interesse del titolare alla presentazione dei dati
+            complessivi del progetto (art. 6, par. 1, lett. f GDPR), senza
+            utilizzo di cookie né profilazione dell'utente.
+        </p>
+        {% endif %}
+
         {% if site.consent.services.analytics %}
         <p>
             Google Analytics viene attivato
@@ -1208,7 +1277,7 @@ title: Informativa privacy
         </p>
         {% endif %}
 
-        {% if site.consent.services.supabase %}
+        {% if site.consent.services.supabase or site.consent.supabase_stats %}
         <p>
             Per il salvataggio cloud dei progressi di gioco,
             i dati tecnici di connessione e i dati di gioco
@@ -1300,7 +1369,7 @@ title: Informativa privacy
 
     </section>
 
-    {% elsif site.consent.services.supabase %}
+    {% elsif site.consent.services.supabase or site.consent.supabase_stats %}
 
     <section class="spisotti-privacy-section">
 
