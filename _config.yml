@@ -23,6 +23,7 @@ consent:
 
   # Inserisci questa riga SOLO se il sito usa Supabase per salvare il codice partita:
   supabase_storage_key: "ombra-sui-portici.codice-segreto.v2"
+  supabase_stats: true
 
   privacy_template:
     url: "https://raw.githubusercontent.com/glispisotti/glispisotti/main/consent/privacy.html"
