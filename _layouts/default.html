@@ -71,8 +71,26 @@
 {% if page.gioco %}<script defer src="{{ '/js/giornate/giorno-23.js' | relative_url }}"></script>{% endif %}
 <script defer src="{{ '/js/gioco/oggetti-pozzo.js' | relative_url }}"></script>
 {% if page.gioco %}<link rel="stylesheet" href="{{ '/css/giorno24.css' | relative_url }}"><script defer src="{{ '/js/giornate/giorno-24.js' | relative_url }}"></script>{% endif %}
+{% if page.gioco %}<link rel="stylesheet" href="{{ '/css/giorno25.css' | relative_url }}"><script defer src="{{ '/js/giornate/giorno-25.js' | relative_url }}"></script>{% endif %}
 <script defer src="{{ '/js/avvio.js' | relative_url }}"></script>
 </head>
+<body>
+{% include header.html %}
+<main class="site-main" id="contenuto">
+<div class="scroll-container">
+<div class="scroll-top" aria-hidden="true"></div>
+<div class="scroll-middle">
+<figure id="immagine-schermata" class="immagine-schermata" hidden
+  data-immagine="{% if page.immagine_schermata %}{{ page.immagine_schermata | relative_url | escape }}{% endif %}"
+  data-descrizione="{{ page.descrizione_immagine | default: '' | escape }}">
+  <img id="illustrazione-schermata" alt="" decoding="async">
+</figure>
+{{ content }}
+</div>
+<div class="scroll-bottom" aria-hidden="true"></div>
+</div>
+</main>
+{% include footer.html %}
 <script>
 window.SpisottiConsentConfig = {
     version: {{ site.consent.version | jsonify }},
@@ -93,24 +111,6 @@ window.SpisottiConsentConfig = {
 };
 </script>
 <script src="https://glispisotti.github.io/consent/consent.js"></script>
-
-<body>
-{% include header.html %}
-<main class="site-main" id="contenuto">
-<div class="scroll-container">
-<div class="scroll-top" aria-hidden="true"></div>
-<div class="scroll-middle">
-<figure id="immagine-schermata" class="immagine-schermata" hidden
-  data-immagine="{% if page.immagine_schermata %}{{ page.immagine_schermata | relative_url | escape }}{% endif %}"
-  data-descrizione="{{ page.descrizione_immagine | default: '' | escape }}">
-  <img id="illustrazione-schermata" alt="" decoding="async">
-</figure>
-{{ content }}
-</div>
-<div class="scroll-bottom" aria-hidden="true"></div>
-</div>
-</main>
-{% include footer.html %}
 </body>
 </html>
 
