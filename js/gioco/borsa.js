@@ -31,7 +31,7 @@
    ultimoErrore='';if(busy){ultimoErrore='Attendi il risultato dell’operazione in corso.';return}const vecchia=pending();
    if(vecchia&&JSON.stringify(vecchia.args)!==JSON.stringify(args)){intestazione();ultimoErrore=msg.textContent;return}
    const r=vecchia||{nomeRpc,args,codice:api.codice,tentativo:api.dati.tentativo};
-   if(!api.memoria.scrivi(REQ,JSON.stringify(r))){msg.textContent='Abilita la memoria del sito prima di modificare la borsa.';return}
+   api.memoria.scrivi(REQ,JSON.stringify(r));
    busy=true;let risultato;
    await api.esegui(async()=>{
      try{

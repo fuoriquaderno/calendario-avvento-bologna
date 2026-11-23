@@ -59,7 +59,7 @@
   riprovaClassi.addEventListener('click',caricaClassi);
   caricaClassi();
   const accesso=document.createElement('section');accesso.className='accesso-partita';
-  accesso.innerHTML='<h2>Hai già una partita?</h2><label for="codice-ripresa">Codice segreto della partita</label><input id="codice-ripresa" type="text" autocomplete="off" autocapitalize="none" spellcheck="false"><button type="button" id="riprendi-partita">Riprendi la partita</button><p>Chi conosce il codice può accedere al salvataggio. Conservalo per giocare anche da un altro dispositivo.</p>';
+  accesso.innerHTML='<h2>Hai già una partita?</h2><label for="codice-ripresa">Codice segreto della partita</label><input id="codice-ripresa" type="text" autocomplete="off" autocapitalize="none" spellcheck="false"><button type="button" id="riprendi-partita">Riprendi la partita</button><p>Chi conosce il codice può accedere al salvataggio. Se il browser non lo ricorda, inseriscilo qui per riprendere la partita.</p>';
   $('schermata-login').prepend(accesso);
   $('riprendi-partita').addEventListener('click',()=>api.esegui(()=>api.riprendi($('codice-ripresa').value),messaggio));
   $('codice-ripresa').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('riprendi-partita').click()}});
@@ -76,20 +76,51 @@
   scrivi.addEventListener('click',()=>{$('codice-accesso').focus();$('codice-accesso').select()});
   genera.after(scrivi);scrivi.after(istruzioni);
   istruzioni.id='istruzioni-codice';$('codice-accesso').setAttribute('aria-describedby',istruzioni.id);
+  function confermaMemorizzazioneCodice(){
+    const privacy=window.SpisottiConsent;
+    if(privacy?.status?.('supabase')!==null||typeof privacy.supabaseSave!=='function'){
+      return window.ConfermaPergamena(
+        'Conserva il codice che hai scelto. Quando riaprirai il gioco dovrai inserirlo per ritrovare i tuoi progressi.',
+        {titolo:'Continua senza memorizzare il codice',conferma:'Ho segnato il codice, continua',annulla:'Torna al codice'}
+      );
+    }
+    const dialogo=document.createElement('dialog');
+    dialogo.className='avviso-codice memorizzazione-codice';
+    dialogo.innerHTML='<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-memorizzazione-codice">Vuoi ricordare il codice in questo browser?</h2><div data-scelta-memorizzazione></div><button type="button" data-torna-al-codice>Torna al codice</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
+    dialogo.setAttribute('aria-labelledby','titolo-memorizzazione-codice');
+    document.body.append(dialogo);
+    return new Promise(resolve=>{
+      let continua=false;
+      const torna=dialogo.querySelector('[data-torna-al-codice]');
+      torna.addEventListener('click',()=>dialogo.close());
+      dialogo.addEventListener('close',()=>{dialogo.remove();resolve(continua)},{once:true});
+      const procedi=()=>{continua=true;dialogo.close()};
+      dialogo.showModal();
+      const container=dialogo.querySelector('[data-scelta-memorizzazione]');
+      // Il codice verrà scritto solo dopo la creazione riuscita, da Partita.applica.
+      privacy.supabaseSave({container,onSave:procedi,onSkip:procedi});
+      if(dialogo.open)torna.focus();
+    });
+  }
   $('btn-login').textContent='Crea partita';$('btn-login').type='button';
   $('btn-login').addEventListener('click',async()=>{
-    await api.esegui(async()=>{
+    const richiesta=await api.esegui(async()=>{
       if(!classiCaricate)throw new Error('Attendi il caricamento delle classi o premi Riprova.');
       let richiesta;try{richiesta=JSON.parse(api.memoria.leggi(api.SOSPESA))}catch{}
-      if(!richiesta||!api.valido(richiesta.codice)){
-        const codice=api.pulisci($('codice-accesso').value),nome=$('nome-nuovo-personaggio').value.trim();
-        if(!api.valido(codice))throw new Error('Scrivi un codice da 1 a 128 caratteri oppure generane uno casuale.');
-        if(Array.from(nome).length>40)throw new Error('Il nome può contenere al massimo 40 caratteri.');
-        const classe=$('scelta-classe').value;
-        if(!catalogoClassi.some(c=>c.nome===classe)){$('scelta-classe').focus();throw new Error('Scegli una classe prima di creare la partita.');}
-        richiesta={codice,classe,nome};
-        if(!api.memoria.scrivi(api.SOSPESA,JSON.stringify(richiesta)))throw new Error('Abilita la memorizzazione dei dati del sito per creare una partita.');
-      }
+      if(api.valido(richiesta?.codice))return richiesta;
+      const codice=api.pulisci($('codice-accesso').value),nome=$('nome-nuovo-personaggio').value.trim();
+      if(!api.valido(codice))throw new Error('Scrivi un codice da 1 a 128 caratteri oppure generane uno casuale.');
+      if(Array.from(nome).length>40)throw new Error('Il nome può contenere al massimo 40 caratteri.');
+      const classe=$('scelta-classe').value;
+      if(!catalogoClassi.some(c=>c.nome===classe)){$('scelta-classe').focus();throw new Error('Scegli una classe prima di creare la partita.');}
+      return {codice,classe,nome};
+    },messaggio);
+    if(!richiesta)return;
+    if(!api.memorizzazioneConsentita()&&!api.memoria.leggi(api.SOSPESA)){
+      if(!await confermaMemorizzazioneCodice()){$('codice-accesso').focus();$('codice-accesso').select();return}
+    }
+    await api.esegui(async()=>{
+      api.memoria.scrivi(api.SOSPESA,JSON.stringify(richiesta));
       const dati=await api.rpc('gioco_crea',{p_codice:richiesta.codice,p_classe:richiesta.classe,p_nome:richiesta.nome||''});
       await api.applica(dati,richiesta.codice,{anima:true});api.memoria.rimuovi(api.SOSPESA);
     },messaggio);

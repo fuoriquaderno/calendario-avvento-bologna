@@ -11,11 +11,27 @@
   const INFO='ombra-sui-portici.avviso-codice.v1';
   let codice=null,dati=null,occupato=false;
   const ascoltatori=[];
-  const consenso=()=>window.SpisottiConsent?.has('supabase')===true;
+  const consenso=()=>window.SpisottiConsent?.has?.('supabase')===true;
+  const memoriaPagina=new Map();
   const memoria={
-    leggi(k){if(!consenso())return null;try{return localStorage.getItem(k)}catch{return null}},
-    scrivi(k,v){if(!consenso())return false;try{localStorage.setItem(k,v);return true}catch{return false}},
-    rimuovi(k){try{localStorage.removeItem(k)}catch{}}
+    leggi(k){
+      if(memoriaPagina.has(k))return memoriaPagina.get(k);
+      if(!consenso())return null;
+      try{return localStorage.getItem(k)}catch{return null}
+    },
+    scrivi(k,v){
+      // Il codice per il recupero automatico richiede il consenso.
+      // Le richieste in corso restano disponibili nella pagina anche in caso di rifiuto.
+      if(k!==CHIAVE)memoriaPagina.set(k,v);
+      if(consenso()){
+        try{localStorage.setItem(k,v);return true}catch{}
+      }
+      return k!==CHIAVE;
+    },
+    rimuovi(k){
+      memoriaPagina.delete(k);
+      try{localStorage.removeItem(k)}catch{}
+    }
   };
   let ultimoGiorno=memoria.leggi(GIORNO)||'';
   const pulisci=v=>v.trim();
@@ -61,7 +77,7 @@
     const impostazioni=transizione?{...opzioni,anima:cambiaLuogo?true:opzioni.anima,transizioneGestita:true,dopoTransizione}:opzioni;
     const aggiorna=async()=>{
       dati=nuovi;codice=nuovoCodice;aggiornaHeader();
-      if(!memoria.scrivi(CHIAVE,codice))stato('Il browser non può ricordare il codice: copialo e conservalo.');
+      memoria.scrivi(CHIAVE,codice);
       for(const fn of ascoltatori)await fn(dati,codice,impostazioni);
     };
     if(transizione)await window.cambiaPergamena(aggiorna);else await aggiorna();
@@ -81,7 +97,7 @@
     if(dati){ultimoGiorno=giorno();memoria.scrivi(GIORNO,ultimoGiorno)}
   }
   function promemoria(){
-    if(dati&&!occupato&&ultimoGiorno!==giorno()&&!document.querySelector('dialog[open]'))apriCodice();
+    if(dati&&memoria.leggi(CHIAVE)===codice&&!occupato&&ultimoGiorno!==giorno()&&!document.querySelector('dialog[open]'))apriCodice();
   }
   $('apri-codice').addEventListener('click',apriCodice);
   $('chiudi-gestione-codice').addEventListener('click',()=>$('dialogo-codice').close());
@@ -140,7 +156,7 @@
     const aggiornati=await rpc('gioco_riprendi_checkpoint',{p_codice:codice,p_tentativo:dati.tentativo});
     await applica(aggiornati,codice,{anima:true});
   }
-  window.Partita={rpc,esegui,applica,riprendi,memoria,CHIAVE,SOSPESA,pulisci,valido,
+  window.Partita={rpc,esegui,applica,riprendi,memoria,CHIAVE,SOSPESA,pulisci,valido,memorizzazioneConsentita:consenso,
     iniziaGiornata,riprendiCheckpoint,resocontoMorti:(...args)=>window.BorsaBase.resocontoMorti(...args),ridisegnaBorsa:()=>window.BorsaBase.disegna(),
     get dati(){return dati},get codice(){return codice},onChange(fn){ascoltatori.push(fn)},promemoria,stato,risorsa,quantita:(...args)=>window.BorsaBase.quantita(...args),get occupato(){return occupato}};
   async function inizializza(){

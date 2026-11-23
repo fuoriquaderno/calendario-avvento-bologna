@@ -71,3 +71,42 @@ dialog.avviso-codice.messaggio-orizzontale .scroll-middle>.azioni-fine-giornata{
 #contenuto-allenamento .scheda-oggetto-scontro>p{margin:8px 0}
 #borsa-extra .appunti-conservati-borsa{margin-block:16px}
 
+dialog.memorizzazione-codice[open] {
+  animation: apertura-pergamena-verticale 650ms ease-out both;
+}
+dialog.memorizzazione-codice .spisotti-consent-placeholder,
+dialog.memorizzazione-codice .spisotti-consent-placeholder * {
+  font-family: inherit;
+}
+dialog.memorizzazione-codice .spisotti-consent-placeholder {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  text-align: inherit;
+}
+dialog.memorizzazione-codice .spisotti-consent-placeholder p,
+dialog.memorizzazione-codice .spisotti-consent-warning {
+  margin-block: 1em;
+  font-size: inherit;
+  line-height: inherit;
+}
+dialog.memorizzazione-codice .spisotti-consent-warning {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+}
+dialog.memorizzazione-codice .spisotti-consent-placeholder-actions {
+  display: block;
+}
+dialog.memorizzazione-codice .spisotti-consent-placeholder-actions button {
+  background: var(--accent);
+  color: var(--surface);
+  font: inherit;
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog.memorizzazione-codice[open] { animation: none; }
+}

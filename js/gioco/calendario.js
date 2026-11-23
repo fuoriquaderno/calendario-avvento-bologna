@@ -18,6 +18,7 @@
  function disegna(){
   const d=api.dati;$('calendario-accesso').hidden=!!d;$('calendario-ripresa').hidden=!d;
   if(d){$('calendario-benvenuto').textContent=(d.nome?d.nome+', ':'')+(d.giornata_completata?`hai concluso la giornata ${d.giorno_corrente}.`:`la tua avventura ti aspetta alla giornata ${d.giorno_corrente}.`);$('calendario-continua').textContent=d.giornata_completata?'Torna alla storia':`Riprendi la giornata ${d.giorno_corrente}`}
+  $('calendario-memoria-codice').hidden=!d||api.memoria.leggi(api.CHIAVE)===api.codice;
   for(const c of caselle){
    const s=statoGiorno(c.n),p=c.pulsante;p.dataset.stato=s.tipo;p.disabled=busy||s.bloccato;p.setAttribute('aria-disabled',String(s.bloccato));c.stato.textContent=s.testo;
    if(s.bloccato)p.setAttribute('data-disabilitato','');else p.removeAttribute('data-disabilitato');

@@ -180,7 +180,7 @@
    const requestKey='ombra-sui-portici.pozione.v1';let r;
    try{r=JSON.parse(api.memoria.leggi(requestKey))}catch{}
    if(!r||r.p_codice!==api.codice||r.p_tentativo!==api.dati.tentativo)r={p_codice:api.codice,p_tentativo:api.dati.tentativo,p_richiesta:crypto.randomUUID(),p_oggetto:id};
-   if(!api.memoria.scrivi(requestKey,JSON.stringify(r))){$('borsa-stato').textContent='Abilita la memoria del sito prima di usare una pozione.';return}
+   api.memoria.scrivi(requestKey,JSON.stringify(r));
    await api.esegui(async()=>{
      try{const v=await api.rpc('gioco_pozione',r);api.memoria.rimuovi(requestKey);await api.applica(v,api.codice,{anima:false});$('inventario').close();api.stato('Pozione utilizzata. La cura e il consumo sono salvati.')}
      catch(e){if(['Hai già tutti i punti vita','Oggetto non disponibile nella borsa','Durante il combattimento usa le azioni dello scontro'].includes(e.message))api.memoria.rimuovi(requestKey);throw e}
