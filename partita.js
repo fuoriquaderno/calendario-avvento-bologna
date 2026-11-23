@@ -89,12 +89,7 @@
     const impostazioni=transizione?{...opzioni,anima:cambiaLuogo?true:opzioni.anima,transizioneGestita:true,dopoTransizione}:opzioni;
     const aggiorna=async()=>{
       dati=nuovi;codice=nuovoCodice;aggiornaHeader();
-      if (!memoria.scrivi(CHIAVE, codice)) {
-        stato(
-          'Il codice non viene conservato su questo dispositivo. ' +
-          'Conservalo per poter riprendere la partita.'
-        );
-      }
+      if(!memoria.scrivi(CHIAVE,codice))stato('Il browser non può ricordare il codice: copialo e conservalo.');
       for(const fn of ascoltatori)await fn(dati,codice,impostazioni);
     };
     if(transizione)await window.cambiaPergamena(aggiorna);else await aggiorna();

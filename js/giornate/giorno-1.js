@@ -1,29 +1,6 @@
 (() => {
   'use strict';
   const $=id=>document.getElementById(id),api=window.Partita;
-
-  // Mostra le preferenze privacy al primo accesso,
-  // anche quando Supabase è l'unico servizio configurato.
-  function verificaPreferenzePrivacy() {
-    if (!window.SpisottiConsent) return;
-
-    const stato = window.SpisottiConsent.status('supabase');
-
-    if (stato === null) {
-      window.SpisottiConsent.settings();
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener(
-      'DOMContentLoaded',
-      verificaPreferenzePrivacy,
-      { once: true }
-    );
-  } else {
-    verificaPreferenzePrivacy();
-  }
-
   let classiCaricate=false;
   function mostraRisposta(dati){
     const reazione=dati.enigmi_stato?.['1']?.reazione_risposta;
@@ -100,7 +77,6 @@
   genera.after(scrivi);scrivi.after(istruzioni);
   istruzioni.id='istruzioni-codice';$('codice-accesso').setAttribute('aria-describedby',istruzioni.id);
   $('btn-login').textContent='Crea partita';$('btn-login').type='button';
-  aggiornaConfermaCodice();
   $('btn-login').addEventListener('click',async()=>{
     await api.esegui(async()=>{
       if(!classiCaricate)throw new Error('Attendi il caricamento delle classi o premi Riprova.');

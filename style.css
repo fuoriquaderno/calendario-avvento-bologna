@@ -275,7 +275,3 @@ body button:not(.azione-header):disabled {
   body button:not(.azione-header) { transition: none !important; }
 }
 
-/* Colore dell'inchiostro nella schermata di registrazione */
-#form-registrazione > p {
-    color: var(--text) !important;
-}
