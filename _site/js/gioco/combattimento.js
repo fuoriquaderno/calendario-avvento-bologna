@@ -51,7 +51,10 @@
    }
    area.append(p(`${vista.giocatore.nome} · ${vista.giocatore.classe} · Livello ${vista.giocatore.livello||1} · ${vista.giocatore.xp||0} XP · ${vista.giocatore.hp}/${vista.giocatore.hp_massimi} HP`),p(vista.avversario.nome));
 
-   if(vista.cerbero){for(const testa of vista.teste_cerbero||[])if(!testa.attiva)area.append(p(testa.nome+': rimane inerte e non attacca più.'));}
+   if(vista.cerbero){for(const testa of vista.teste_cerbero||[]){
+     if(!testa.attiva)area.append(p(testa.nome+': rimane inerte e non attacca più.'));
+     else if(testa.turni_distratta>0)area.append(p(testa.nome+': salterà il prossimo attacco.'));
+   }}
    if(vista.cerbero&&vista.esito==='in_corso'&&!vista.recupero_necessario&&menuBersagli){
      area.append(p('Dove indirizzi il tuo attacco?'));
      const tipo=vista.giocatore.classe==='Mago'?'magico':'fisico';
@@ -63,17 +66,30 @@
      const titolo=document.createElement('h3');titolo.textContent='Oggetti utilizzabili';area.append(titolo,p('Scegli un oggetto per leggere la descrizione. Aprire o chiudere questo elenco non consuma il turno.'));
      for(const o of oggettiUtilizzabili()){
        const scheda=document.createElement('details'),nome=document.createElement('summary');scheda.className='scheda-oggetto-scontro';scheda.open=oggettoAperto===o.id;nome.textContent=o.nome+' × '+o.quantita;
-       const dato=catalogoOggetti.find(x=>x.id===o.id),descrizione=dato?.descrizione||o.descrizione||'Oggetto utilizzabile durante questo scontro.';
+       const dato=catalogoOggetti.find(x=>x.id===o.id),descrizione=o.descrizione||dato?.descrizione||'Oggetto utilizzabile durante questo scontro.';
        const usa=b('Utilizza — usa il turno',()=>{menuOggetti=false;menuBersagli=false;oggettoAperto=null;return azione(o.azione||'oggetto',o.azione==='corda'?null:o.id)});
        usa.disabled=busy||(dato?.effetto?.tipo==='cura_percentuale'&&vista.giocatore.hp>=vista.giocatore.hp_massimi);
-       scheda.append(nome,p(descrizione));if(o.azione==='corda')scheda.append(p('Provi a immobilizzare il facchino: tiri il d20 e usi il turno.'));scheda.append(usa);scheda.addEventListener('toggle',()=>{if(scheda.open){oggettoAperto=o.id;for(const altra of area.querySelectorAll('.scheda-oggetto-scontro'))if(altra!==scheda)altra.open=false}else if(oggettoAperto===o.id)oggettoAperto=null});area.append(scheda);
+       scheda.append(nome,p(descrizione));
+       if(Array.isArray(o.bersagli)){
+         for(const testa of o.bersagli){
+           const etichetta=testa.id==='avversario'?'Utilizza':'Usa su: '+testa.nome;
+           scheda.append(b(o.id==='tortellino_legno'?etichetta:etichetta+' — tira il d20',()=>{
+             menuOggetti=false;menuBersagli=false;oggettoAperto=null;
+             return azione('oggetto',o.id+':'+testa.id);
+           }));
+         }
+       }else{
+         if(o.azione==='corda')scheda.append(p('Provi a immobilizzare il facchino: tiri il d20 e usi il turno.'));
+         scheda.append(usa);
+       }
+       scheda.addEventListener('toggle',()=>{if(scheda.open){oggettoAperto=o.id;for(const altra of area.querySelectorAll('.scheda-oggetto-scontro'))if(altra!==scheda)altra.open=false}else if(oggettoAperto===o.id)oggettoAperto=null});area.append(scheda);
      }
      if(!oggettiUtilizzabili().length)area.append(p('Non hai oggetti utilizzabili in questo scontro.'));
      area.append(b('Torna alle azioni',()=>{menuOggetti=false;menuBersagli=false;oggettoAperto=null;disegna()}));return;
    }
    if(vista.turno){
      const t= vista.turno;
-     dadi(t.azione==='cura'?'Il tuo tiro di cura':t.azione==='fuga'?'Il tuo tiro di fuga':t.azione==='corda'?'Il tuo tiro per legarlo':vista.facchino?'Il tuo tiro per disattivarlo':'Il tuo tiro per colpire',t.tiro);
+     dadi(t.azione==='cura'?'Il tuo tiro di cura':t.azione==='fuga'?'Il tuo tiro di fuga':t.azione==='corda'?'Il tuo tiro per legarlo':t.azione==='oggetto'?'Il tuo tiro di abilità':vista.facchino?'Il tuo tiro per disattivarlo':'Il tuo tiro per colpire',t.tiro);
      dadi(vista.facchino?'Il tuo dado per sciogliere l’incanto':'Il tuo dado dei danni',t.danno);
      if(t.danni_finali>0)area.append(p(((vista.scontro_resistenza||vista.facchino)?'Resistenza ridotta di ':'Danno finale: ')+t.danni_finali+((vista.scontro_resistenza||vista.facchino)?'':' HP')+(t.bonus_percentuale===20?' · colpo potente +20%':'')+'.'));
      for(const m of t.messaggi)area.append(p(m.testo+(m.danni?` (${(vista.scontro_resistenza||vista.facchino)&&m.tipo==='attacco_inferto'?'Resistenza ridotta di '+m.danni:m.danni+' HP di danno'})`:'')));
