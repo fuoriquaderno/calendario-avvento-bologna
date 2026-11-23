@@ -26,9 +26,37 @@
     const {data,error}=await client.rpc(nome,parametri);
     if(error){
       const note=["Installa prima gli aggiornamenti fino al 143","Motore scontri non riconosciuto","Dado dei danni non riconosciuto","Configurazione scontri non riconosciuta","Partita non disponibile","La partita è cambiata: ricarica la pagina","Richiesta già usata diversamente","Azione non disponibile","Scendi prima nel pozzo","Termina prima il combattimento","La scelta è già stata fatta: puoi confermare o rigiocare la giornata","Esplorazione non disponibile","La Borsa è troppo piena: alleggeriscila prima di prendere la pozione","Risposta troppo lunga","Oggetto non configurato","La Borsa è troppo piena: puoi lasciare qui il tesoro e alleggerirla","non valido","Scegli posizione e orientamento del modellino","Posizione non valida","Ingredienti non validi","Scegli tre ingredienti diversi fra quelli sul banco",'Stanza nascosta non disponibile','Torna alla stanza nascosta prima di proseguire','La prova del topo è già stata effettuata','Effettua prima la prova del topo','Hai già raccolto queste monete','Hai già raccolto questa pozione','Torna alla locanda prima di proseguire','Servizi non disponibili','Esamina prima la parete opposta','Per oggi non ci sono altre informazioni','Scegli un luogo già conosciuto','Sala dei manoscritti non disponibile','Documento non disponibile','Sala di lettura non disponibile','Testo non disponibile','Torna alla biblioteca prima di proseguire','Torna al luogo del racconto prima di proseguire','Scrivi dove vuoi cercare','Usa al massimo 500 caratteri','Incontro con Iliano non disponibile','Il sacchetto è già stato consegnato oppure Iliano non è qui','Questa scelta non è disponibile','Ricompensa di Iliano non configurata','Raggiungi prima questo negozio','Prezzo del prodotto non disponibile','Scena non disponibile','Scrivi una risposta',"Termina prima il combattimento","Luogo non disponibile","Questo personaggio non è qui","Riferimento del personaggio non valido","Non ci sono ancora indicazioni per questo percorso","Concludi prima la perquisizione per entrare in città","Chiedi prima indicazioni per questo luogo","Equipaggiamento non valido","Puoi indossare al massimo due accessori","Oggetto non adatto a questo posto","Richiesta già usata diversamente","Quantità non valida","Prima rimuovi l’oggetto dall’equipaggiamento","Qui non c’è un mercante","Il mercante non ritira questo oggetto","Oggetto non in vendita","Argento insufficiente","Servono pergamena e calamaio per scrivere","Il taccuino può contenere al massimo 20000 caratteri","Gli appunti sono cambiati su un altro dispositivo","Perquisizione non disponibile","La perquisizione è cambiata: recupera lo stato","Non puoi più tentare Inganno","La discussione con la guardia è chiusa","Scrivi una parola","Nessuna proposta da confermare","Servono cinque monete","Accetta o rifiuta prima la proposta","Selezione non valida","Troppi oggetti per i posti disponibili","Scegli un’arma e una difesa","Oggetto non proposto sul tavolo","Quantità non disponibile sul tavolo","Superi il peso massimo della classe","Equipaggiamento non modificabile in questa giornata","Scegli prima cosa fare del bottino","Bottino non disponibile","Quantità non disponibile","Arma non disponibile nella borsa","Questa arma è già equipaggiata","Questa giornata è già confermata","La giornata non è ancora da confermare","Conferma la giornata prima di proseguire","Questa giornata non è ancora aperta","Cura già usata in questa giornata","Durante il combattimento usa le azioni dello scontro","Nessun combattimento in questa scena","Combattimento terminato","Azione non disponibile",'Sessione di allenamento non valida','Richiesta di allenamento diversa','Avversario non disponibile','Classe non disponibile','Allenamento scaduto: ricomincia','Azione di allenamento non valida','Turno cambiato: recupera l’allenamento','Allenamento terminato','Codice non disponibile','Nome troppo lungo','Oggetto non disponibile nella borsa','Oggetto non utilizzabile qui','Nessun passaggio compatibile','Partita non disponibile','Riprendi dal checkpoint prima di proseguire','Completa la giornata corrente prima di proseguire','Questa giornata non è ancora configurata','Checkpoint non disponibile','Tentativo non valido','La partita è cambiata: riapri la Borsa','Questa capacità è riservata al Chierico','Cura non disponibile','Riprendi dal checkpoint prima di usare la cura','Hai già tutti i punti vita','Richiesta non valida','Enigma non disponibile in questa scena','La partita è cambiata: riapri l’enigma','Hai già fatto due offerte','Offerta non valida o argento insufficiente','Scambio non disponibile','Non possiedi l’oggetto richiesto','Acquisto in argento non disponibile','Richiesta già usata con un’altra offerta'];
-      if(error.message==='Codice non disponibile')memoria.rimuovi(SOSPESA);
-      throw new Error(note.includes(error.message)?error.message:'Operazione non riuscita. Controlla la connessione e riprova. Se una creazione o un cambio codice potrebbero essere riusciti, prova a riprendere la partita con il codice scelto.');
-    }
+      if (error.message === 'Codice non disponibile') {
+        memoria.rimuovi(SOSPESA);
+      }
+
+      const messaggio = error.message || '';
+
+      const erroreBorsa =
+        /borsa.*troppo piena/i.test(messaggio) ||
+        /borsa.*piena/i.test(messaggio) ||
+        /superi il peso massimo/i.test(messaggio) ||
+        /troppi oggetti per i posti disponibili/i.test(messaggio) ||
+        /capacità.*borsa/i.test(messaggio);
+
+      const erroreConosciuto = note.includes(messaggio);
+
+      const erroreDefinitivo =
+        (erroreBorsa || erroreConosciuto) &&
+        error.code === 'P0001';
+
+      const testo = erroreBorsa
+        ? 'La Borsa è piena. Lascia o utilizza un oggetto prima di raccoglierne altri.'
+        : erroreConosciuto
+          ? messaggio
+          : 'Operazione non riuscita. Controlla la connessione e riprova.';
+
+      const eccezione = new Error(testo);
+
+      eccezione.richiestaRifiutata = erroreDefinitivo;
+
+      throw eccezione;
+}
     window.Dadi?.operazione(nome,parametri,data);
     return data;
   }
