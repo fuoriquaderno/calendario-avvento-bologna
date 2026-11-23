@@ -3,8 +3,17 @@
  const api=window.Partita,$=id=>document.getElementById(id);if(!$('schermata-gioco'))return;
  const area=document.createElement('section');area.id='sala-manoscritti';area.hidden=true;document.querySelector('main .scroll-middle').append(area);
  const pianta=document.createElement('dialog');pianta.className='avviso-codice pianta-biblioteca';pianta.setAttribute('aria-labelledby','titolo-pianta-biblioteca');
- pianta.innerHTML='<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-pianta-biblioteca">Pianta incompleta della biblioteca</h2><div class="superficie-pianta"><img id="immagine-pianta-biblioteca" alt="Pianta parziale della biblioteca: il corridoio termina prima dei servizi; fra cisterna e servizi rimane uno spazio vuoto senza indicazioni."></div><p id="testo-pianta-biblioteca"></p><p class="istruzioni-pianta">Su uno schermo piccolo puoi scorrere lateralmente la pianta.</p><button type="button" id="chiudi-pianta-biblioteca">Torna ai manoscritti</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
+ pianta.innerHTML='<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-pianta-biblioteca">Pianta incompleta della biblioteca</h2><div id="superficie-pianta-biblioteca" class="superficie-pianta" role="region" aria-label="Pianta della biblioteca"><img id="immagine-pianta-biblioteca" alt="Pianta parziale della biblioteca: il corridoio termina prima dei servizi; fra cisterna e servizi rimane uno spazio vuoto senza indicazioni."></div><button type="button" id="zoom-pianta-biblioteca" aria-controls="superficie-pianta-biblioteca">Ingrandisci la pianta</button><p id="testo-pianta-biblioteca"></p><button type="button" id="chiudi-pianta-biblioteca">Torna ai manoscritti</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
  document.body.append(pianta);$('chiudi-pianta-biblioteca').addEventListener('click',()=>pianta.close());
+ const superficiePianta=$('superficie-pianta-biblioteca'), zoomPianta=$('zoom-pianta-biblioteca');
+ function impostaZoomPianta(ingrandita){
+  superficiePianta.classList.toggle('pianta-ingrandita',ingrandita);
+  superficiePianta.scrollLeft=0;
+  if(ingrandita)superficiePianta.tabIndex=0;else superficiePianta.removeAttribute('tabindex');
+  zoomPianta.textContent=ingrandita?'Mostra la pianta intera':'Ingrandisci la pianta';
+ }
+ zoomPianta.addEventListener('click',()=>impostaZoomPianta(!superficiePianta.classList.contains('pianta-ingrandita')));
+ pianta.addEventListener('close',()=>impostaZoomPianta(false));
  
  let vista=null,busy=false,versione=0;
  function p(t){const e=document.createElement('p');e.textContent=t;return e}

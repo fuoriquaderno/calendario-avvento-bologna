@@ -96,7 +96,7 @@ dialog.borsa-dialog { width:min(600px,calc(100% - 24px)); }
 .borsa-elenco h3 { margin:0;font:20px/1.4 var(--sans);font-weight:bold; }
 .borsa-elenco p { margin:8px 0; }
 .borsa-conferma { padding:12px;border:1px solid var(--accent);margin-block:12px; }
-.accesso-partita { margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line); }
+.accesso-partita { margin-bottom:28px;padding-bottom:20px; }
 .accesso-partita button { padding:10px 16px; }
 
 /* Desktop: descrizione a sinistra, firma e logo a destra. */
