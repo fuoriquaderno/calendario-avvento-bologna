@@ -28,23 +28,47 @@
    if(r)msg.textContent='Una richiesta deve essere recuperata prima di fare altre modifiche.';
  }
  async function esegui(nomeRpc,args){
-   ultimoErrore='';if(busy){ultimoErrore='Attendi il risultato dell’operazione in corso.';return}const vecchia=pending();
-   if(vecchia&&JSON.stringify(vecchia.args)!==JSON.stringify(args)){intestazione();ultimoErrore=msg.textContent;return}
+   ultimoErrore='';if(busy||api.occupato){ultimoErrore='Attendi il risultato dell’operazione in corso.';return}const vecchia=pending();
+   if(vecchia&&(vecchia.nomeRpc!==nomeRpc||JSON.stringify(vecchia.args)!==JSON.stringify(args))){intestazione();ultimoErrore=msg.textContent;return}
    const r=vecchia||{nomeRpc,args,codice:api.codice,tentativo:api.dati.tentativo};
-   api.memoria.scrivi(REQ,JSON.stringify(r));
-   busy=true;let risultato;
-   await api.esegui(async()=>{
-     try{
-       risultato=await api.rpc(r.nomeRpc,r.args);api.memoria.rimuovi(REQ);
+   busy=true;
+   let risultato,erroreCapienza;
+   try{
+     await api.esegui(async()=>{
+       api.memoria.scrivi(REQ,JSON.stringify(r));
+       try{risultato=await api.rpc(r.nomeRpc,r.args)}
+       catch(e){
+         if(e.richiestaRifiutata===true)api.memoria.rimuovi(REQ);
+         if(e.borsaPiena===true)erroreCapienza=e.message;
+         throw e;
+       }
+       api.memoria.rimuovi(REQ);
        const fase=risultato?.partita?.stato_partita?.fase;
        const rispostaBreve=(r.nomeRpc==='gioco_giorno16'&&r.args.p_azione==='domanda')||(r.nomeRpc==='gioco_giorno15'&&["colloca","svuota","verifica","incanto","notizie","chiedi_eco","orario"].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno14'&&["apri_casella","segna_casella","ricomincia_griglia","consegna_gettone","chiedi","osserva","patacca","esamina","regole","carta","stai","prossima_mano","cerca","banco","fiorenza","incarico","attrezzi"].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno13'&&['parla','libro','bibliotecaria','tiro_manuali','fazzoletto','polvere','riservato','copia','chiedi_accesso','ispeziona','modellino'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno12'&&['ascolta','chi','dove','parla','strumento','misura','aiuto','disponi'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno11'&&['prendi_ritrovamento','studioso','domanda_studioso','studente','rispondi','aiuto','spiegazione','libro','appunti','prendi_pagina'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno10'&&['passante','custode','erudito','favore','ordine','aiuto','consegna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno9'&&(['osserva','esplora','prendi_pozione'].includes(r.args.p_azione)&&fase!=='g9_baule'||r.nomeRpc==='gioco_giorno9'&&r.args.p_azione==='cerca_casa'&&fase==='g9_vicolo'))||(r.nomeRpc==='gioco_giorno8'&&(['parla','scaccia','carezza','lascia_gatto','confronta','accarezza'].includes(r.args.p_azione)||(r.args.p_azione==='esamina'&&fase==='g8_esplora')))||(r.nomeRpc==='gioco_giorno6'&&(['studenti','maestri','biblioteca','bottega','passante_locanda','aiuto','diario','rileggi_nomi','ricerca'].includes(r.args.p_azione)||(r.args.p_azione==='continua'&&fase==='g6_passante')||(r.args.p_azione==='cerca'&&fase==='g6_dialogo')))||(r.nomeRpc==='gioco_giorno7'&&(r.args.p_azione==='esamina_altra'||(r.args.p_azione==='esamina'&&r.args.p_testo!=='base')||(r.args.p_azione==='esplora'&&r.args.p_testo!=='arazzo')||r.args.p_azione==='annota'||(['parola','gesto'].includes(r.args.p_azione)&&fase==='g7_enigma')));
        if(risultato?.partita)await api.applica(risultato.partita,r.codice,{anima:!rispostaBreve&&(['gioco_giorno16','gioco_giorno15','gioco_giorno14','gioco_giorno13','gioco_giorno12','gioco_giorno11','gioco_giorno10','gioco_giorno9','gioco_giorno8','gioco_giorno7','gioco_giorno6','gioco_cerca_torre','gioco_giorno5','gioco_missione_guardia','gioco_missione_galeazzo','gioco_iliano','gioco_giorno3'].includes(r.nomeRpc)||(r.nomeRpc==='gioco_sala_lettura'&&['manoscritti','sala','torna'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_manoscritti'&&r.args.p_azione!=='documento')||(r.nomeRpc==='gioco_servizi'&&['entra','premi','corridoio','torna','esci'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_giorno4'&&!['parla','passante'].includes(r.args.p_azione))||(r.nomeRpc==='gioco_stanza_nascosta'&&['esplora','scaffali','libri','uscita','torna'].includes(r.args.p_azione)))});
        if($('inventario').open)await aggiorna();
-     }catch(e){if(!e.message.startsWith('Operazione non riuscita'))api.memoria.rimuovi(REQ);throw e}
-   },msg);
-   busy=false;if(!risultato)ultimoErrore=msg.textContent;intestazione();return risultato;
+     },msg);
+   }finally{
+     busy=false;
+     if(!risultato)ultimoErrore=msg.textContent;
+     intestazione();
+   }
+   if(erroreCapienza&&!$('inventario').open){
+     api.stato(erroreCapienza);
+     window.ConfermaPergamena?.(erroreCapienza,{titolo:'Borsa piena',conferma:'Apri la Borsa',annulla:'Torna al gioco'})
+       .then(apri=>{if(apri&&!$('inventario').open)$('apri-borsa').click()});
+   }
+   return risultato;
  }
- riprendi.addEventListener('click',()=>{const r=pending();if(r)return esegui(r.nomeRpc,r.args)});
+ riprendi.addEventListener('click',async()=>{
+   const r=pending();if(!r)return;
+   const risultato=await esegui(r.nomeRpc,r.args);
+   // Il recupero dalla Borsa può chiudere la richiesta senza produrre un nuovo stato.
+   if(!risultato&&!pending()&&api.codice===r.codice&&api.dati?.tentativo===r.tentativo){
+     await api.esegui(()=>api.applica(api.dati,api.codice,{anima:false}),msg);
+     msg.textContent=ultimoErrore;
+   }
+ });
  function args(azione,id=null,quantita=1,eq=null){return {p_codice:api.codice,p_azione:azione,p_oggetto:id,p_quantita:quantita,p_equip:eq,p_richiesta:crypto.randomUUID(),p_tentativo:api.dati.tentativo}}
  async function cambia(tipo,id,aggiungi=true){
    const eq=JSON.parse(JSON.stringify(borsa.partita.equipaggiamento));
@@ -52,8 +76,13 @@
    else eq[tipo]=eq[tipo]===id?null:id;
    return esegui('gioco_borsa',args('equipaggia',null,1,eq));
  }
- function comandi(){
+ function comandi(vistaNegozio){
    if(!borsa)return;
+   const codice=api.codice,{tentativo,luogo_attuale:luogo}=borsa.partita;
+   const negozio=vistaNegozio?.partita?.luogo_attuale===luogo?vistaNegozio.negozio:null;
+   const vendibili=new Map(
+     negozio&&!vistaNegozio.bloccato?vistaNegozio.vendibili.map(o=>[o.id,o]):[]
+   );
    peso.textContent=`Peso: ${borsa.peso}/${borsa.capacita}`+(borsa.peso>borsa.capacita?' — alleggerisci la borsa prima di aggiungere altro.':'');
    const eq=borsa.partita.equipaggiamento;
    equip.textContent=`Arma: ${eq.arma?nome(eq.arma):'nessuna'} · Difesa: ${eq.difesa?nome(eq.difesa):'nessuna'} · Accessori (${eq.accessori.length}/2): ${eq.accessori.map(nome).join(', ')||'nessuno'}`;
@@ -76,9 +105,19 @@
        }
        if(n>quanti){
          const q=document.createElement('input');q.type='number';q.min='1';q.max=String(n-quanti);q.value='1';q.setAttribute('aria-label','Quantità di '+nome(id));q.style.width='80px';
-         function numero(){const v=Number(q.value);if(!Number.isInteger(v)||v<1||v>n-quanti){msg.textContent='Scegli una quantità valida.';return null}return v}
+         function numero(massimo=n-quanti){const v=Number(q.value);if(!Number.isInteger(v)||v<1||v>massimo){msg.textContent='Scegli una quantità valida.';return null}return v}
          box.append(q,b('Lascia',async()=>{const qta=numero();if(qta&&await window.ConfermaPergamena((o?.tipo_base||id)==='kit_taccuino'?'Lasciare il taccuino? Gli appunti restano salvati e leggibili, ma per scrivere dovrai procurartene un altro.':`Abbandonare definitivamente ${qta} × ${nome(id)}?`))return esegui('gioco_borsa',args('lascia',id,qta))}));
-         if(borsa.mercante&&o?.prezzo_vendita>0)box.append(b(`Vendi (${o.prezzo_vendita} monete ciascuno)`,async()=>{const qta=numero();if(qta&&await window.ConfermaPergamena(`Vendere ${qta} × ${nome(id)}?`))return esegui('gioco_borsa',args('vendi',id,qta))}));
+         const offerta=vendibili.get(id);
+         const massimoVendibile=Math.min(n-quanti,(offerta?.quantita??0)-quanti);
+         if(offerta?.prezzo_vendita>0&&massimoVendibile>0){
+           const prezzo=offerta.prezzo_vendita;
+           box.append(b(`Vendi (${prezzo} monete per copia)`,async()=>{
+             const qta=numero(massimoVendibile);
+             if(!qta||!await window.ConfermaPergamena(`Vendere ${qta} × ${nome(id)} per ${qta*prezzo} monete d'argento?`))return;
+             if(api.codice!==codice||api.dati?.tentativo!==tentativo||api.dati?.luogo_attuale!==luogo||!$('inventario').open)return;
+             return esegui('gioco_negozio',{p_codice:codice,p_azione:'vendi',p_negozio:negozio.id,p_oggetto:id,p_quantita:qta,p_richiesta:crypto.randomUUID(),p_tentativo:tentativo});
+           }));
+         }
        }
      }
      const contenuto=li.querySelector('.contenuto-oggetto-borsa')||li;contenuto.append(box);
@@ -96,12 +135,13 @@
  async function aggiorna(){
    if(!api.dati){info.hidden=true;extra.hidden=true;return}info.hidden=false;extra.hidden=false;const n=++revision;
    try{
-     const [bag,cat,bottino,appunti]=await Promise.all([
-       api.rpc('gioco_borsa',{p_codice:api.codice}),api.rpc('gioco_catalogo_oggetti',{}),api.rpc('gioco_bottino',{p_codice:api.codice}),api.rpc('gioco_taccuino',{p_codice:api.codice})]);
+     const [bag,cat,bottino,appunti,vistaNegozio]=await Promise.all([
+       api.rpc('gioco_borsa',{p_codice:api.codice}),api.rpc('gioco_catalogo_oggetti',{}),api.rpc('gioco_bottino',{p_codice:api.codice}),api.rpc('gioco_taccuino',{p_codice:api.codice}),
+       api.rpc('gioco_negozio',{p_codice:api.codice}).catch(()=>null)]);
      if(n!==revision)return;borsa=bag;catalogo=cat;
      appuntiConservati.append(notes);
      // Il ridisegno rimuove i controlli delle righe precedenti.
-     api.ridisegnaBorsa();comandi();mostraBottino(bottino);shop.replaceChildren();
+     api.ridisegnaBorsa();comandi(vistaNegozio);mostraBottino(bottino);shop.replaceChildren();
      if(bag.mercante){const h=document.createElement('h3');h.textContent='Dal mercante';shop.append(h);for(const [id,prezzo] of Object.entries(bag.catalogo_mercante))shop.append(b(`Compra ${nome(id)} — ${prezzo} monete`,async()=>{if(await window.ConfermaPergamena(`Comprare ${nome(id)} per ${prezzo} monete?`))return esegui('gioco_borsa',args('compra',id))}))}
      const bozza=leggi(DRAFT),cambiato=notesOwner!==api.codice;
      const sporco=!cambiato&&nota.value!==notesBase;

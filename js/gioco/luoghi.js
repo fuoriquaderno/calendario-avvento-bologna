@@ -6,6 +6,14 @@
  const pulsante=document.createElement('button');pulsante.type='button';pulsante.textContent='Mappa e luoghi';pulsante.id='apri-luoghi';pulsante.hidden=true;
  const apriMappa=document.createElement('button');apriMappa.type='button';apriMappa.textContent='Apri la mappa di Bologna';apriMappa.id='apri-mappa-bologna';apriMappa.hidden=true;
  $('borsa-elenco').before(pulsante);pulsante.after(apriMappa);
+ const azioniCitta=document.createElement('nav');azioniCitta.hidden=true;
+ azioniCitta.setAttribute('aria-label','Esplorazione di Bologna');
+ const nomePassante='Chiedi informazioni a un passante';
+ const apriMappaCitta=b('Apri la mappa e i luoghi',apriElenco);
+ const chiediPassante=b(nomePassante,apriPassante);
+ for(const comando of [apriMappaCitta,chiediPassante])comando.className='azione-header';
+ azioniCitta.append(apriMappaCitta,chiediPassante);
+ if($('schermata-gioco'))$('barra-stato').after(azioniCitta);
  const scena=document.createElement('section');scena.id='esplorazione-citta';scena.hidden=true;
  const titolo=document.createElement('h2'),descrizione=document.createElement('p'),persone=document.createElement('div'),stato=document.createElement('p');stato.setAttribute('role','status');
  scena.append(titolo,descrizione,persone,stato);if($('schermata-gioco'))document.querySelector('main .scroll-middle').append(scena);
@@ -35,6 +43,7 @@
  }
  function disegna(){
    pulsante.hidden=!api.dati;apriMappa.hidden=true;
+   azioniCitta.hidden=!dati?.destinazioni_passante?.length;
    scena.hidden=(dati?.partita.giorno_corrente===5&&String(dati.partita.stato_partita?.fase||'').startsWith('g5_')&&(dati.partita.stato_partita.fase==='g5_colazione'||dati.partita.luogo_attuale==='torre_demetrio'))||!dati||!$('schermata-gioco')||dati.partita.morto||([3,4].includes(dati.partita.giorno_corrente)&&String(dati.partita.stato_partita?.fase||'').startsWith('g3_'))||(dati.partita.giorno_corrente===4&&['g4_colazione','g4_passaggio','g4_nascosta','g4_esplora','g4_fantasma','g4_dopocustode'].includes(dati.partita.stato_partita?.fase))||(dati.partita.giorno_corrente===2&&['ritorno_porta','indicazioni_giorno2','guardia_giorno2','scontro_guardie'].includes(dati.partita.stato_partita?.fase));
    if(!dati)return;
    titolo.textContent=dati.corrente.nome;descrizione.textContent=dati.corrente.descrizione;persone.replaceChildren();
@@ -47,6 +56,7 @@
    lista($('elenco-luoghi'));window.MissioneGaleazzo?.azioniLuogo($('elenco-luoghi'),dati);window.MissioneGuardia?.azioniLuogo($('elenco-luoghi'),dati);if(mappa.open)disegnaMappa();
  }
  async function aggiorna(){
+   azioniCitta.hidden=true;
    if(api.dati?.interazioni?.dimensione_alternativa){++richiesta;dati=null;owner=api.codice;scena.hidden=true;pulsante.hidden=false;pulsante.textContent='Mappa delle Sette Chiese';apriMappa.hidden=true;if(mappa.open)mappa.close();return}
    pulsante.textContent='Mappa e luoghi';
    const n=++richiesta;if(owner!==api.codice){dati=null;owner=api.codice}
@@ -56,16 +66,22 @@
  }
  async function apriElenco(){return apriCartina()}
 
+ function apriPassante(){
+   if(bloccato()||!dati.destinazioni_passante?.length)return;
+   apriIndicazioni({nome:'un passante',generico:true});
+ }
+
  function apriIndicazioni(n=null){
    informatore=n;$('destinazioni-indicazioni').replaceChildren();$('segui-indicazioni').replaceChildren();$('testo-indicazioni').textContent='';$('stato-indicazioni').textContent='';
    $('titolo-indicazioni').textContent=n?'Indicazioni da '+n.nome:'Indicazioni ricevute';
-   if(n)for(const d of dati.destinazioni){const e=b('Come raggiungo '+d.nome+'?',()=>chiedi(n,d.id));e.disabled=bloccato();$('destinazioni-indicazioni').append(e)}
+   const destinazioni=n?.generico?dati.destinazioni_passante:dati?.destinazioni;
+   if(n)for(const d of destinazioni){const e=b('Come raggiungo '+d.nome+'?',()=>chiedi(n,d.id));e.disabled=bloccato();$('destinazioni-indicazioni').append(e)}
    if(!indicazioni.open)indicazioni.showModal();
  }
  async function chiedi(n,id){
    if(bloccato())return;busy=true;
    await api.esegui(async()=>{
-     const r=await api.rpc('gioco_luoghi',{p_codice:api.codice,p_azione:'chiedi',p_destinazione:id,p_informatore:n.id,p_tentativo:api.dati.tentativo});
+     const r=await api.rpc('gioco_luoghi',{p_codice:api.codice,p_azione:n.generico?'chiedi_passante':'chiedi',p_destinazione:id,p_informatore:n.id??null,p_tentativo:api.dati.tentativo});
      await api.applica(r.partita,api.codice,{anima:false});$('testo-indicazioni').textContent=r.indicazione.testo;
      $('segui-indicazioni').replaceChildren(b('Segui le indicazioni',()=>muovi(id)));
    },$('stato-indicazioni'));
@@ -122,7 +138,9 @@
   if(extra.length){const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Altri luoghi conosciuti';details.append(summary);for(const l of extra)details.append(b(l.nome,()=>schedaLuogo(l)));$('altri-luoghi-mappa').append(details)}
   const validi=dati.luoghi.filter(l=>selezionati.includes(l.id));
   if(validi.length===1)schedaLuogo(validi[0]);else if(validi.length>1)scegliGruppo(validi);else{selezionati=[];scheda.replaceChildren(p('Tocca un punto per leggere il nome e scegliere se raggiungerlo.'))}
-  const azioni=$('azioni-mappa');azioni.replaceChildren();window.MissioneGaleazzo?.azioniLuogo(azioni,dati);window.MissioneGuardia?.azioniLuogo(azioni,dati);
+  const azioni=$('azioni-mappa');azioni.replaceChildren();
+  if(dati.destinazioni_passante?.length)azioni.append(b(nomePassante,apriPassante));
+  window.MissioneGaleazzo?.azioniLuogo(azioni,dati);window.MissioneGuardia?.azioniLuogo(azioni,dati);
  }
  function dimensione(nuovo){
   const centroX=(viewport.scrollLeft+viewport.clientWidth/2)/zoom,centroY=(viewport.scrollTop+viewport.clientHeight/2)/zoom;

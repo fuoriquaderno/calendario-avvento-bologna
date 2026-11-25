@@ -25,6 +25,54 @@
  function linkSocial(testo,url){const a=document.createElement('a');a.textContent=testo;a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.style.cssText='display:inline-block;margin:4px 20px 4px 0';return a}
 
  
+ let pergamenaPietra,contenutoPietra,proprietarioPietra;
+ async function apriPietra(){
+  if(busy)return;
+  const proprietario={codice:api.codice,tentativo:api.dati?.tentativo};
+  if(!api.dati?.stato_partita?.stanza_nascosta?.pietra_sollevata)await invia('solleva');
+  if(api.codice!==proprietario.codice||api.dati?.tentativo!==proprietario.tentativo)return;
+  proprietarioPietra=proprietario;
+  if(!pergamenaPietra){
+   pergamenaPietra=document.createElement('dialog');
+   pergamenaPietra.className='avviso-codice';
+   pergamenaPietra.setAttribute('aria-label','Sotto la pietra');
+   const alto=document.createElement('div'),basso=document.createElement('div');
+   alto.className='scroll-top';basso.className='scroll-bottom';
+   alto.setAttribute('aria-hidden','true');basso.setAttribute('aria-hidden','true');
+   contenutoPietra=document.createElement('div');contenutoPietra.className='scroll-middle';
+   pergamenaPietra.append(alto,contenutoPietra,basso);document.body.append(pergamenaPietra);
+   pergamenaPietra.addEventListener('close',()=>area.querySelector('#solleva-pietra')?.focus());
+  }
+  if(!pergamenaPietra.open&&aggiornaPietra())pergamenaPietra.showModal();
+ }
+
+ function aggiornaPietra(){
+  const d=api.dati,s=d?.stato_partita?.stanza_nascosta;
+  if(api.codice!==proprietarioPietra?.codice||d?.tentativo!==proprietarioPietra?.tentativo||
+     d?.giorno_corrente!==4||d.morto||d.luogo_attuale!=='sala_consiglio'||
+     d.stato_partita?.fase!=='g4_esplora'||!s?.pietra_sollevata)return false;
+
+  const titolo=document.createElement('h2');titolo.textContent='Sotto la pietra';
+  contenutoPietra.replaceChildren(titolo,
+   p("Sotto la pietra trovi un piccolo incavo: due monete d'argento e un'ampolla ancora chiusa. È una pozione curativa media."));
+  const sospesa=window.BorsaNuova.pending();
+  if(sospesa){
+   contenutoPietra.append(p("Recupera il risultato dell'ultima azione prima di proseguire."),
+    b('Recupera il risultato',async()=>{await window.BorsaNuova.esegui(sospesa.nomeRpc,sospesa.args);aggiorna()}));
+  }else{
+   contenutoPietra.append(
+    s.monete_prese?p('Hai raccolto le due monete.'):b("Prendi le 2 monete d'argento",()=>invia('monete')),
+    s.pozione_presa?p('Hai raccolto la pozione.'):b('Prendi la pozione curativa media',()=>invia('pozione')));
+  }
+  if(window.BorsaNuova.errore){
+   const avviso=p(window.BorsaNuova.errore);avviso.setAttribute('role','status');contenutoPietra.append(avviso);
+  }
+  const chiudi=b('Torna a esplorare',()=>pergamenaPietra.close());
+  chiudi.disabled=false;
+  contenutoPietra.append(chiudi);
+  return true;
+ }
+
  let ritratto=null,proprietarioRitratto=null;
  function apriRitratto(){
   proprietarioRitratto={codice:api.codice,tentativo:api.dati?.tentativo};
@@ -51,6 +99,7 @@
  }
 
  function aggiorna(){
+  if(pergamenaPietra?.open&&!aggiornaPietra())pergamenaPietra.close();
   const d=api.dati,f=d?.stato_partita?.fase,s=d?.stato_partita?.stanza_nascosta||{};area.replaceChildren();
   area.hidden=!d||d.giorno_corrente!==4||d.morto||!['g4_nascosta','g4_esplora','g4_fantasma','g4_dopocustode','g4_tomi','fine_giorno4'].includes(f);if(area.hidden)return;
   if(f!=='g4_tomi'){vistaVerbali=false;paginaVerbali=null;bozzaRisposta=''}
@@ -126,16 +175,11 @@
    const azioniEsplorazione=document.createElement('div');azioniEsplorazione.className='azioni-esplorazione-stanza';
    for(const [id,t] of [['sgabello','Raddrizza lo sgabello'],['cassa','Apri la vecchia cassa'],['solleva','Solleva la pietra allentata'],['arazzo','Scosta il drappo'],['brocca','Solleva la brocca incrinata']]){
     const esaminato=id==='solleva'?s.pietra_sollevata:s.esaminati?.[id];
-    const comando=b(t+(esaminato?' · Esaminato':''),()=>invia(id));
-    if(id==='solleva'&&s.pietra_sollevata){comando.disabled=true;comando.setAttribute('data-disabilitato','')}
+    const comando=b(t+(esaminato?' · Esaminato':''),id==='solleva'?apriPietra:()=>invia(id));
+    if(id==='solleva'){comando.id='solleva-pietra';comando.setAttribute('aria-haspopup','dialog')}
     azioniEsplorazione.append(comando);
    }
    area.append(azioniEsplorazione);
-   if(s.pietra_sollevata){
-    area.append(p('Sotto la pietra trovi un piccolo incavo: due monete d’argento e un’ampolla ancora chiusa. È una pozione curativa media.'));
-    if(!s.monete_prese)area.append(b('Prendi le 2 monete d’argento',()=>invia('monete')));else area.append(p('Hai raccolto le due monete.'));
-    if(!s.pozione_presa)area.append(b('Prendi la pozione curativa media',()=>invia('pozione')));else area.append(p('Hai raccolto la pozione.'));
-   }
    const ritorni=document.createElement('div');ritorni.className='ritorni-esplorazione';ritorni.style.cssText='margin-top:32px;padding-top:8px';
    ritorni.append(b('Torna davanti agli scaffali',()=>invia('scaffali')),b('Torna nei servizi',()=>invia('uscita')));area.append(ritorni);
   }else{

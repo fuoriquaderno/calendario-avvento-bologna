@@ -9,6 +9,7 @@
   const SOSPESA='ombra-sui-portici.creazione.v2';
   const GIORNO='ombra-sui-portici.popup-codice.giorno.v1';
   const INFO='ombra-sui-portici.avviso-codice.v1';
+  const MESSAGGIO_BORSA_PIENA='La Borsa non ha spazio per questo oggetto. Libera spazio e poi riprova.';
   let codice=null,dati=null,occupato=false;
   const ascoltatori=[];
   const consenso=()=>window.SpisottiConsent?.has?.('supabase')===true;
@@ -47,7 +48,7 @@
       const noto=note.includes(messaggio);
       const capienza=/\b(?:borsa|inventario)\b[^.!?\n]*(?:pien[ao]|capacità|spazio (?:insufficiente|disponibile)|troppo pesante)|\b(?:peso massimo|peso consentito|limite di peso|capacità di carico)\b|\b(?:borsa|inventario)\s*[^.!?\n]*\b(?:non ha spazio|non può contenere)\b|\b(?:non c['’]è|non hai) (?:abbastanza )?spazio\b[^.!?\n]*\b(?:borsa|inventario)\b/i;
       const borsaPiena=[messaggio,error.details].some(testo=>typeof testo==='string'&&capienza.test(testo));
-      const erroreRpc=new Error(borsaPiena?'La Borsa non ha spazio per questo oggetto. Libera spazio e poi riprova.':noto?messaggio:'Operazione non riuscita. Controlla la connessione e riprova. Se una creazione o un cambio codice potrebbero essere riusciti, prova a riprendere la partita con il codice scelto.');
+      const erroreRpc=new Error(borsaPiena?MESSAGGIO_BORSA_PIENA:noto?messaggio:'Operazione non riuscita. Controlla la connessione e riprova. Se una creazione o un cambio codice potrebbero essere riusciti, prova a riprendere la partita con il codice scelto.');
       // P0001 è un rifiuto esplicito della funzione SQL, anche con un messaggio nuovo.
       erroreRpc.richiestaRifiutata=error.code==='P0001'||noto||borsaPiena;
       erroreRpc.borsaPiena=borsaPiena;
@@ -80,10 +81,14 @@
   }
   async function applica(nuovi,nuovoCodice,opzioni={}){
     const cambiaLuogo=!!dati&&nuovi.luogo_attuale!==dati.luogo_attuale;
+    const cambiaAmbiente=!!dati&&(cambiaLuogo||nuovi.giorno_corrente!==dati.giorno_corrente||
+      nuovi.stato_partita?.fase!==dati.stato_partita?.fase||nuovi.tentativo!==dati.tentativo||
+      nuovoCodice!==codice);
     const transizione=(opzioni.anima!==false||cambiaLuogo)&&typeof window.cambiaPergamena==='function';
     const dopoTransizione=[];
     const impostazioni=transizione?{...opzioni,anima:cambiaLuogo?true:opzioni.anima,transizioneGestita:true,dopoTransizione}:opzioni;
     const aggiorna=async()=>{
+      if(cambiaAmbiente&&$('stato-condiviso').textContent===MESSAGGIO_BORSA_PIENA)stato('');
       dati=nuovi;codice=nuovoCodice;aggiornaHeader();
       memoria.scrivi(CHIAVE,codice);
       for(const fn of ascoltatori)await fn(dati,codice,impostazioni);
