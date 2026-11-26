@@ -21,7 +21,7 @@
   window.Messaggi.mostra({...r.racconto,testo,pulsante:'Continua'});
  }
  async function invia(azione,testo=null){if(busy)return;busy=true;errore='';try{const r=await window.BorsaNuova.esegui('gioco_giorno8',{p_codice:api.codice,p_azione:azione,p_testo:testo,p_richiesta:crypto.randomUUID(),p_tentativo:api.dati.tentativo});if(r){ultimo=r.racconto;mostraRisposta(r)}}catch(e){errore=e.message}finally{busy=false;disegna()}}
- function ritorni(){const e=document.createElement('div');e.className='ritorni-giorno8';e.append(b('Torna al banco',()=>invia('torna')),b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri()));area.append(e)}
+ function ritorni(){const e=document.createElement('div');e.className='ritorni-giorno8';e.append(b('Torna al banco',()=>invia('torna')),...window.LuoghiGioco.conPassante(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri())));area.append(e)}
  function fine(g){if(g.visto_ordine&&g.visto_erbe){const box=document.createElement('div');box.className='ritorni-giorno8';box.append(b('Confronta le due pergamene',()=>invia('confronta')),b('Hai raccolto le indicazioni — termina il racconto di oggi',()=>invia('fine')));area.append(box)}}
  function esplorazioni(d,g){
   const prefix=d.luogo_attuale==='farmacia_serpente'?'serpente':d.luogo_attuale==='farmacia_ordine'?'ordine':'erbe';
@@ -42,10 +42,10 @@
    area.append(p('Ti svegli alla locanda. Hai raccolto notizie e indizi su alcuni dei sette maghi, ma proprio non sai come andare avanti. Decidi di girare la città in cerca di indizi.'),b(d.luogo_attuale==='locanda_risveglio'?'Esci dalla locanda':'Torna alla locanda',()=>invia(d.luogo_attuale==='locanda_risveglio'?'esci':'torna_locanda')));return;
   }
   if(f==='fine_giorno8'){area.append(p('Le due pergamene ti hanno dato il nome di un vicolo e i particolari di una casa. Domani andrai a cercarla.'),b('Riguarda le due metà',()=>{if(!documento.open)documento.showModal()}),b('Termina giornata',()=>window.FineGiornata.apri()));return}
-  if(!farmacia){area.append(p('Hai raccolto notizie e indizi su alcuni dei sette maghi, ma non sai ancora come proseguire. Percorri le vie di Bologna e osserva ciò che incontri.'),b('Scegli dove andare sulla mappa',()=>window.LuoghiGioco.apri()));fine(g);return}
+  if(!farmacia){area.append(p('Hai raccolto notizie e indizi su alcuni dei sette maghi, ma non sai ancora come proseguire. Percorri le vie di Bologna e osserva ciò che incontri.'),...window.LuoghiGioco.conPassante(b('Scegli dove andare sulla mappa',()=>window.LuoghiGioco.apri())));fine(g);return}
   if(g.arrivo)area.append(p('Prima di arrivare alla destinazione, passi davanti a una farmacia. Sull’insegna riconosci il serpente visto sulla copertina dei verbali. Ti fermi ed entri nella bottega.'));
   if(f==='g8_farmacia'){
-   area.append(p(farmacia.descrizione),b('Compra qualcosa',()=>invia('acquisti')),b('Esplora la farmacia',()=>invia('esplora')),b('Parla con il farmacista',()=>invia('parla')),b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri()));
+   area.append(p(farmacia.descrizione),b('Compra qualcosa',()=>invia('acquisti')),b('Esplora la farmacia',()=>invia('esplora')),b('Parla con il farmacista',()=>invia('parla')),...window.LuoghiGioco.conPassante(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri())));
    if(g.rivali_note&&d.luogo_attuale==='farmacia_serpente')area.append(p('Ora conosci le due botteghe di cui ti ha parlato il farmacista. Puoi raggiungerle dalla mappa.'));
   }else if(f==='g8_esplora'){
    area.append(p(d.luogo_attuale==='farmacia_serpente'?'Osservi gli strumenti e i recipienti della bottega.':d.luogo_attuale==='farmacia_ordine'?'Puoi osservare il registro, la bilancia e un vecchio foglio nella cornice.':'Fra il disordine riconosci il mortaio, i mazzi di erbe, un vecchio foglio appeso e il gatto che occupa le ricette.'));esplorazioni(d,g);ritorni();

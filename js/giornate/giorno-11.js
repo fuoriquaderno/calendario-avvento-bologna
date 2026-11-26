@@ -65,7 +65,7 @@
   else if(f==='g11_biblioteca')biblioteca(g);
   else if(f==='g11_citta')area.append(p(g.pagina_presa?'Hai già conservato la pagina di Alano. Puoi tornare al Collegio per concludere il racconto di oggi.':g.enigma_risolto?'Ora sai come raggiungere la biblioteca del Collegio. Puoi tornarci quando vuoi.':'Hai ottenuto accesso al Collegio di Spagna. La sua biblioteca ti aspetta, se riesci a ottenere indicazioni dagli studenti.'));
   else if(f==='fine_giorno11')area.append(p('Hai trovato gli appunti di Alano e conservato una pagina: «La soluzione è sempre la scienza.» Per ora non sai a quale prova potrà servirti.'),b('Termina giornata',()=>window.FineGiornata.apri()));
-  if(f!=='fine_giorno11')area.append(b('Apri la mappa e i luoghi',mappa));if(errore)area.append(p(errore));
+  if(f!=='fine_giorno11')area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa e i luoghi',mappa)));if(errore)area.append(p(errore));
  }
  async function aggiorna(){const n=++versione;if(api.dati?.giorno_corrente!==11){disegna();return}try{await api.rpc('gioco_giorno11',{p_codice:api.codice});if(n!==versione)return;errore=''}catch(e){if(n!==versione)return;errore=e.message}disegna()}
  window.GiornoUndici={aggiorna};api.onChange(aggiorna);api.ready.then(aggiorna);

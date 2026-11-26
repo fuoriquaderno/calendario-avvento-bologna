@@ -10,6 +10,10 @@
   const GIORNO='ombra-sui-portici.popup-codice.giorno.v1';
   const INFO='ombra-sui-portici.avviso-codice.v1';
   const MESSAGGIO_BORSA_PIENA='La Borsa non ha spazio per questo oggetto. Libera spazio e poi riprova.';
+  const MESSAGGI_DI_SCENA=new Set([
+    MESSAGGIO_BORSA_PIENA,
+    'Pozione utilizzata. La cura e il consumo sono salvati.'
+  ]);
   let codice=null,dati=null,occupato=false;
   const ascoltatori=[];
   const consenso=()=>window.SpisottiConsent?.has?.('supabase')===true;
@@ -88,7 +92,7 @@
     const dopoTransizione=[];
     const impostazioni=transizione?{...opzioni,anima:cambiaLuogo?true:opzioni.anima,transizioneGestita:true,dopoTransizione}:opzioni;
     const aggiorna=async()=>{
-      if(cambiaAmbiente&&$('stato-condiviso').textContent===MESSAGGIO_BORSA_PIENA)stato('');
+      if(cambiaAmbiente&&MESSAGGI_DI_SCENA.has($('stato-condiviso').textContent))stato('');
       dati=nuovi;codice=nuovoCodice;aggiornaHeader();
       memoria.scrivi(CHIAVE,codice);
       for(const fn of ascoltatori)await fn(dati,codice,impostazioni);

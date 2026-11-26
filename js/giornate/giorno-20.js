@@ -66,23 +66,24 @@
  if(d.morto){area.append(p('Il custode ti ha sopraffatto. Puoi ripartire dal checkpoint della giornata.'),b('Riparti dal checkpoint',()=>api.esegui(()=>api.riprendiCheckpoint(),area)));return}
  const pending=window.BorsaNuova.pending?.();if(pending){area.append(p('Recupera l’esito dell’ultima azione prima di continuare.'),b('Recupera il risultato',async()=>{const r=await window.BorsaNuova.esegui(pending.nomeRpc,pending.args);if(r?.racconto)window.Messaggi.mostra(r.racconto);disegna()}));return}
  if(d.giornata_completata){area.append(p('La giornata 20 è confermata. Il Cortile di Pilato ti aspetta.'));return}
- if(['g20_serpente','g20_ritorno'].includes(f))area.append(p('Hai ritrovato la tua misura e aperto la porta di Vitale e Agricola. Ora puoi scoprire ciò che custodisce la quarta chiesa.'),b('Raggiungi Santi Vitale e Agricola',()=>passaggio(4)),b('Apri la mappa delle Sette Chiese',mappa));
+ if(['g20_serpente','g20_ritorno'].includes(f))area.append(p('Hai ritrovato la tua misura e aperto la porta di Vitale e Agricola. Ora puoi scoprire ciò che custodisce la quarta chiesa.'),window.SetteChiese.comandoNavigazione(b('Raggiungi Santi Vitale e Agricola',()=>passaggio(4))),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  else if(f==='g20_navata'){
  area.append(p('Le colonne incorniciano un piccolo altare. Il sarcofago scolpito occupa un lato della navata; vicino trovi una lampada e due recipienti. Il sole inciso nella pietra è il segno di Alano.'));
  if(d.inventario?.includes('pagina_alano'))area.append(p('Conservi ancora la pagina di Alano: «La soluzione è sempre la scienza».'));
- area.append(b('Prova il passaggio verso il Cortile di Pilato',()=>passaggio(5)),b(g.custode_liberato?'Torna al luogo del sigillo':'Osserva la parete davanti a te',()=>invia('apparizioni')));
+ area.append(window.SetteChiese.comandoNavigazione(b('Prova il passaggio verso il Cortile di Pilato',()=>passaggio(5))),b(g.custode_liberato?'Torna al luogo del sigillo':'Osserva la parete davanti a te',()=>invia('apparizioni')));
  for(const[id,t]of [['sarcofago','Esamina il sarcofago'],['capitelli','Osserva i capitelli'],['recipienti','Esamina i recipienti'],['finestra','Avvicinati alla finestra'],['altare','Guarda dietro l’altare']])area.append(b(t,()=>invia('esplora',id)));
  if(g.pozione_vista&&!g.pozione_presa)area.append(b('Prendi la pozione media',async()=>{if(await window.ConfermaPergamena('Vuoi raccogliere la pozione media? Occupa il peso previsto nella Borsa.',{titolo:'La custodia dietro l’altare',conferma:'Prendi la pozione',annulla:'Lasciala lì'}))await invia('prendi_pozione')}));
- if(g.ombra_verificata&&!g.custode_liberato)area.append(b('Torna alla tavola degli specchi',()=>invia('specchi')));area.append(b('Apri la mappa delle Sette Chiese',mappa));
+ if(g.ombra_verificata&&!g.custode_liberato)area.append(b('Torna alla tavola degli specchi',()=>invia('specchi')));area.append(window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  }else if(f==='g20_apparizioni')ombre(g);
  else if(f==='g20_specchi')tavola(g);
  else if(f==='g20_custode')area.append(p('La luce ha sciolto il sigillo. Il custode è uscito dalla soglia e prepara un incanto. Ora la figura è reale e può essere affrontata.'),b('Affronta il custode',()=>window.AzioniGioco.apriScontro()));
  else if(f==='g20_riparo')area.append(p('Ti sei sottratto ai bagliori del custode. Dal riparo dietro il sarcofago puoi recuperare le forze. Le ferite che hai inflitto alla figura rimangono.'),b('Torna ad affrontare il custode',()=>invia('riprendi_custode')),b('Apri la Borsa',()=>$('apri-borsa')?.click()));
  else if(f==='g20_dopocustode'){
  area.append(p('Il custode è immobile e le immagini ingannevoli sono svanite. Nel punto che sorvegliava distingui un piccolo alloggiamento nella pietra.'),b('Esamina l’alloggiamento',()=>invia('esamina_custodia')));
- if(g.custodia_vista&&!g.chiave_presa)area.append(p('Il foglio di Alano dice: «Il pericolo cominciò quando smettemmo di verificare le risposte, perché erano quasi sempre giuste».'),b('Prendi la chiave con il sole',()=>invia('prendi_chiave')));if(g.chiave_presa)area.append(b('Controlla il passaggio verso il cortile',()=>passaggio(5)));
- }else if(f==='fine_giorno20')area.append(p('Hai verificato le apparenze, seguito il percorso della luce e superato il custode. Il passaggio al Cortile di Pilato è aperto; lo attraverserai domani.'),b('Termina giornata',()=>window.FineGiornata.apri()),b('Apri la mappa delle Sette Chiese',mappa));
+ if(g.custodia_vista&&!g.chiave_presa)area.append(p('Il foglio di Alano dice: «Il pericolo cominciò quando smettemmo di verificare le risposte, perché erano quasi sempre giuste».'),b('Prendi la chiave con il sole',()=>invia('prendi_chiave')));if(g.chiave_presa)area.append(window.SetteChiese.comandoNavigazione(b('Controlla il passaggio verso il cortile',()=>passaggio(5))));
+ }else if(f==='fine_giorno20')area.append(p('Hai verificato le apparenze, seguito il percorso della luce e superato il custode. Il passaggio al Cortile di Pilato è aperto; lo attraverserai domani.'),b('Termina giornata',()=>window.FineGiornata.apri()),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e)}
+ window.SetteChiese.posizionaNavigazione(area);
  }
  async function aggiorna(){const n=++revision;disegna();if(api.dati?.giorno_corrente!==20)return;try{await api.rpc('gioco_giorno20',{p_codice:api.codice});if(n===revision)errore=''}catch(e){if(n===revision){errore=e.message;disegna()}}}
  window.Giorno20={aggiorna,passaggio,occupato:()=>busy};api.onChange(aggiorna);api.ready.then(aggiorna);

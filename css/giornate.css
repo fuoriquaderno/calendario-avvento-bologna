@@ -351,3 +351,18 @@ dialog.sette-chiese-dialog{width:min(940px,96vw);max-height:94dvh;padding:14px;o
 /* Novanta tessere come nel sacchetto della tombola. */
 #racconto-giorno22 .tessere-ragno22{grid-template-columns:repeat(10,minmax(0,1fr));max-width:760px;max-height:45dvh;overflow:auto;box-sizing:border-box;padding:6px;border:1px solid #79502c;border-radius:4px;gap:8px;overscroll-behavior:contain}
 @media(max-width:700px){#racconto-giorno22 .tessere-ragno22{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}}
+
+.navigazione-sette-chiese {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-block-start: 32px;
+}
+
+@media (max-width: 600px) {
+  .navigazione-sette-chiese > button {
+    width: 100%;
+    margin-inline: 0;
+  }
+}

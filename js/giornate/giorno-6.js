@@ -50,7 +50,7 @@
   else if(d.luogo_attuale!=='tombe_glossatori')area.append(b('Passeggia per la città',()=>invia('passeggia')));
   if(g.indice_conosciuto&&d.luogo_attuale!=='bottega_indice')area.append(b('Raggiungi la bottega di scrittura',()=>invia('vai_indice')));
   if(g.tombe_scoperte&&d.luogo_attuale!=='tombe_glossatori')area.append(b('Raggiungi il luogo individuato',()=>invia('vai_tombe')));
-  area.append(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri()));
+  area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri())));
   if(g.in_cammino&&!g.studenti&&!g.consiglio_locanda&&['piazza_maggiore','mercato','porta_maggiore','san_francesco','san_domenico'].includes(d.luogo_attuale))area.append(b('Parla con un passante',()=>invia('passante_locanda')));
 
  }

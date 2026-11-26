@@ -159,11 +159,42 @@
  dialogo.addEventListener('close',()=>window.Dadi?.pulisci());
  dialogo.addEventListener('cancel',e=>{if(busy)e.preventDefault()});
  prova.addEventListener('click',()=>apri('allenamento'));combatti.addEventListener('click',()=>apri('storia'));nellaStoria.addEventListener('click',()=>apri('storia'));
+ let preparazione=null;
+ function aggiornaPreparazione(){
+   for(const area of document.querySelectorAll('main [data-preparazione-scontro]'))disegnaPreparazione(area);
+ }
+ function disegnaPreparazione(area){
+   const opzioni=preparazione?.fase===area.dataset.preparazioneScontro?preparazione.opzioni:null;
+   area.replaceChildren();area.hidden=!opzioni?.riposo&&!opzioni?.difesa_media;
+   if(area.hidden)return;
+   const messaggio=p('');messaggio.setAttribute('role','status');
+   if(opzioni.riposo)area.append(b('Riprendi fiato - recupera fino a '+opzioni.soglia_hp+' HP',()=>usaPreparazione('riprendi_fiato',messaggio)));
+   if(opzioni.difesa_media)area.append(b('Raccogli una difesa media',()=>usaPreparazione('prendi_difesa_media',messaggio)));
+   area.append(messaggio);
+ }
+ function creaPreparazione(){
+   const area=document.createElement('div');
+   area.dataset.preparazioneScontro=api.dati?.stato_partita?.fase||'';
+   disegnaPreparazione(area);
+   return area;
+ }
+ async function usaPreparazione(azione,messaggio){
+   if(busy||api.occupato||!api.dati)return;
+   const codice=api.codice;
+   await api.esegui(async()=>{
+     const r=await api.rpc('gioco_scontro',{p_codice:codice,p_azione:azione,p_tentativo:api.dati.tentativo});
+     await api.applica(r.partita,codice,{anima:false});
+     if(azione==='prendi_difesa_media')window.Messaggi.mostra({
+       titolo:'Difesa media',testo:'Hai riposto la difesa media nella Borsa. Equipaggiala per ottenere +2 alla difesa fisica e magica.',pulsante:'Continua'
+     });
+   },messaggio);
+ }
  let revisione=0;
  async function aggiorna(){
    const n=++revisione;prova.hidden=!api.dati;livelli.hidden=!api.dati;
    livelli.textContent=api.dati?`Livello ${api.dati.livello||1} · ${api.dati.xp||0} XP · prossimo livello a ${((api.dati.livello||1)*10)} XP`:'';
    combatti.hidden=true;nellaStoria.hidden=true;
+   preparazione=null;aggiornaPreparazione();
    if(owner&&owner!==api.codice){vista=null;pendente=null;menuOggetti=false;menuBersagli=false;oggettoAperto=null;dialogo.close()}
    if(!api.dati)return;
    let sospesa;try{sospesa=JSON.parse(api.memoria.leggi(KEY))}catch{}
@@ -172,10 +203,10 @@
      nellaStoria.hidden=false;nellaStoria.textContent='Recupera esito del combattimento';
    }else combatti.textContent='Riprendi combattimento';
    if(api.dati.morto)return;
-   try{const s=await api.rpc('gioco_scontro',{p_codice:api.codice,p_azione:'disponibile'});if(n!==revisione)return;if(s&&!s.terminato){combatti.hidden=false;nellaStoria.hidden=!$('schermata-gioco')||['g4_fantasma','g16_facchino_prova','g16_facchino_attacco','g17_guardiano','g17_effigi'].includes(api.dati.stato_partita?.fase);nellaStoria.textContent='Inizia il combattimento'}}
+   try{const s=await api.rpc('gioco_scontro',{p_codice:api.codice,p_azione:'disponibile'});if(n!==revisione)return;preparazione={fase:api.dati?.stato_partita?.fase,opzioni:s?.preparazione};aggiornaPreparazione();if(s&&!s.terminato){combatti.hidden=false;nellaStoria.hidden=!$('schermata-gioco')||['g4_fantasma','g16_facchino_prova','g16_facchino_attacco','g17_guardiano','g17_effigi'].includes(api.dati.stato_partita?.fase);nellaStoria.textContent='Inizia il combattimento'}}
    catch{/* La borsa resta utilizzabile quando la verifica dello scontro fallisce. */}
  }
- window.AzioniGioco={apriScontro:()=>apri('storia'),async usaPozione(id){
+ window.AzioniGioco={apriScontro:()=>apri('storia'),preparazione:creaPreparazione,async usaPozione(id){
    if(!await window.ConfermaPergamena('Usare una pozione? Si consumerà dopo la conferma della cura.'))return;
    const requestKey='ombra-sui-portici.pozione.v1';let r;
    try{r=JSON.parse(api.memoria.leggi(requestKey))}catch{}

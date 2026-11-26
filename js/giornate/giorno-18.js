@@ -24,7 +24,7 @@
  function esplora(g){
  area.append(b('Leggi il libro sul leggio',()=>invia('esplora','leggio')),b('Guarda sotto le panche',()=>invia('esplora','panche')),b('Osserva le immagini alle pareti',()=>invia('esplora','immagini')),b('Esamina sotto l’altare',()=>invia('esplora','altare')));
  if(g.panche_viste&&!g.pozione_presa)area.append(b('Prendi la pozione potente',async()=>{if(busy)return;if(await window.ConfermaPergamena('Vuoi prendere la pozione potente trovata sotto la panca? Occupa il peso previsto nella Borsa.',{titolo:'La pozione sotto la panca',conferma:'Prendi la pozione',annulla:'Lasciala lì'}))await invia('pozione')}));
- area.append(b('Risali nella Chiesa della Stella',()=>passaggio(1)),b('Apri la mappa delle Sette Chiese',mappa));
+ area.append(window.SetteChiese.comandoNavigazione(b('Risali nella Chiesa della Stella',()=>passaggio(1))),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  }
  function disegna(){
  const d=api.dati,s=d?.stato_partita||{},g=s.g18||{},f=s.fase||'',valido=d?.giorno_corrente===18&&(f.startsWith('g18_')||f==='fine_giorno18');
@@ -34,7 +34,7 @@
  const h=document.createElement('h2');h.textContent=({g18_scala:'La scala sotto l’altare',g18_cripta:'La Chiesa del Trifoglio',g18_immagini:'Le immagini alle pareti',g18_lastra:'La lastra sotto l’altare',g18_risolto:'Uno scatto dall’alto',g18_stella:'Di nuovo nella Chiesa della Stella',g18_ombre:'Le ombre di inchiostro',fine_giorno18:'Il passaggio verso la terza chiesa'})[f]||'La cripta';area.append(h);
  if(d.morto){area.append(p('La tua avventura si è interrotta. Puoi ripartire dal checkpoint della giornata.'),b('Riparti dal checkpoint',()=>api.esegui(()=>api.riprendiCheckpoint(),area)));return}
  if(d.giornata_completata){area.append(p('La giornata 18 è confermata. Il passaggio verso il Santo Sepolcro è aperto.'));return}
- if(f==='g18_scala')area.append(p('Il cielo di pietra ha rivelato una scala. Prima di proseguire verso gli altri ambienti, puoi scendere sotto l’altare e scoprire che cosa custodisce la cripta.'),b('Scendi nella cripta',()=>passaggio(2)),b('Apri la mappa delle Sette Chiese',mappa));
+ if(f==='g18_scala')area.append(p('Il cielo di pietra ha rivelato una scala. Prima di proseguire verso gli altri ambienti, puoi scendere sotto l’altare e scoprire che cosa custodisce la cripta.'),window.SetteChiese.comandoNavigazione(b('Scendi nella cripta',()=>passaggio(2))),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  else if(f==='g18_cripta'){
  area.append(p('Alla base del leggio riconosci un trifoglio inciso: il sigillo di Samuele. Questa è la Chiesa del Trifoglio. Le volte sono basse e le colonne dividono la cripta in piccoli spazi raccolti. Un altare occupa il centro; accanto c’è un leggio con un libro aperto. Alle pareti sono appese quattro immagini sacre, ciascuna con un’iscrizione.'),p('Non senti passi né rumori della città. La scala verso la Chiesa della Stella rimane alle tue spalle.'));esplora(g);
  }else if(f==='g18_immagini'){
@@ -58,16 +58,17 @@
  if(g.aiuto_usato){const aiuto=document.createElement('details'),titolo=document.createElement('summary');titolo.textContent='Rileggi il suggerimento';aiuto.append(titolo,p('«Verba volant, scripta manent»: le parole volano, gli scritti rimangono.'));area.append(aiuto)}
  area.append(b('Torna alle immagini',()=>invia('esplora','immagini')),b('Torna a esplorare la cripta',()=>invia('torna')));
  }else if(f==='g18_risolto'){
- area.append(p('La voce tace. Sulla lastra è comparsa un’annotazione firmata da Samuele: «Avevamo dato alla magia molte risposte possibili. Non avevamo previsto che imparasse a scegliere le proprie».'),p('Hai sentito uno scatto metallico provenire dalla Chiesa della Stella. Devi risalire per capire che cosa sia successo.'),b('Risali nella Chiesa della Stella',()=>passaggio(1)),b('Rimani a esplorare la cripta',()=>invia('torna')));
+ area.append(p('La voce tace. Sulla lastra è comparsa un’annotazione firmata da Samuele: «Avevamo dato alla magia molte risposte possibili. Non avevamo previsto che imparasse a scegliere le proprie».'),p('Hai sentito uno scatto metallico provenire dalla Chiesa della Stella. Devi risalire per capire che cosa sia successo.'),window.SetteChiese.comandoNavigazione(b('Risali nella Chiesa della Stella',()=>passaggio(1))),b('Rimani a esplorare la cripta',()=>invia('torna')));
  }else if(f==='g18_stella'){
- area.append(p(g.risolto?'Risali nella navata. Qui tutto sembra immobile, ma lo scatto che hai sentito proveniva proprio da questa chiesa.':'La navata è silenziosa. La scala della cripta rimane aperta; la parete verso il Santo Sepolcro attende ancora.'),b('Controlla il passaggio verso il Santo Sepolcro',()=>passaggio(3)),b('Scendi nella cripta',()=>passaggio(2)),b('Apri la mappa delle Sette Chiese',mappa));
+ area.append(p(g.risolto?'Risali nella navata. Qui tutto sembra immobile, ma lo scatto che hai sentito proveniva proprio da questa chiesa.':'La navata è silenziosa. La scala della cripta rimane aperta; la parete verso il Santo Sepolcro attende ancora.'),window.SetteChiese.comandoNavigazione(b('Controlla il passaggio verso il Santo Sepolcro',()=>passaggio(3))),window.SetteChiese.comandoNavigazione(b('Scendi nella cripta',()=>passaggio(2))),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  }else if(f==='g18_ombre'){
  area.append(p('Due figure fatte di lettere e inchiostro si muovono fra le colonne. Le immagini sono rimaste appese, ma i segni staccati dalla pietra si addensano in mani pronte a scagliare incanti.'),b('Inizia il combattimento',()=>window.AzioniGioco.apriScontro()));
  }else if(f==='fine_giorno18'){
- area.append(p('Hai verificato che il passaggio dalla Chiesa della Stella al Santo Sepolcro è aperto. Lo attraverserai nella prossima giornata.'),b('Termina giornata',()=>window.FineGiornata.apri()),b('Apri la mappa delle Sette Chiese',mappa));
+ area.append(p('Hai verificato che il passaggio dalla Chiesa della Stella al Santo Sepolcro è aperto. Lo attraverserai nella prossima giornata.'),b('Termina giornata',()=>window.FineGiornata.apri()),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  if(sotto){area.append(b('Rileggi l’annotazione sotto l’altare',()=>invia('esplora','altare')),b('Guarda sotto le panche',()=>invia('esplora','panche')));if(g.panche_viste&&!g.pozione_presa)area.append(b('Prendi la pozione potente',()=>invia('pozione')))}
  }
  if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e)}
+ window.SetteChiese.posizionaNavigazione(area);
  }
  let ultimoErrore='';async function aggiorna(){const n=++revision;disegna();if(api.dati?.giorno_corrente!==18)return;try{const r=await api.rpc('gioco_giorno18',{p_codice:api.codice});if(n!==revision)return;const fase=api.dati?.stato_partita?.fase;if(api.dati?.stato_partita?.fase!==fase)disegna();ultimoErrore=''}catch(e){if(n===revision&&e.message!==ultimoErrore){ultimoErrore=e.message;errore=e.message;disegna()}}}
  window.Giorno18={passaggio,occupato:()=>busy,aggiorna};api.onChange(aggiorna);api.ready.then(aggiorna);

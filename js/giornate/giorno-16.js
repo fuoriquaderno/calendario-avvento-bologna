@@ -50,7 +50,7 @@
  else area.append(p('Cerchi di scansarlo, ma il piede ti scivola e finisci sul pavimento con un tonfo. Il gatto balza via e ti guarda da una distanza prudente.'),p('Una porta si spalanca. La moglie del locandiere appare con uno scialle sulle spalle: «Ma ti pare l’ora di far tremare tutta la casa? La porta è da quella parte! E lascia stare il gatto, che lui sa dove mette le zampe!»'),p('Ti rialzi, raccogli quel che resta della tua dignità e raggiungi l’uscita sotto il suo sguardo severo.'));
  area.append(b('Esci dalla locanda',()=>invia('esci')));
  }else if(f==='g16_strada'){
- area.append(p('Bologna sembra trattenere il respiro. Le strade sono vuote, le imposte ancora serrate; sotto i portici il rumore dei tuoi passi corre più lontano del solito. L’aria fredda ti pizzica il viso e ogni respiro si scioglie in una piccola nuvola.'),p('Dai tetti sale qualche filo di fumo. In fondo a una via una finestra si accende, poi torna tutto immobile. Sopra le torri il cielo ha appena cominciato a perdere il nero della notte, lasciando una striscia più chiara verso oriente.'),p('Natale si avvicina. Non sapresti dire se sia il freddo, l’attesa o il silenzio, ma la città ha qualcosa di quasi magico anche senza incanti. Per una volta non hai fretta di attraversarla.'),b('Prosegui verso il voltone',()=>invia('voltone')),b('Apri la mappa',mappa));
+ area.append(p('Bologna sembra trattenere il respiro. Le strade sono vuote, le imposte ancora serrate; sotto i portici il rumore dei tuoi passi corre più lontano del solito. L’aria fredda ti pizzica il viso e ogni respiro si scioglie in una piccola nuvola.'),p('Dai tetti sale qualche filo di fumo. In fondo a una via una finestra si accende, poi torna tutto immobile. Sopra le torri il cielo ha appena cominciato a perdere il nero della notte, lasciando una striscia più chiara verso oriente.'),p('Natale si avvicina. Non sapresti dire se sia il freddo, l’attesa o il silenzio, ma la città ha qualcosa di quasi magico anche senza incanti. Per una volta non hai fretta di attraversarla.'),b('Prosegui verso il voltone',()=>invia('voltone')),...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
  }else if(f==='g16_voltone'){
  area.append(p('Arrivi sotto il voltone mentre la prima luce raggiunge gli archi. Gli angoli sono vuoti. Non c’è nessuno con cui scambiare sussurri, nessuno che ti risponda per gioco.'),p('Ti avvicini alla muratura. Nel silenzio senti il fruscio dei tuoi vestiti e, lontano, una porta che viene aperta. Poi una voce bassa, vicinissima: «Sei tornato.»'),b('Accostati all’angolo e parla',()=>invia('accostati')));
  }else if(f==='g16_domande'){
@@ -58,11 +58,11 @@
  const form=document.createElement('form'),label=document.createElement('label'),input=document.createElement('textarea'),submit=document.createElement('button');label.textContent='Che cosa chiedi alla voce?';input.id='domanda-re-g16';label.htmlFor=input.id;input.maxLength=500;input.rows=3;input.required=true;input.disabled=busy;submit.type='submit';submit.textContent='Domanda';submit.disabled=busy;form.append(label,input,submit);form.addEventListener('submit',e=>{e.preventDefault();const t=input.value.trim();if(t)invia('domanda',t)});area.append(form);
  if(s.risposta_g16?.testo){const rileggi=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Rileggi l’ultima risposta';rileggi.append(summary,p(s.risposta_g16.testo));area.append(rileggi)}
  if(g.aiuto_vecchina){const aiuti=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Gli aiuti degli Spisotti';aiuti.append(summary);for(const [nome,url] of [['Facebook','https://www.facebook.com/profile.php?id=61594558125926'],['Instagram','https://www.instagram.com/glispisotti/']]){const link=document.createElement('a');link.textContent=nome;link.href=url;link.target='_blank';link.rel='noopener noreferrer';aiuti.append(link)}area.append(aiuti)}
- area.append(b('Apri la mappa',mappa));
+ area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
  }else if(f==='g16_rimando'){
  area.append(p('Santo Stefano. Le Sette Chiese. Hai finalmente un luogo da cui cominciare, ma il re ti ha rimandato a chi ti ha affidato la ricerca.'),p('Devi tornare da Iliano: c’è qualcosa che non ti ha ancora raccontato.'),b('Passeggia in attesa che la città si svegli',()=>invia('passeggia')));
  }else if(f==='g16_citta'){
- area.append(p(g.rimando_iliano?'Il re ti ha rimandato a Iliano. Devi tornare da lui per sapere come varcare la soglia.':'La città comincia appena a svegliarsi. Puoi raggiungere il voltone per ascoltare la voce.'),b('Apri la mappa',mappa));
+ area.append(p(g.rimando_iliano?'Il re ti ha rimandato a Iliano. Devi tornare da lui per sapere come varcare la soglia.':'La città comincia appena a svegliarsi. Puoi raggiungere il voltone per ascoltare la voce.'),...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
  if(g.rimando_iliano&&!g.facchino_esito)area.append(b('Passeggia per la città',()=>invia('passeggia')));
  if(!g.rimando_iliano)area.append(b('Raggiungi il voltone',()=>invia('voltone')));
  }else if(f==='g16_passeggiata'){
@@ -80,7 +80,7 @@
  }else if(f==='g16_facchino_salvo'){
  area.append(p('Il facchino resta fermo fra le casse, con le braccia abbassate. L’apprendista gli gira attorno, incredulo, poi corre ad aprire la porta al padrone.'),p('L’uomo ascolta il racconto, controlla che il suo servitore sia intero e ti porge cinque monete d’argento. «Hai salvato la merce e il ragazzo. Per l’ordine ci penseremo con calma.»'),p('Ricevi 5 monete d’argento e 3 XP. La ricompensa è già stata salvata.'),b('Saluta e riprendi la passeggiata',()=>invia('saluta_apprendista')));
  }else if(f==='g16_attesa_iliano'){
- area.append(p('Ora dalle botteghe arrivano voci e rumori di lavoro. La notte è finita: puoi tornare da Iliano e chiedergli ciò che il re ha lasciato in sospeso.'),b('Apri la mappa',mappa));
+ area.append(p('Ora dalle botteghe arrivano voci e rumori di lavoro. La notte è finita: puoi tornare da Iliano e chiedergli ciò che il re ha lasciato in sospeso.'),...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
  }else if(['g16_arresto','g16_facchino_sconfitto'].includes(f)){
  area.append(p(f==='g16_facchino_sconfitto'?'Una delle braccia di legno ti travolge. Cadi fra le casse e non riesci più a rialzarti.': 'Il facchino si schianta sul pavimento. Il padrone entra proprio mentre l’ultimo pezzo di legno smette di rotolare. Guarda il suo servitore distrutto, poi te. Non vuole sentire spiegazioni: chiama le guardie.'),p(f==='g16_facchino_sconfitto'?'Il combattimento è finito. Puoi ripartire dal checkpoint della giornata.':'Ti portano via sotto lo sguardo dell’apprendista. L’arresto interrompe la tua avventura e conta come una morte. Ripartirai dall’inizio della giornata, con gli oggetti e gli appunti del checkpoint.'),b('Riparti dal checkpoint',async()=>{if(busy)return;busy=true;disegna();try{const r=await api.rpc('gioco_riprendi_checkpoint',{p_codice:api.codice,p_tentativo:api.dati.tentativo});await api.applica(r,api.codice,{anima:true})}catch(e){errore=e.message}finally{busy=false;disegna()}}));
 
@@ -96,13 +96,13 @@
  }else if(f==='g16_verso_chiese'||f==='g16_iliano_ripasso'){
  area.append(p(f==='g16_iliano_ripasso'?'Iliano solleva lo sguardo dai suoi appunti. «Hai ciò che ti serve. A destra dell’entrata che sei solito passare, ricordalo.»':'Ripieghi la mappa e lasci l’osteria. Per raggiungere il nascondiglio devi cominciare da Santo Stefano.'));
  if(possiedeMappa())area.append(b('Guarda la mappa di Iliano',mostraPianta));
- area.append(b('Rileggi le istruzioni del rito',ripassoRito),b('Apri la mappa di Bologna',mappa));
+ area.append(b('Rileggi le istruzioni del rito',ripassoRito),...window.LuoghiGioco.conPassante(b('Apri la mappa di Bologna',mappa)));
  }else if(f==='g16_chiese'){
  area.append(p('La piazza è attraversata da mercanti, passanti e monaci benedettini. Il portone della chiesa è aperto; qualcuno entra, altri si fermano a parlare davanti alla facciata.'),p('Riconosci il punto indicato da Iliano, a destra dell’ingresso. Ti basta avvicinarti al muro per tentare il rito.'));
  area.append(b('Prova a compiere il rito',()=>invia('prova_rito')),b('Rileggi le istruzioni',ripassoRito));
  if(possiedeMappa())area.append(b('Consulta la mappa di Iliano',mostraPianta));
  if(g.tentativi_diurni>=3)area.append(p('Fra chi entra e chi esce non riesci a restare vicino al muro senza essere notato.'),b('Aspetta che faccia buio',()=>invia('attendi_buio')));
- else area.append(b('Apri la mappa di Bologna',mappa));
+ else area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa di Bologna',mappa)));
  }else if(f==='fine_giorno16'){
  area.append(p('Aspetti che le botteghe chiudano e i passi sotto i portici si facciano più radi. Le ultime conversazioni si allontanano. Quando torni davanti a Santo Stefano, la piazza è deserta.'),p('Sopra i tetti sono apparse la luna e qualche stella. Stringi la pergamena di Iliano, su cui compaiono ancora soltanto i sette simboli, e ti avvicini al lato destro del portone. Questa volta nessuno ti interrompe.'),p('Ora puoi tentare di aprire la soglia. Il tuo cammino nelle Sette Chiese comincerà nella prossima giornata.'));
  if(possiedeMappa())area.append(b('Consulta la mappa di Iliano',mostraPianta));

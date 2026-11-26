@@ -26,28 +26,28 @@
   else if(f==='g10_strada'){
    area.append(p(g.lettera?'Hai con te la lettera del bibliotecario. Ora il custode del Collegio dovrebbe lasciarti passare.':g.fascicolo?'La copia è pronta. Devi riportarla al bibliotecario di San Domenico.':g.favore?'Il bibliotecario aspetta il fascicolo affidato al copista.':g.erudito?'Il custode accetterebbe una lettera del bibliotecario di San Domenico.':g.collegio_noto?'Un passante ti ha indicato il Collegio degli Spagnoli. Puoi raggiungerlo dalla mappa.':'Potresti chiedere dove consultare altri libri antichi, oltre a quelli di San Domenico.'));
    if(!g.collegio_noto)area.append(b('Chiedi a un passante dove trovare altri libri',()=>invia('passante')));
-   area.append(b('Apri la mappa e scegli dove andare',mappa));
+   area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa e scegli dove andare',mappa)));
   }else if(f==='g10_portone'){
    area.append(p('Il portone del Collegio è sorvegliato. Dietro l’ingresso intravedi un passaggio, ma il custode ti ferma prima che tu possa avvicinarti.'));
    if(!g.custode)area.append(b('Chiedi di consultare la biblioteca',()=>invia('custode')));
    else if(!g.erudito)campo('A chi potresti chiedere una lettera di presentazione?','Proponi un nome','erudito');
    else area.append(p('Una lettera del bibliotecario di San Domenico sarà sufficiente. Sai già dove trovarlo.'));
-   area.append(b('Apri la mappa',mappa));
+   area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
   }else if(f==='g10_bibliotecario'){
    if(g.lettera)area.append(p('Hai già ricevuto la lettera con il sigillo del bibliotecario. Non ti resta che presentarla al custode del Collegio.'));
    else if(g.fascicolo)area.append(p('Il bibliotecario solleva gli occhi dai suoi appunti. Hai con te il fascicolo ricopiato che stava aspettando.'),b('Consegna il fascicolo',()=>invia('consegna')));
    else if(g.favore)area.append(p('«Il fascicolo è ancora dal copista. Riportamelo e scriverò la tua lettera.»'));
    else area.append(p('Ritrovi il bibliotecario al suo banco. Gli spieghi che vorresti consultare i libri del Collegio degli Spagnoli e che per entrare ti serve qualcuno che garantisca per te.'),b('Chiedi una lettera di presentazione',()=>invia('favore')));
-   area.append(b('Apri la mappa',mappa));
-  }else if(f==='g10_copista')area.append(p('Nella bottega il copista cerca di trattenere con un gomito una pila di fogli, mentre ne sfoglia un’altra. Sul banco riconosci il nome della biblioteca di San Domenico.'),b('Chiedi il fascicolo del bibliotecario',()=>invia('copista')),b('Apri la mappa',mappa));
+   area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
+  }else if(f==='g10_copista')area.append(p('Nella bottega il copista cerca di trattenere con un gomito una pila di fogli, mentre ne sfoglia un’altra. Sul banco riconosci il nome della biblioteca di San Domenico.'),b('Chiedi il fascicolo del bibliotecario',()=>invia('copista')),...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
   else if(f==='g10_fogli'){
    area.append(p('I tre fogli descrivono un procedimento. Sceglili nell’ordine in cui dovrebbero essere letti.'));
    for(const [id,testo] of Object.entries(fogli)){const button=b(testo,()=>{if(!ordine.includes(id)&&ordine.length<3){ordine.push(id);disegna()}});button.disabled=busy||ordine.includes(id);area.append(button)}
    const lista=document.createElement('ol');lista.className='ordine-fogli-g10';for(const id of ordine){const li=document.createElement('li');li.textContent=fogli[id];lista.append(li)}area.append(lista);
    const consegna=b('Mostra l’ordine al copista',()=>invia('ordine',ordine.join(',')));consegna.disabled=busy||ordine.length!==3;area.append(consegna,b('Ricomincia l’ordine',()=>{ordine=[];disegna()}));
    if((g.errori_ordine||0)>=3)area.append(b('Chiedi un aiuto al copista',()=>invia('aiuto')));
-   area.append(b('Apri la mappa',mappa));
-  }else if(f==='g10_copista_pronto')area.append(p('Il copista ti ha consegnato il fascicolo, con i fogli nuovamente in ordine. Lo conservi con cura: devi riportarlo al bibliotecario di San Domenico.'),b('Apri la mappa',mappa));
+   area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
+  }else if(f==='g10_copista_pronto')area.append(p('Il copista ti ha consegnato il fascicolo, con i fogli nuovamente in ordine. Lo conservi con cura: devi riportarlo al bibliotecario di San Domenico.'),...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
   else if(f==='g10_cortile')area.append(p('Il custode legge la lettera, controlla il sigillo e si scosta. «Puoi passare. E bada a rispettare i libri.» Attraversi l’ingresso e ti ritrovi nel cortile: due ordini di archi, un pozzo e, sopra i tetti, una piccola torretta.'),p('Hai ottenuto l’accesso al Collegio. Domani cercherai la biblioteca e proverai a scoprire che cosa custodiscono i suoi volumi.'),b('Termina il racconto di oggi',()=>invia('fine')));
   else if(f==='fine_giorno10')area.append(p('Il Collegio ti ha aperto le porte grazie alla lettera del bibliotecario. Puoi concludere la giornata oppure continuare a girare per la città.'),b('Termina giornata',()=>window.FineGiornata.apri()));
   if(errore)area.append(p(errore));

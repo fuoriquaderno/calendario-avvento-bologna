@@ -44,7 +44,20 @@
  if(busy)return;const r=await invia('passaggio',String(n));if(r&&api.dati?.stato_partita?.fase==='g17_stelle')mappa.close();
  }
  function apriMappa(){if(!dentro())return;img.src=api.risorsa('images/map_reale.png');disegnaMappa();$('inventario')?.close();if(!mappa.open)mappa.showModal()}
- window.SetteChiese={apri:apriMappa,aggiorna:disegnaMappa};
+ function comandoNavigazione(comando){
+   comando.setAttribute('data-navigazione-sette-chiese','');
+   return comando;
+ }
+ function posizionaNavigazione(scena){
+   const comandi=scena.querySelectorAll(':scope > [data-navigazione-sette-chiese]');
+   if(!comandi.length)return;
+   const navigazione=document.createElement('nav');
+   navigazione.className='navigazione-sette-chiese';
+   navigazione.setAttribute('aria-label','Passaggi e mappa delle Sette Chiese');
+   navigazione.append(...comandi);
+   scena.append(navigazione);
+ }
+ window.SetteChiese={apri:apriMappa,aggiorna:disegnaMappa,comandoNavigazione,posizionaNavigazione};
  // Tutte le stelle principali hanno lo stesso bersaglio invisibile. Nessun indice indica la soluzione.
  const stelle=[[.067,.552],[.138,.598],[.179,.674],[.219,.743],[.195,.809],[.278,.867],[.328,.794],[.318,.242],[.381,.229],[.393,.281],[.331,.3],[.446,.288],[.493,.326],[.528,.383],[.168,.353],[.19,.3],[.234,.323],[.218,.376],[.249,.431],[.258,.515],[.32,.58],[.375,.565],[.425,.547],[.483,.579],[.516,.636],[.56,.672],[.621,.657],[.66,.602],[.807,.146],[.752,.241],[.742,.359],[.842,.36],[.859,.24],[.738,.488],[.78,.547],[.82,.503],[.869,.535],[.908,.461]];
 
@@ -89,15 +102,16 @@
  else if(f==='g17_ritorno_soglia')area.append(p('Ti sei sottratto al custode, ma la figura continua a sorvegliare il passaggio. Le ferite che gli hai inflitto non sono scomparse.'),b('Torna ad affrontare il custode',()=>invia('riprendi_guardiano')));
  else if(f==='g17_ingresso')area.append(p('Il custode cade e il segno sul suo petto si spegne. La soglia è libera. Stringi la pergamena di Iliano e fai un passo verso la penombra.'),b('Entra nella dimensione alternativa',()=>invia('entra')));
  else if(f==='g17_navata'){
- area.append(p('La navata somiglia a quella che conosci, ma i suoni non arrivano da Bologna. Sulla pergamena di Iliano ora distingui sette ambienti e i passaggi che dovrebbero collegarli.'),p('L’altare è rialzato sopra una breve scala. Lungo le pareti trovi nicchie, piccoli reliquiari e due icone di santi. Puoi esaminare la chiesa oppure cercare una via per proseguire.'),b(g.altare_esaminato?'Riesamina l’altare':'Ispeziona sotto l’altare',()=>invia('altare')),b('Esamina le reliquie e le nicchie',()=>invia('reliquie')),b(g.icone_risvegliate?'Torna alle icone':'Guarda dietro le icone dei santi',()=>invia('icone')),b('Apri la mappa delle Sette Chiese',apriMappa));
+ area.append(p('La navata somiglia a quella che conosci, ma i suoni non arrivano da Bologna. Sulla pergamena di Iliano ora distingui sette ambienti e i passaggi che dovrebbero collegarli.'),p('L’altare è rialzato sopra una breve scala. Lungo le pareti trovi nicchie, piccoli reliquiari e due icone di santi. Puoi esaminare la chiesa oppure cercare una via per proseguire.'),b(g.altare_esaminato?'Riesamina l’altare':'Ispeziona sotto l’altare',()=>invia('altare')),b('Esamina le reliquie e le nicchie',()=>invia('reliquie')),b(g.icone_risvegliate?'Torna alle icone':'Guarda dietro le icone dei santi',()=>invia('icone')),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',apriMappa)));
  if(d.inventario?.includes('fermaglio_stella'))area.append(p('Il Fermaglio della Stella è nella Borsa: puoi indossarlo come accessorio insieme alla tua armatura.'),b('Apri la Borsa',()=>$('apri-borsa').click()));
  }else if(f==='g17_effigi')area.append(p('Le figure dipinte si muovono fuori dalle loro cornici. Sono due e non hanno più l’espressione immobile dei santi: intrecciano gesti con le dita e preparano altri incanti.'),b('Difenditi dalle due effigi',()=>window.AzioniGioco.apriScontro()));
  else if(f==='g17_stelle'){
  area.append(p('Il passaggio verso la seconda stanza è nascosto da una parete. Nel cielo inciso riconosci diversi gruppi di stelle. Alcune stelle sporgono appena dalla pietra.'),p('Premi una delle stelle grandi e piene. Le piccole stelle vuote sono decorative. Il cielo si adatta allo schermo. Usa + per ingrandirlo e Adatta per tornare alla vista completa.'));parete();
  if(g.aiuto_stelle){const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Rileggi l’indizio';details.append(summary,p('Iliano rappresenta memoria e orientamento. Cerca la stella che indica il nord.'));area.append(details)}
- area.append(b('Torna a esplorare la chiesa',()=>invia('torna')),b('Consulta la mappa delle Sette Chiese',apriMappa));
- }else if(f==='fine_giorno17')area.append(p('Più avanti lungo la parete si è aperto un passaggio e una scala scende verso la cripta. Sulla mappa l’accesso è segnato altrove: la pianta rimane invariata e non corrisponde a ciò che vedi. Il cielo di pietra si è fermato attorno alla stella che hai premuto.'),p('Hai attraversato la prima chiesa e trovato un riferimento dove la mappa non bastava. La seconda stanza ti aspetta nella prossima giornata.'),b('Consulta la mappa delle Sette Chiese',apriMappa));
+ area.append(b('Torna a esplorare la chiesa',()=>invia('torna')),window.SetteChiese.comandoNavigazione(b('Consulta la mappa delle Sette Chiese',apriMappa)));
+ }else if(f==='fine_giorno17')area.append(p('Più avanti lungo la parete si è aperto un passaggio e una scala scende verso la cripta. Sulla mappa l’accesso è segnato altrove: la pianta rimane invariata e non corrisponde a ciò che vedi. Il cielo di pietra si è fermato attorno alla stella che hai premuto.'),p('Hai attraversato la prima chiesa e trovato un riferimento dove la mappa non bastava. La seconda stanza ti aspetta nella prossima giornata.'),window.SetteChiese.comandoNavigazione(b('Consulta la mappa delle Sette Chiese',apriMappa)));
  if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e)}
+ window.SetteChiese.posizionaNavigazione(area);
  }
  async function aggiorna(){if(!dentro()&&mappa.open)mappa.close();const n=++revision;disegna();disegnaMappa();if(api.dati?.giorno_corrente!==17)return;try{await api.rpc('gioco_giorno17',{p_codice:api.codice});if(n!==revision)return;errore=''}catch(e){if(n!==revision)return;errore=e.message}disegna();disegnaMappa()}
  window.GiornoDiciassette={aggiorna};api.onChange(aggiorna);api.ready.then(aggiorna);
