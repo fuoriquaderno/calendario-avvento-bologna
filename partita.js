@@ -16,7 +16,7 @@
   ]);
   let codice=null,dati=null,occupato=false;
   const ascoltatori=[];
-  const consenso=()=>window.SpisottiConsent?.has?.('supabase')===true;
+  const consenso=()=>window.SpisottiConsent?.has?window.SpisottiConsent.has('supabase'):(()=>{try{const r=localStorage.getItem('spisottiConsent');return r?JSON.parse(r).supabase!==false:true}catch{return true}})();
   const memoriaPagina=new Map();
   const memoria={
     leggi(k){
@@ -82,6 +82,20 @@
     $('gestione-con-partita').hidden=!dati;
     $('codice-da-conservare').value=codice||'';
     $('nome-personaggio-modifica').value=dati?.nome||'';
+    if(dati&&window.SpisottiConsent?.supabaseSave){
+      let box=$('spisotti-supabase-consent');
+      if(!box){
+        box=document.createElement('div');
+        box.id='spisotti-supabase-consent';
+        const campoCodice=$('codice-da-conservare')?.closest('p,div,label')||$('codice-da-conservare');
+        campoCodice.after(box);
+      }
+      window.SpisottiConsent.supabaseSave({
+        container:box,
+        code:codice||'',
+        onSave(){if(ultimoGiorno)memoria.scrivi(GIORNO,ultimoGiorno)}
+      });
+    }
   }
   async function applica(nuovi,nuovoCodice,opzioni={}){
     const cambiaLuogo=!!dati&&nuovi.luogo_attuale!==dati.luogo_attuale;
@@ -176,6 +190,10 @@
   window.Partita={rpc,esegui,applica,riprendi,memoria,CHIAVE,SOSPESA,pulisci,valido,memorizzazioneConsentita:consenso,
     iniziaGiornata,riprendiCheckpoint,resocontoMorti:(...args)=>window.BorsaBase.resocontoMorti(...args),ridisegnaBorsa:()=>window.BorsaBase.disegna(),
     get dati(){return dati},get codice(){return codice},onChange(fn){ascoltatori.push(fn)},promemoria,stato,risorsa,quantita:(...args)=>window.BorsaBase.quantita(...args),get occupato(){return occupato}};
+  window.addEventListener('spisotti:consent',()=>{
+    if(dati&&codice&&consenso())memoria.scrivi(CHIAVE,codice);
+    if(dati)aggiornaHeader();
+  });
   async function inizializza(){
     aggiornaHeader();
     if(!memoria.leggi(INFO)&&!$('calendario-avvento')){
