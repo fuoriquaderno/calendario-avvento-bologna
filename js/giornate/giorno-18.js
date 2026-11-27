@@ -64,7 +64,7 @@
  }else if(f==='g18_ombre'){
  area.append(p('Due figure fatte di lettere e inchiostro si muovono fra le colonne. Le immagini sono rimaste appese, ma i segni staccati dalla pietra si addensano in mani pronte a scagliare incanti.'),b('Inizia il combattimento',()=>window.AzioniGioco.apriScontro()));
  }else if(f==='fine_giorno18'){
- area.append(p('Hai verificato che il passaggio dalla Chiesa della Stella al Santo Sepolcro è aperto. Lo attraverserai nella prossima giornata.'),b('Termina giornata',()=>window.FineGiornata.apri()),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
+ area.append(p('Hai verificato che il passaggio dalla Chiesa della Stella al Santo Sepolcro è aperto. Lo attraverserai nella prossima giornata.'),window.FineGiornata.pulsante(b),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  if(sotto){area.append(b('Rileggi l’annotazione sotto l’altare',()=>invia('esplora','altare')),b('Guarda sotto le panche',()=>invia('esplora','panche')));if(g.panche_viste&&!g.pozione_presa)area.append(b('Prendi la pozione potente',()=>invia('pozione')))}
  }
  if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e)}

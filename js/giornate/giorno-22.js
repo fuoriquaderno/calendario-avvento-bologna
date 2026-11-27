@@ -33,7 +33,7 @@ else if(f==='g22_automa'){area.append(p('Il ragno ha allentato la presa e hai re
 else if(f==='g22_riparo'){area.append(p('Sei al riparo dietro una colonna. Gli ingranaggi dell’automa conservano i danni che hai inflitto.'),b('Torna ad affrontare l’automa',()=>invia('riprendi')),b('Apri la Borsa',()=>$('apri-borsa')?.click()));esplorazioni(g);}
 else if(f==='g22_ruote'){ingranaggi(g);esplorazioni(g);area.append(window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));}
 else if(f==='g22_uscita'){area.append(p('Le ruote girano e la cancellata è sollevata. Il secondo appunto di Goffredo dice: «Le misure erano giuste. Poi la magia ha cominciato a cambiarle mentre il meccanismo era già in movimento».'),window.SetteChiese.comandoNavigazione(b('Verifica il passaggio al chiostro',()=>passaggio(7))),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));esplorazioni(g);}
-else if(f==='fine_giorno22'){area.append(p('Hai verificato la cancellata. La via al chiostro è aperta; la attraverserai nella prossima giornata.'),b('Termina giornata',()=>window.FineGiornata.apri()),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));esplorazioni(g);}
+else if(f==='fine_giorno22'){area.append(p('Hai verificato la cancellata. La via al chiostro è aperta; la attraverserai nella prossima giornata.'),window.FineGiornata.pulsante(b),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));esplorazioni(g);}
 if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e)}
 window.SetteChiese.posizionaNavigazione(area);
 }

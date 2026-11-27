@@ -63,7 +63,7 @@ if(scelta){const titolo=document.createElement('h3');titolo.textContent=scelta[1
 else for(const[id,text]of possibilita)area.append(b(text,()=>{sceltaTomo=id;disegna();}));
 area.append(b('Torna ancora nella stanza del pozzo',()=>{sceltaTomo=null;return invia('torna');}));
 }
-else if(f==='fine_giorno24'){area.append(p(({tenere:'Hai deciso di tenere per te il tomo.',distruggere:'Hai deciso di distruggere la magia nuova.',iliano:'Hai deciso di consegnare il tomo a Iliano.'})[g.scelta_tomo]||'Hai scelto il destino del tomo.'),p('Le conseguenze arriveranno domani.'),b('Termina giornata',()=>window.FineGiornata.apri()));}
+else if(f==='fine_giorno24'){area.append(p(({tenere:'Hai deciso di tenere per te il tomo.',distruggere:'Hai deciso di distruggere la magia nuova.',iliano:'Hai deciso di consegnare il tomo a Iliano.'})[g.scelta_tomo]||'Hai scelto il destino del tomo.'),p('Le conseguenze arriveranno domani.'),window.FineGiornata.pulsante(b));}
 if(f!=='fine_giorno24')area.append(b('Apri la Borsa',()=>$('apri-borsa')?.click()));if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e);}
 }
 async function aggiorna(){const n=++revision;disegna();if(api.dati?.giorno_corrente!==24)return;try{await api.rpc('gioco_giorno24',{p_codice:api.codice});const key=api.codice+':'+api.dati.tentativo;if(catOwner!==key){const r=await api.rpc('gioco_catalogo_oggetti',{});if(n===revision){catalogo=Array.isArray(r)?r:[];catOwner=key;}}}catch(e){if(n===revision)errore=e.message;}if(n===revision)disegna();}

@@ -64,7 +64,7 @@ else if(f==='g23_riparo')area.append(p('Sei al riparo sotto il portico. Il custo
 else if(f==='g23_doposcontro')area.append(p('Il custode si è dissolto, ma le quattro catene trattengono ancora la donna.'),b('Torna dalla custode',()=>invia('continua')));
 else if(f==='g23_fasi')visualePozzo(g);
 else if(f==='g23_pozzo')pozzo(g,d);
-else if(f==='fine_giorno23')area.append(p('Hai raggiunto la stanza sotto il pozzo scendendo lungo la corda. La ricerca del tomo è quasi conclusa. Scoprirai cosa ti attende nella prossima giornata.'),b('Termina giornata',()=>window.FineGiornata.apri()));
+else if(f==='fine_giorno23')area.append(p('Hai raggiunto la stanza sotto il pozzo scendendo lungo la corda. La ricerca del tomo è quasi conclusa. Scoprirai cosa ti attende nella prossima giornata.'),window.FineGiornata.pulsante(b));
 if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e);}
 window.SetteChiese.posizionaNavigazione(area);
 }

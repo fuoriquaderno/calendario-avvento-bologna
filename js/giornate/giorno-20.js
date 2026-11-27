@@ -81,7 +81,7 @@
  else if(f==='g20_dopocustode'){
  area.append(p('Il custode è immobile e le immagini ingannevoli sono svanite. Nel punto che sorvegliava distingui un piccolo alloggiamento nella pietra.'),b('Esamina l’alloggiamento',()=>invia('esamina_custodia')));
  if(g.custodia_vista&&!g.chiave_presa)area.append(p('Il foglio di Alano dice: «Il pericolo cominciò quando smettemmo di verificare le risposte, perché erano quasi sempre giuste».'),b('Prendi la chiave con il sole',()=>invia('prendi_chiave')));if(g.chiave_presa)area.append(window.SetteChiese.comandoNavigazione(b('Controlla il passaggio verso il cortile',()=>passaggio(5))));
- }else if(f==='fine_giorno20')area.append(p('Hai verificato le apparenze, seguito il percorso della luce e superato il custode. Il passaggio al Cortile di Pilato è aperto; lo attraverserai domani.'),b('Termina giornata',()=>window.FineGiornata.apri()),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
+ }else if(f==='fine_giorno20')area.append(p('Hai verificato le apparenze, seguito il percorso della luce e superato il custode. Il passaggio al Cortile di Pilato è aperto; lo attraverserai domani.'),window.FineGiornata.pulsante(b),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e)}
  window.SetteChiese.posizionaNavigazione(area);
  }

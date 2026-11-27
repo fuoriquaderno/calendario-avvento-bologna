@@ -8,6 +8,21 @@
  function figura(nome,alt){const f=document.createElement('figure');f.className='immagine-schermata';const i=document.createElement('img');i.src=api.risorsa('images/'+nome);i.alt=alt;i.decoding='async';i.addEventListener('error',()=>f.hidden=true);f.append(i);area.append(f)}
  async function invia(azione,testo=null){if(busy)return null;busy=true;errore='';disegna();try{const r=await window.BorsaNuova.esegui('gioco_giorno17',{p_codice:api.codice,p_azione:azione,p_testo:testo,p_richiesta:crypto.randomUUID(),p_tentativo:api.dati.tentativo});if(r?.racconto?.testo)window.Messaggi.mostra({...r.racconto,pulsante:'Continua'});if(!r)errore=window.BorsaNuova.errore||'';return r}catch(e){errore=e.message;return null}finally{busy=false;disegna();disegnaMappa()}}
  const dentro=()=>api.dati?.interazioni?.dimensione_alternativa===true;
+ const fasiPrimaIngresso=['g17_piazza','g17_soglia','g17_guardiano','g17_ritorno_soglia','g17_ingresso'];
+ let avvisoSoglia;
+ async function proseguiAllaSoglia(azione){
+  if(busy)return;
+  const partita=api.dati;
+  const chiave=api.codice+':'+partita.tentativo;
+  if(avvisoSoglia!==chiave){
+   const accettato=await window.ConfermaPergamena('Una volta varcata la soglia, non potrai più tornare nelle vie di Bologna. Se hai ancora argento, passa dall’armaiolo e scegli la migliore arma e la migliore armatura che puoi permetterti. Ricorda di equipaggiarle dalla Borsa.',{
+    titolo:'Prima di varcare la soglia',conferma:azione==='rito'?'Compi il rito':'Varca la soglia',annulla:'Mi preparo ancora'
+   });
+   if(!accettato||partita!==api.dati)return;
+   avvisoSoglia=chiave;
+  }
+  return invia(azione);
+ }
 
  // La planimetria originale resta intatta: il filtro cambia soltanto l'inchiostro visualizzato.
  const nsMappa='http://www.w3.org/2000/svg',filtri=document.createElementNS(nsMappa,'svg');filtri.setAttribute('aria-hidden','true');filtri.setAttribute('width','0');filtri.setAttribute('height','0');filtri.style.cssText='position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
@@ -91,16 +106,21 @@
   const dimensiona=()=>{const scala=Math.min(W/720,W/(svg.getBoundingClientRect?.().width||W));for(const {stella,bersaglio,piccola} of figure){stella.setAttribute('transform','scale('+(scala*(piccola ? 0.3 : 1))+')');if(bersaglio)bersaglio.setAttribute('r',String(16*scala))}};
   cambiaZoom(zoomCielo);if(typeof ResizeObserver!=='undefined'){osservatoreCielo=new ResizeObserver(dimensiona);osservatoreCielo.observe(svg)}
  }
- function disegna(){if(osservatoreCielo){osservatoreCielo.disconnect();osservatoreCielo=null}const d=api.dati,s=d?.stato_partita||{},g=s.g17||{},f=s.fase||'',valido=d?.giorno_corrente===17&&(f.startsWith('g17_')||f==='fine_giorno17');area.replaceChildren();area.hidden=!valido;main.classList.toggle('giorno17-attivo',!!valido);if(!valido)return;
- figura(['g17_piazza','g17_soglia','g17_guardiano','g17_ritorno_soglia','g17_ingresso'].includes(f)?'santo.stefano.png':'chiesa1.png',dentro()?'La prima chiesa con l’altare e le icone.':'Santo Stefano nella piazza deserta.');
+ function disegna(){
+ if(osservatoreCielo){osservatoreCielo.disconnect();osservatoreCielo=null}
+ const d=api.dati,s=d?.stato_partita||{},g=s.g17||{},f=s.fase||'';
+ const primaIngresso=!dentro()&&fasiPrimaIngresso.includes(f);
+ const valido=d?.giorno_corrente===17&&(f.startsWith('g17_')||f==='fine_giorno17')&&(!primaIngresso||d.luogo_attuale==='santo_stefano');
+ area.replaceChildren();area.hidden=!valido;main.classList.toggle('giorno17-attivo',!!valido);if(!valido)return;
+ figura(primaIngresso?'santo.stefano.png':'chiesa1.png',dentro()?'La prima chiesa con l’altare e le icone.':'Santo Stefano nella piazza deserta.');
  const h=document.createElement('h2');h.textContent=({g17_piazza:'La soglia di Santo Stefano',g17_soglia:'Un altro ingresso',g17_guardiano:'Il custode della soglia',g17_ritorno_soglia:'Ancora davanti alla soglia',g17_ingresso:'Oltre il custode',g17_navata:'La chiesa della Stella',g17_effigi:'Le figure delle icone',g17_stelle:'Un cielo inciso nella pietra',fine_giorno17:'La via verso la cripta'})[f]||'Il diciassettesimo giorno';area.append(h);
  if(d.morto){area.append(p('Il combattimento ti ha sopraffatto. Il cammino si interrompe qui. Puoi ripartire dal checkpoint della giornata; il fallimento rimane nel registro.'),b('Riparti dal checkpoint',()=>api.esegui(()=>api.riprendiCheckpoint(),area)));return}
  const pending=window.BorsaNuova.pending();if(pending){area.append(p('Recupera l’esito dell’ultima azione prima di continuare.'),b('Recupera il risultato',async()=>{const r=await window.BorsaNuova.esegui(pending.nomeRpc,pending.args);if(r?.racconto)window.Messaggi.mostra(r.racconto);disegna()}));return}
- if(f==='g17_piazza')area.append(p('La piazza è deserta. I monaci si sono ritirati e nessuno ti ferma quando raggiungi il lato destro del portone. Ripensi alle parole di Iliano: «A destra dell’entrata che sei solito passare». Questa volta puoi portare a termine il rito.'),b('Traccia i sette cerchi e pronuncia la formula',()=>invia('rito')));
+ if(f==='g17_piazza')area.append(p('La piazza è deserta. I monaci si sono ritirati e nessuno ti ferma quando raggiungi il lato destro del portone. Ripensi alle parole di Iliano: «A destra dell’entrata che sei solito passare». Questa volta puoi portare a termine il rito.'),b('Traccia i sette cerchi e pronuncia la formula',()=>proseguiAllaSoglia('rito')));
  else if(f==='g17_soglia')area.append(p('Sulla pietra brilla ancora il segno che hai tracciato. Dietro il portone riconosci un ingresso che un momento fa non esisteva. Dall’altra parte arriva un soffio d’aria fredda.'),b('Avvicinati all’ingresso',()=>invia('avvicinati')));
  else if(f==='g17_guardiano')area.append(p('Il custode occupa tutta la soglia. La stella sul suo petto richiama il sigillo di Iliano, ma la figura non si fa da parte. Stringe l’arma e avanza. Iliano ti aveva assicurato che il rito ti avrebbe fatto riconoscere come autorizzato: i guardiani avrebbero dovuto lasciarti passare. Perché questo ti sta attaccando?'),b('Affronta il custode',()=>window.AzioniGioco.apriScontro()));
  else if(f==='g17_ritorno_soglia')area.append(p('Ti sei sottratto al custode, ma la figura continua a sorvegliare il passaggio. Le ferite che gli hai inflitto non sono scomparse.'),b('Torna ad affrontare il custode',()=>invia('riprendi_guardiano')));
- else if(f==='g17_ingresso')area.append(p('Il custode cade e il segno sul suo petto si spegne. La soglia è libera. Stringi la pergamena di Iliano e fai un passo verso la penombra.'),b('Entra nella dimensione alternativa',()=>invia('entra')));
+ else if(f==='g17_ingresso')area.append(p('Il custode cade e il segno sul suo petto si spegne. La soglia è libera. Stringi la pergamena di Iliano e fai un passo verso la penombra.'),b('Entra nella dimensione alternativa',()=>proseguiAllaSoglia('entra')));
  else if(f==='g17_navata'){
  area.append(p('La navata somiglia a quella che conosci, ma i suoni non arrivano da Bologna. Sulla pergamena di Iliano ora distingui sette ambienti e i passaggi che dovrebbero collegarli.'),p('L’altare è rialzato sopra una breve scala. Lungo le pareti trovi nicchie, piccoli reliquiari e due icone di santi. Puoi esaminare la chiesa oppure cercare una via per proseguire.'),b(g.altare_esaminato?'Riesamina l’altare':'Ispeziona sotto l’altare',()=>invia('altare')),b('Esamina le reliquie e le nicchie',()=>invia('reliquie')),b(g.icone_risvegliate?'Torna alle icone':'Guarda dietro le icone dei santi',()=>invia('icone')),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',apriMappa)));
  if(d.inventario?.includes('fermaglio_stella'))area.append(p('Il Fermaglio della Stella è nella Borsa: puoi indossarlo come accessorio insieme alla tua armatura.'),b('Apri la Borsa',()=>$('apri-borsa').click()));
@@ -110,6 +130,7 @@
  if(g.aiuto_stelle){const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Rileggi l’indizio';details.append(summary,p('Iliano rappresenta memoria e orientamento. Cerca la stella che indica il nord.'));area.append(details)}
  area.append(b('Torna a esplorare la chiesa',()=>invia('torna')),window.SetteChiese.comandoNavigazione(b('Consulta la mappa delle Sette Chiese',apriMappa)));
  }else if(f==='fine_giorno17')area.append(p('Più avanti lungo la parete si è aperto un passaggio e una scala scende verso la cripta. Sulla mappa l’accesso è segnato altrove: la pianta rimane invariata e non corrisponde a ciò che vedi. Il cielo di pietra si è fermato attorno alla stella che hai premuto.'),p('Hai attraversato la prima chiesa e trovato un riferimento dove la mappa non bastava. La seconda stanza ti aspetta nella prossima giornata.'),window.SetteChiese.comandoNavigazione(b('Consulta la mappa delle Sette Chiese',apriMappa)));
+ if(primaIngresso)area.append(window.LuoghiGioco.conPassante(b('Apri la mappa di Bologna',()=>window.LuoghiGioco.apri())));
  if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e)}
  window.SetteChiese.posizionaNavigazione(area);
  }

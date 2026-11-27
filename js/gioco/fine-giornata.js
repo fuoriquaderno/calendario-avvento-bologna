@@ -16,9 +16,22 @@
  const terminaBorsa=document.createElement('button');terminaBorsa.type='button';terminaBorsa.id='termina-giornata-borsa';terminaBorsa.textContent='Termina giornata';terminaBorsa.hidden=true;
  const titoloBorsa=$('titolo-borsa');if(titoloBorsa)titoloBorsa.after(terminaBorsa);else $('borsa-elenco').before(terminaBorsa);
  const chiave=()=>api.dati?api.codice+':'+api.dati.tentativo+':'+api.dati.giorno_corrente:null;
- function pulsanti(){const d=api.dati;terminaBorsa.hidden=!d?.giornata_da_confermare||d.giorno_corrente<2||d.morto;apri.hidden=!d?.giornata_da_confermare;avanti.hidden=!$('schermata-gioco')||!d?.giornata_completata||!calendario?.prossimo_configurato||!calendario?.prossimo_aperto||d.giorno_corrente>=calendario.giorni}
+ const daConfermare=()=>!!api.dati?.giornata_da_confermare&&!api.dati.giornata_completata&&!api.dati.morto;
+ function pulsante(creaPulsante){
+   if(!daConfermare())return document.createDocumentFragment();
+   const comando=creaPulsante('Termina giornata',mostra);
+   comando.setAttribute('data-termina-giornata','');
+   return comando;
+ }
+ function pulsanti(){
+   const d=api.dati,conferma=daConfermare();
+   terminaBorsa.hidden=!conferma||d.giorno_corrente<2;
+   apri.hidden=!conferma;
+   if(!conferma)main.querySelectorAll('[data-termina-giornata]').forEach(comando=>comando.remove());
+   avanti.hidden=!$('schermata-gioco')||!d?.giornata_completata||!calendario?.prossimo_configurato||!calendario?.prossimo_aperto||d.giorno_corrente>=calendario.giorni;
+ }
  function mostra(){
-   if(busy||!api.dati?.giornata_da_confermare||api.dati.morto)return;
+   if(busy||!daConfermare())return;
    
    $('esplora-fine-giornata').textContent=api.dati.interazioni?.dimensione_alternativa?'Esplora le Sette Chiese':'Gira per la città';
    $('esplora-fine-giornata').hidden=api.dati.giorno_corrente<2||api.dati.stato_partita?.esplorazione_consentita===false;
@@ -29,11 +42,11 @@
  }
  function programma(){
    if(!$('schermata-gioco'))return;
-   if(attesa||!api.dati?.giornata_da_confermare||api.dati.morto||ultimoAvviso===chiave()||api.memoria.leggi(MEM_ESPLORA)===chiave())return;
+   if(attesa||!daConfermare()||ultimoAvviso===chiave()||api.memoria.leggi(MEM_ESPLORA)===chiave())return;
    attesa=true;
    setTimeout(async()=>{
      attesa=false;
-     if(!api.dati?.giornata_da_confermare||api.dati.morto||ultimoAvviso===chiave())return;
+     if(!daConfermare()||ultimoAvviso===chiave())return;
      // Prima si legge la reazione dell’enigma, poi si sceglie la conclusione della giornata.
      try{const loot=await api.rpc('gioco_bottino',{p_codice:api.codice});if(loot.bottini.length){testo.textContent='Scegli prima cosa fare del bottino nella Borsa.';return}}catch{return}
      const aperto=document.querySelector('dialog[open]');
@@ -43,11 +56,11 @@
  }
  async function aggiorna(dati,codice,opzioni={}){
    const n=++versione,d=api.dati;
-   area.hidden=!$('schermata-gioco')||!d||d.morto||(!d.giornata_da_confermare&&!d.giornata_completata);
+   area.hidden=!$('schermata-gioco')||!d||d.morto||(!daConfermare()&&!d.giornata_completata);
    pulsanti();
-   if(!d?.giornata_da_confermare&&dialogo.open)dialogo.close();
+   if(!daConfermare()&&dialogo.open)dialogo.close();
    if(!d)return;
-   if(d.giornata_da_confermare)testo.textContent=`La giornata ${d.giorno_corrente} è terminata, ma le scelte sono ancora da confermare.`;
+   if(daConfermare())testo.textContent=`La giornata ${d.giorno_corrente} è terminata, ma le scelte sono ancora da confermare.`;
    else if(d.giornata_completata)testo.textContent=`La giornata ${d.giorno_corrente} è confermata.`;
    if(opzioni.anima!==true&&!opzioni.transizioneGestita)programma();
    try{
@@ -71,7 +84,7 @@
  $('conferma-fine-giornata').addEventListener('click',()=>scegli('conferma'));
  $('rigioca-fine-giornata').addEventListener('click',()=>scegli('rigioca'));
  $('esplora-fine-giornata').addEventListener('click',async()=>{
-  if(busy||!api.dati?.giornata_da_confermare||api.dati.giorno_corrente<2||api.dati.stato_partita?.esplorazione_consentita===false)return;
+  if(busy||!daConfermare()||api.dati.giorno_corrente<2||api.dati.stato_partita?.esplorazione_consentita===false)return;
   ultimoAvviso=chiave();api.memoria.scrivi(MEM_ESPLORA,chiave());dialogo.close();await window.LuoghiGioco?.apri();
  });
  terminaBorsa.addEventListener('click',()=>{$('inventario').close();mostra()});
@@ -79,5 +92,5 @@
  apri.addEventListener('click',mostra);
  avanti.addEventListener('click',()=>api.esegui(()=>api.iniziaGiornata(api.dati.giorno_corrente+1),stato));
  api.onChange(aggiorna);api.ready.then(()=>aggiorna());
- window.FineGiornata={aggiorna:programma,apri:mostra};
+ window.FineGiornata={aggiorna:programma,apri:mostra,pulsante};
 })();

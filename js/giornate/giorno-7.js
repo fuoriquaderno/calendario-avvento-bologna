@@ -49,9 +49,9 @@
   }
   const h=document.createElement('h2');h.textContent=f==='fine_giorno7'?'Le parole di Samuele':f==='g7_arche'?'Il settimo giorno — sotto le arche':f==='g7_enigma'?'Le lettere consumate':f==='g7_ratto'?'Il custode sotto le arche':f==='g7_arazzo'?'L’arazzo sulla parete':'Sotto le tombe dei maestri';area.append(h);
   const pending=window.BorsaNuova.pending();if(pending){area.append(p('Recupera il risultato prima di proseguire.'),b('Recupera il risultato',async()=>{await window.BorsaNuova.esegui(pending.nomeRpc,pending.args);await aggiorna()}));return}
-  if(f==='fine_giorno7'){area.append(p('Hai copiato nel taccuino la frase trovata sull’arazzo. Non sai ancora dove ti servirà, ma ora puoi conservarla.'),b('Termina giornata',()=>window.FineGiornata.apri()));return}
+  if(f==='fine_giorno7'){area.append(p('Hai copiato nel taccuino la frase trovata sull’arazzo. Non sai ancora dove ti servirà, ma ora puoi conservarla.'),window.FineGiornata.pulsante(b));return}
   if(!sulPosto||f==='g7_citta'){
-   area.append(p(g.visto_arazzo&&!g.annotato?'La scritta rimane nella stanza sotto le arche. Ti serve qualcosa per annotare la frase sull’arazzo: hai la sensazione che ti sarà utile. Ricordi di aver visto un taccuino in vendita da qualche parte.':'Puoi girare per la città e tornare alle arche quando vuoi.'),...window.LuoghiGioco.conPassante(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri())),b('Torna alle tombe e riprendi l’esplorazione',()=>invia('torna')));
+   area.append(p(g.visto_arazzo&&!g.annotato?'La scritta rimane nella stanza sotto le arche. Ti serve qualcosa per annotare la frase sull’arazzo: hai la sensazione che ti sarà utile. Ricordi di aver visto un taccuino in vendita da qualche parte.':'Puoi girare per la città e tornare alle arche quando vuoi.'),window.LuoghiGioco.conPassante(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri())),b('Torna alle tombe e riprendi l’esplorazione',()=>invia('torna')));
    if(s.ratto_sconfitto)area.append(p('Il passaggio è aperto e il ratto è stato sconfitto. Non dovrai affrontarlo di nuovo.'));
    return;
   }

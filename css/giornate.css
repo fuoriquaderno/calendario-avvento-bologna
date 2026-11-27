@@ -197,7 +197,7 @@
 .sette-chiese-dialog button:disabled{cursor:default;opacity:.65}
 .sette-chiese-dialog .elenco-passaggi-chiese{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
 .sette-chiese-dialog .elenco-passaggi-chiese button{font:inherit;padding:10px 14px;background:#8b261b;color:#f4ead5;border:1px solid #631810;border-radius:3px}
-@media(max-width:600px){#racconto-giorno17>button{width:100%;margin-inline:0}.sette-chiese-dialog .elenco-passaggi-chiese button{width:100%}}
+@media(max-width:600px){#racconto-giorno17>button,#racconto-giorno17 .ritorni-esplorazione>button{width:100%;margin-inline:0}.sette-chiese-dialog .elenco-passaggi-chiese button{width:100%}}
 
 /* Bersagli dell’enigma: stelle vuote, mai pulsanti rettangolari pieni. */
 #racconto-giorno17 .cielo17 button.stella-premibile17{background:transparent!important;border:0!important;box-shadow:none!important;padding:0;margin:0;width:32px;height:32px;min-width:0;min-height:0;border-radius:0}

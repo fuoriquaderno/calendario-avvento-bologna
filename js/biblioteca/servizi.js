@@ -27,7 +27,10 @@
    const opzioni=[['sporgente','Prova a spingere la pietra sporgente'],['destra','Esamina la parete destra'],['pavimento','Osserva il pavimento'],['opposta','Esamina la parete opposta']];
    for(const [id,testo] of opzioni){const e=b(testo+(s[id]?' · Già osservato':''),()=>invia(id));e.dataset.ispezione=id;area.append(e)}
    if(s.opposta){area.append(p('Sulla parete opposta hai individuato una pietra quasi a filo del muro, con i bordi consumati.'),b('Premi la pietra dai bordi consumati',()=>invia('premi')))}
-   area.append(b('Torna nel corridoio',()=>invia('corridoio')));
+   const ritorni=document.createElement('div');
+   ritorni.className='ritorni-esplorazione';
+   ritorni.append(b('Torna nel corridoio',()=>invia('corridoio')));
+   area.append(ritorni);
   }
   if(window.BorsaNuova.errore)area.append(p(window.BorsaNuova.errore));
  }

@@ -22,7 +22,7 @@
   if(f==='g13_sede'){
    area.append(p(notte?'Nella casa comune quasi tutti dormono. La torre è ancora là, oltre il cortile.':'Ti svegli ospite dei Costruttori. Nel cortile qualcuno lavora già; altri discutono della magia nuova. La scala che hai aiutato a costruire arriva finalmente alla porta della torre, ma non sai ancora che cosa custodisca.'));
    if(!notte)for(const [id,t] of [['radicale','Ascolta il muratore che vorrebbe vietare la magia nuova'],['moderato','Parla con la costruttrice al banco'],['mago','Ascolta le notizie sui grandi maghi']])if(!g['parlato_'+id])area.append(b(t,()=>invia('parla',id)));
-   area.append(b('Entra nella sala dei manuali',()=>invia('manuali')),b('Avvicinati alla torre',()=>invia('torre')),...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
+   area.append(b('Entra nella sala dei manuali',()=>invia('manuali')),b('Avvicinati alla torre',()=>invia('torre')),window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
   }else if(f==='g13_manuali'){
    area.append(p(notte?'La sala è deserta. Sul banco rimangono manuali, fogli e una penna.':g.metodo_riservati==='polvere'?'La bibliotecaria dorme sulla sedia. I manuali restano aperti sul banco.':'Nella sala, custodita quasi come un santuario del mestiere, una bibliotecaria riordina i volumi. Sul banco ci sono alcuni manuali aperti.'));
    const libri=document.createElement('div');libri.className='scelte-goffredo';for(const [id,t] of [['funi','Delle funi e dei nodi'],['attrezzi','Custodia degli strumenti'],['legname','Del legname stagionato']])libri.append(b(t+(g['letto_'+id]?' · Letto':''),()=>invia('libro',id)));area.append(libri);
@@ -35,7 +35,7 @@
    else if(notte)area.append(p('Un solo custode veglia davanti alla porta. Gli altri si sono ritirati nella casa comune.'),b('Avvicinati al custode notturno',()=>invia('guardia_notte')));
    else{area.append(p('La scala è finita. Mentre sali, un custode si mette davanti alla porta. Dal cortile altri uomini seguono i tuoi movimenti.'));if(!g.rifiuto)area.append(b('Chiedi di entrare',()=>invia('chiedi_accesso')));else{if(!g.inganno_tentato&&!s.allarme_giorno)area.append(b('Fingi un controllo alla scala — prova di Inganno',()=>invia('inganno')));area.append(b('Prova a entrare con la forza',()=>invia('forza')),b('Aspetta la notte',()=>invia('notte')))}}
    if(accesso&&!notte&&g.rifiuto)area.append(b('Aspetta la notte',()=>invia('notte')));
-   area.append(b('Torna alla sala dei manuali',()=>invia('manuali')),b('Torna nel cortile',()=>invia('sede')),...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
+   area.append(b('Torna alla sala dei manuali',()=>invia('manuali')),b('Torna nel cortile',()=>invia('sede')),window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
   }else if(f.startsWith('g13_pre_')){
    const interno=f==='g13_pre_interno',giorno=f==='g13_pre_giorno';area.append(p(interno?'Appena tocchi la porta interna, due guardie escono dall’ombra e alzano le mazze. «Qui non passi.» Dopo ogni tua azione attaccherà ciascuna guardia ancora in piedi.':giorno?'Il custode chiama i compagni. In pochi istanti sei uomini ti circondano: dopo ogni tua azione attaccherà ciascuno di quelli ancora in piedi. Puoi ancora rinunciare prima dello scontro.':'Il custode notturno stringe il bastone. Se vuoi prendere le chiavi e oltrepassare quella porta, dovrai affrontarlo.'),b('Affronta '+(interno?'le due guardie interne':giorno?'i sei custodi':'il custode notturno'),()=>invia('combatti')),b('Indietro',()=>invia(interno?'indietro_interno':'indietro_scontro')));
   }else if(f.startsWith('g13_scontro_'))area.append(p(f==='g13_scontro_interno'?'Le due guardie ti sbarrano il passo. Dopo ogni tua azione attaccherà ciascuna guardia ancora in piedi. Preparati prima di dare inizio allo scontro.':'Il custode ti sbarra il passo. Preparati prima di dare inizio allo scontro.'),b('Inizia lo scontro',()=>window.AzioniGioco.apriScontro()));
@@ -49,8 +49,8 @@
    if(g.modellino_preso&&g.nota_presa)area.append(b('Lascia la torre e termina il racconto di oggi',()=>invia('fine')));
    else if(g.modellino_preso)area.append(p('Hai ancora qualcosa da cercare nei manuali della corporazione.'),b('Torna nella sala dei manuali',()=>invia('manuali')));
    area.append(b('Torna nella stanza esterna',()=>invia('indietro_interno')));
-  }else if(f==='g13_citta')area.append(p('Puoi tornare alla casa comune dei Costruttori per continuare la ricerca.'),...window.LuoghiGioco.conPassante(b('Apri la mappa e raggiungi i Costruttori',mappa)));
-  else if(f==='fine_giorno13')area.append(p('Hai conservato la nota sulle proporzioni e il modellino di Goffredo. Per oggi hai trovato ciò che cercavi.'),b('Termina giornata',()=>window.FineGiornata.apri()));
+  }else if(f==='g13_citta')area.append(p('Puoi tornare alla casa comune dei Costruttori per continuare la ricerca.'),window.LuoghiGioco.conPassante(b('Apri la mappa e raggiungi i Costruttori',mappa)));
+  else if(f==='fine_giorno13')area.append(p('Hai conservato la nota sulle proporzioni e il modellino di Goffredo. Per oggi hai trovato ciò che cercavi.'),window.FineGiornata.pulsante(b));
   if(errore)area.append(p(errore));
  }
  async function aggiorna(){const n=++versione;if(api.dati?.giorno_corrente!==13){disegna();return}try{const r=await api.rpc('gioco_giorno13',{p_codice:api.codice});if(n!==versione)return;meta=r;errore=''}catch(e){if(n!==versione)return;errore=e.message}disegna()}

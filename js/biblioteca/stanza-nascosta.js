@@ -109,7 +109,7 @@
   if(sospesa){area.append(p('Recupera il risultato dell’ultima azione prima di proseguire.'),b('Recupera il risultato',async()=>{await window.BorsaNuova.esegui(sospesa.nomeRpc,sospesa.args);aggiorna()}));return}
   if(f==='fine_giorno4'){
    titolo.textContent='Iliano diceva la verità';
-   area.append(p('Nei verbali hai trovato le prove: i sette hanno creato la magia nuova e un tomo per controllarla. Il tomo è nascosto e nessuno dei maghi possiede da solo tutti i particolari per ritrovarlo.'),p('Richiudi il volume. Per oggi hai scoperto abbastanza.'),b('Termina giornata',()=>window.FineGiornata.apri()));return;
+   area.append(p('Nei verbali hai trovato le prove: i sette hanno creato la magia nuova e un tomo per controllarla. Il tomo è nascosto e nessuno dei maghi possiede da solo tutti i particolari per ritrovarlo.'),p('Richiudi il volume. Per oggi hai scoperto abbastanza.'),window.FineGiornata.pulsante(b));return;
   }
   if(d.luogo_attuale!=='sala_consiglio'){area.append(p('Puoi riprendere l’esplorazione oltre il passaggio della biblioteca.'),b('Torna alla stanza nascosta',()=>invia('torna')));return}
   if(f==='g4_fantasma'){
@@ -180,7 +180,7 @@
     azioniEsplorazione.append(comando);
    }
    area.append(azioniEsplorazione);
-   const ritorni=document.createElement('div');ritorni.className='ritorni-esplorazione';ritorni.style.cssText='margin-top:32px;padding-top:8px';
+   const ritorni=document.createElement('div');ritorni.className='ritorni-esplorazione';
    ritorni.append(b('Torna davanti agli scaffali',()=>invia('scaffali')),b('Torna nei servizi',()=>invia('uscita')));area.append(ritorni);
   }else{
    if(d.stato_partita.custode_sconfitto)area.append(p('Il custode si è dissolto. L’aria torna immobile e gli scaffali non sembrano più sorvegliati.'));

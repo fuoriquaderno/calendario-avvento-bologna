@@ -50,7 +50,7 @@
   else if(d.luogo_attuale!=='tombe_glossatori')area.append(b('Passeggia per la città',()=>invia('passeggia')));
   if(g.indice_conosciuto&&d.luogo_attuale!=='bottega_indice')area.append(b('Raggiungi la bottega di scrittura',()=>invia('vai_indice')));
   if(g.tombe_scoperte&&d.luogo_attuale!=='tombe_glossatori')area.append(b('Raggiungi il luogo individuato',()=>invia('vai_tombe')));
-  area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri())));
+  area.append(window.LuoghiGioco.conPassante(b('Apri la mappa e i luoghi',()=>window.LuoghiGioco.apri())));
   if(g.in_cammino&&!g.studenti&&!g.consiglio_locanda&&['piazza_maggiore','mercato','porta_maggiore','san_francesco','san_domenico'].includes(d.luogo_attuale))area.append(b('Parla con un passante',()=>invia('passante_locanda')));
 
  }
@@ -62,7 +62,7 @@
   if(piena&&immagini[d.luogo_attuale]){const src=api.risorsa('images/'+immagini[d.luogo_attuale]);if(img.getAttribute('src')!==src){figura.hidden=false;img.src=src}img.alt='';area.append(figura)}
   const titolo=document.createElement('h2');titolo.textContent=f==='g6_colazione'?'Il sesto giorno':f==='fine_giorno6'?'Un luogo da esplorare con calma':(!breve(s)&&racconto?.titolo)||'Sulle tracce di Samuele';area.append(titolo);
   const sospesa=window.BorsaNuova.pending();if(sospesa){area.append(p('Recupera il risultato prima di proseguire.'),b('Recupera il risultato',async()=>{await window.BorsaNuova.esegui(sospesa.nomeRpc,sospesa.args);await aggiorna()}));return}
-  if(f==='fine_giorno6'){area.append(p('Hai raggiunto le tombe dei glossatori, ma oggi non hai trovato una traccia di Samuele. Tornerai domani con più calma.'),b('Termina giornata',()=>window.FineGiornata.apri()));return}
+  if(f==='fine_giorno6'){area.append(p('Hai raggiunto le tombe dei glossatori, ma oggi non hai trovato una traccia di Samuele. Tornerai domani con più calma.'),window.FineGiornata.pulsante(b));return}
   if(f==='g6_colazione'){
    if(d.luogo_attuale!=='locanda_risveglio'){area.append(p('Devi ancora decidere come cominciare la mattina.'),b('Torna alla locanda',()=>invia('torna_locanda')));return}
    area.append(p('Ti svegli alla locanda con le parole del diario ancora in mente. Al piano di sotto senti i primi clienti e il locandiere che prepara le scodelle.'),b('Fai colazione',()=>invia('colazione')),b('Esci subito',()=>invia('esci')));return;

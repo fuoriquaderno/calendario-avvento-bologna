@@ -74,7 +74,7 @@
  for(const [id,t]of [['pareti','Esamina le pareti'],['polvere','Rovista fra polvere e schegge'],['leva','Esamina la leva'],['boccette','Esamina le boccette']])area.append(b(t,()=>invia('camera',id)));
  area.append(b(g.leva_azionata?'Riesamina la leva abbassata':'Aziona la leva',()=>invia('leva')),b('Esci dalla porticina',()=>invia('esci_fessura')),b('Apri la Borsa',()=>$('apri-borsa')?.click()));
  }else if(f==='g19_boccette')ripiano(g);
- else if(f==='fine_giorno19')area.append(p('Hai recuperato la tua grandezza e verificato che la porta verso Santi Vitale e Agricola si apre. La attraverserai domani.'),b('Termina giornata',()=>window.FineGiornata.apri()),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
+ else if(f==='fine_giorno19')area.append(p('Hai recuperato la tua grandezza e verificato che la porta verso Santi Vitale e Agricola si apre. La attraverserai domani.'),window.FineGiornata.pulsante(b),window.SetteChiese.comandoNavigazione(b('Apri la mappa delle Sette Chiese',mappa)));
  if(errore){const e=p(errore);e.setAttribute('role','alert');area.append(e)}
  window.SetteChiese.posizionaNavigazione(area);
  }

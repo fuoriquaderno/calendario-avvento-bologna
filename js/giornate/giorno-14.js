@@ -37,13 +37,13 @@
  if(f==='g14_locanda'){
  area.append(p('Ti svegli alla locanda. Hai raccolto la nota e il modellino di Goffredo, ma ti manca ancora il tassello di Fiorenza. Ripensi al libro sulle maghe: portava sempre con sé un amuleto. Potresti cercarne notizie fra chi compra, vende e ripara vecchi oggetti.'),b('Fai colazione',()=>invia('colazione')),b('Esci subito',()=>invia('esci')));
  }else if(f==='g14_strada'){
- area.append(p('Fra banchi dei pegni e rivenditori potresti trovare qualcuno che ricordi l’amuleto di Fiorenza.'),b('Cerca fra i banchi dei pegni',()=>invia('pegni')),...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
+ area.append(p('Fra banchi dei pegni e rivenditori potresti trovare qualcuno che ricordi l’amuleto di Fiorenza.'),b('Cerca fra i banchi dei pegni',()=>invia('pegni')),window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
  }else if(f==='g14_pegni'){
  area.append(p('Il mercante sistema piccoli scrigni e gioielli usati. Ogni oggetto sembra essere passato per molte mani.'));
  if(!g.pista_mercato)area.append(b('Chiedi dell’amuleto di Fiorenza',()=>invia('chiedi')));
  area.append(b('Esamina i gioielli'+(g.visto_gioielli?' · Esaminati':''),()=>invia('osserva','gioielli')),b('Guarda negli scrigni'+(g.visto_scrigni?' · Esaminati':''),()=>invia('osserva','scrigni')));
  if(g.pista_mercato)area.append(p('La donna che cerchi frequenta i banchi settimanali. Al tavolo da gioco potrebbero sapere dove si trova.'));
- area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
+ area.append(window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
  }else if(f==='g14_mercato'){
  area.append(p('Le tende dei banchi settimanali si affiancano alle botteghe. Fra stoffe, oggetti usati e voci che si sovrappongono, cerchi una pista sull’amuleto.'));
  if(!g.pista_mercato)area.append(b('Chiedi al banco dei pegni',()=>invia('pegni')));
@@ -52,7 +52,7 @@
  if(g.patacca_vista&&!g.patacca_scoperta)area.append(b('Esamina il pendente del venditore',()=>invia('esamina')));
  if(g.pista_mercato)area.append(b('Avvicinati al tavolo da gioco',()=>invia('tavolo')));
  if(g.indicazioni)area.append(b('Cerca la tenda dietro i banchi delle stoffe',()=>invia('allieva')));
- area.append(...window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
+ area.append(window.LuoghiGioco.conPassante(b('Apri la mappa',mappa)));
  }else if(f==='g14_tavolo'){
  if(g.indicazioni)area.append(p('Sai dove cercare la restauratrice. Se vuoi, prima puoi giocare ancora.'),b('Cerca la tenda',()=>invia('allieva')));
  else area.append(p(g.partita_fatta?'Il giocatore riordina le carte. Puoi sfidarlo ancora oppure ottenere l’indicazione aiutandolo a cercare il gettone.':'Un giocatore alza lo sguardo dalle carte. «La donna dei pendenti? La conosco. Ti va una partita, con una piccola posta, prima delle domande?»'));
@@ -110,7 +110,7 @@
  if(g.allieva_conosciuta&&!g.appuntamento)area.append(b('Raccontale dell’incarico e chiedi dell’amuleto',()=>invia('incarico')));
  if(g.appuntamento)area.append(p('Vi siete dati appuntamento per domani. Prima di affidarti l’amuleto, vuole metterti alla prova.'),b('Saluta e termina il racconto di oggi',()=>invia('fine')));
  area.append(b('Torna fra i banchi',()=>invia('mercato')));
- }else if(f==='fine_giorno14')area.append(p('Hai trovato l’allieva di Fiorenza. Domani tornerai al suo banco per la prova.'),b('Termina giornata',()=>window.FineGiornata.apri()));
+ }else if(f==='fine_giorno14')area.append(p('Hai trovato l’allieva di Fiorenza. Domani tornerai al suo banco per la prova.'),window.FineGiornata.pulsante(b));
  if(errore)area.append(p(errore));
  }
  async function aggiorna(){const n=++versione;if(api.dati?.giorno_corrente!==14){disegna();return}try{const r=await api.rpc('gioco_giorno14',{p_codice:api.codice});if(n!==versione)return;meta=r;errore=''}catch(e){if(n!==versione)return;errore=e.message}disegna()}

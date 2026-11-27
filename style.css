@@ -22,6 +22,10 @@ input,select{border:1px solid #8b6a40;border-radius:3px;background:rgba(255,255,
 .scroll-middle{display:flow-root;width:100%;padding:0 9%;background-image:url('./images/middle-pergamena.png');background-position:center top;background-size:100% auto;background-repeat:no-repeat round;overflow-wrap:anywhere}
 /* round conserva un numero intero di tessere, adattandole all'altezza del contenuto. */
 .scroll-middle>:first-child{margin-top:0}.scroll-middle>:last-child{margin-bottom:0}
+.scroll-middle .ritorni-esplorazione {
+  margin-block-start: 32px;
+  padding-block-start: 8px;
+}
 .site-main .scroll-middle :is(ul, ol):has(+ button) {
     margin-block-end: 2rem;
 }
