@@ -31,9 +31,9 @@
    if(r){if(['seduci','convinci','fazzoletto','parole','complicita'].includes(azione)&&r.missione?.dialogo)window.Messaggi.mostra({...r.missione.dialogo,pulsante:'Continua'});if(azione==='parole')bozza='';if(azione==='indicazioni')window.Messaggi.mostra({titolo:'La casa dei Bentivoglio',testo:r.partita.indicazioni_ricevute.casa_bentivoglio.testo,pulsante:'Continua'})}
   }finally{busy=false;aggiorna()}
  }
- function azioniLuogo(dest,vista){
+ function aggiungiIndicazioniPassante(dest,vista,destinazioni){
   if(!disponibile()||m().attiva||vista?.in_combattimento)return;
-  if(!vista?.ha_mappa&&!api.dati.indicazioni_ricevute?.casa_bentivoglio)dest.append(b('Chiedi a un passante dove si trova casa Bentivoglio',()=>invia('indicazioni')));
+  if(!vista?.ha_mappa&&!api.dati.indicazioni_ricevute?.casa_bentivoglio&&!destinazioni.some(l=>l.id==='casa_bentivoglio'))dest.append(b('Come raggiungo casa Bentivoglio?',()=>invia('indicazioni')));
  }
  function aggiorna(){
   const d=api.dati,s=m(),attiva=!!s.attiva&&!d?.morto;
@@ -94,5 +94,5 @@
   if(s.fase!=='scontro')area.append(b('Torna alla tua giornata — potrai riprendere il favore più tardi',()=>invia('lascia')));
   if(window.BorsaNuova.errore)area.append(p(window.BorsaNuova.errore));
  }
- window.MissioneGaleazzo={aggiorna,azioniLuogo,disponibile};api.onChange(aggiorna);api.ready.then(aggiorna);
+ window.MissioneGaleazzo={aggiorna,aggiungiIndicazioniPassante,disponibile};api.onChange(aggiorna);api.ready.then(aggiorna);
 })();

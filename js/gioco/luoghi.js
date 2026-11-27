@@ -16,7 +16,7 @@
  indicazioni.innerHTML='<div class="scroll-top" aria-hidden="true"></div><div class="scroll-middle"><h2 id="titolo-indicazioni">Chiedi indicazioni</h2><div id="destinazioni-indicazioni"></div><p id="testo-indicazioni" aria-live="polite"></p><div id="segui-indicazioni"></div><p id="stato-indicazioni" role="status"></p><button type="button" id="chiudi-indicazioni">Chiudi</button></div><div class="scroll-bottom" aria-hidden="true"></div>';
  document.body.append(indicazioni);
  const mappa=document.createElement('dialog');mappa.className='mappa-dialog mappa-bologna-dialog';mappa.setAttribute('aria-labelledby','titolo-mappa');
- mappa.innerHTML='<h2 id="titolo-mappa">Bologna</h2><p id="regole-mappa"></p><div class="strumenti-mappa"><div id="comandi-mappa"></div><span id="scala-mappa" aria-live="polite">100%</span></div><div class="contenuto-mappa"><div id="superficie-mappa" tabindex="0" role="region" aria-label="Mappa scorrevole di Bologna"><div id="piano-mappa"><img id="immagine-mappa" alt="Veduta illustrata di Bologna senza etichette." draggable="false"><div id="punti-mappa"></div></div></div><aside id="scheda-luogo-mappa" aria-live="polite"></aside></div><div id="altri-luoghi-mappa"></div><div id="azioni-mappa"></div><p id="stato-mappa" role="status"></p><button type="button" id="chiudi-mappa">Chiudi mappa</button>';
+ mappa.innerHTML='<h2 id="titolo-mappa">Bologna</h2><p id="regole-mappa"></p><div class="strumenti-mappa"><div id="comandi-mappa"></div><span id="scala-mappa" aria-live="polite">100%</span></div><div class="contenuto-mappa"><div id="superficie-mappa" tabindex="0" role="region" aria-label="Mappa scorrevole di Bologna"><div id="piano-mappa"><img id="immagine-mappa" alt="Veduta illustrata di Bologna senza etichette." draggable="false"><div id="punti-mappa"></div></div></div><aside id="scheda-luogo-mappa" aria-live="polite"></aside></div><div id="altri-luoghi-mappa"></div><p id="stato-mappa" role="status"></p><button type="button" id="chiudi-mappa">Chiudi mappa</button>';
  document.body.append(mappa);
  function p(t){const e=document.createElement('p');e.textContent=t;return e}
  function b(t,f){const e=document.createElement('button');e.type='button';e.textContent=t;e.addEventListener('click',f);return e}
@@ -42,9 +42,9 @@
    if(dati.in_combattimento)persone.append(p('Termina il combattimento prima di spostarti o chiedere indicazioni.'));
    for(const n of dati.informatori){const e=b((api.dati.giorno_corrente===4?'Parla con ':'Chiedi indicazioni a ')+n.nome,()=>api.dati.giorno_corrente===4?window.GiornoQuattro.parla(n.id):apriIndicazioni(n));e.disabled=bloccato();persone.append(e)}
    if(!(dati.partita.giorno_corrente===16&&dati.partita.stato_partita?.fase==='g16_citta')&&!(dati.partita.giorno_corrente===15&&['g15_citta','g15_ricerca'].includes(dati.partita.stato_partita?.fase))&&!(dati.partita.giorno_corrente===14&&dati.partita.stato_partita?.fase==='g14_strada')&&!(dati.partita.giorno_corrente===13&&dati.partita.stato_partita?.fase==='g13_citta')&&!(dati.partita.giorno_corrente===12&&dati.partita.stato_partita?.fase==='g12_strada')&&!(dati.partita.giorno_corrente===11&&dati.partita.stato_partita?.fase==='g11_citta')&&!(dati.partita.giorno_corrente===10&&dati.partita.stato_partita?.fase==='g10_strada')&&dati.ingresso_completato&&!((dati.partita.giorno_corrente===8&&String(dati.partita.stato_partita?.fase||'').startsWith('g8_')||dati.partita.giorno_corrente===9&&dati.partita.stato_partita?.fase==='g9_strada')))persone.append(conPassante(b('Apri la mappa e i luoghi',apriElenco)));if(dati.partita.giorno_corrente===3&&dati.partita.stato_partita?.fase==='fine_giorno3'&&!['armaiolo','bottega_preziosi','speziale'].includes(dati.partita.luogo_attuale))persone.append(p('Per oggi qui non trovi altri incontri o novità. Puoi continuare la passeggiata, visitare le botteghe oppure terminare la giornata dalla Borsa.'));
-   window.MissioneGaleazzo?.azioniLuogo(persone,dati);window.MissioneGuardia?.azioniLuogo(persone,dati);
+
    $('regole-luoghi').textContent=dati.ha_mappa?'Puoi orientarti con la mappa e raggiungere i luoghi segnati.':'Conosci già Porta Maggiore, San Francesco e Piazza Maggiore. Per gli altri luoghi chiedi indicazioni: una volta scoperti rimangono nell’elenco.';
-   lista($('elenco-luoghi'));window.MissioneGaleazzo?.azioniLuogo($('elenco-luoghi'),dati);window.MissioneGuardia?.azioniLuogo($('elenco-luoghi'),dati);if(mappa.open)disegnaMappa();
+   lista($('elenco-luoghi'));if(mappa.open)disegnaMappa();
  }
  async function aggiorna(){
    if(api.dati?.interazioni?.dimensione_alternativa){++richiesta;dati=null;owner=api.codice;scena.hidden=true;pulsante.hidden=false;pulsante.textContent='Mappa delle Sette Chiese';apriMappa.hidden=true;if(mappa.open)mappa.close();return}
@@ -76,8 +76,13 @@
    informatore=n;$('destinazioni-indicazioni').replaceChildren();$('segui-indicazioni').replaceChildren();$('testo-indicazioni').textContent='';$('stato-indicazioni').textContent='';
    $('titolo-indicazioni').textContent=n?'Indicazioni da '+n.nome:'Indicazioni ricevute';
    const destinazioni=(n?.generico?dati?.destinazioni_passante:dati?.destinazioni)??[];
-   if(n?.generico&&!destinazioni.length)$('testo-indicazioni').textContent='Il passante non ha altre indicazioni da darti qui.';
-   if(n)for(const d of destinazioni){const e=b('Come raggiungo '+d.nome+'?',()=>chiedi(n,d.id));e.disabled=bloccato();$('destinazioni-indicazioni').append(e)}
+   const elencoDestinazioni=$('destinazioni-indicazioni');
+   if(n)for(const d of destinazioni){const e=b('Come raggiungo '+d.nome+'?',()=>chiedi(n,d.id));e.disabled=bloccato();elencoDestinazioni.append(e)}
+   if(n?.generico){
+     window.MissioneGaleazzo?.aggiungiIndicazioniPassante(elencoDestinazioni,dati,destinazioni);
+     window.MissioneGuardia?.aggiungiIndicazioniPassante(elencoDestinazioni,dati,destinazioni);
+     if(!elencoDestinazioni.childElementCount)$('testo-indicazioni').textContent='Il passante non ha altre indicazioni da darti qui.';
+   }
    if(!indicazioni.open)indicazioni.showModal();
  }
  async function chiedi(n,id){
@@ -140,8 +145,7 @@
   if(extra.length){const details=window.MenuPergamena("mappa-altri-luoghi",'Altri luoghi conosciuti');;for(const l of extra)details.append(b(l.nome,()=>schedaLuogo(l)));$('altri-luoghi-mappa').append(details)}
   const validi=dati.luoghi.filter(l=>selezionati.includes(l.id));
   if(validi.length===1)schedaLuogo(validi[0]);else if(validi.length>1)scegliGruppo(validi);else{selezionati=[];scheda.replaceChildren(p('Tocca un punto per leggere il nome e scegliere se raggiungerlo.'))}
-  const azioni=$('azioni-mappa');azioni.replaceChildren();
-  window.MissioneGaleazzo?.azioniLuogo(azioni,dati);window.MissioneGuardia?.azioniLuogo(azioni,dati);
+
  }
  function dimensione(nuovo){
   const centroX=(viewport.scrollLeft+viewport.clientWidth/2)/zoom,centroY=(viewport.scrollTop+viewport.clientHeight/2)/zoom;

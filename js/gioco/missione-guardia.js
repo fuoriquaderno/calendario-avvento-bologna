@@ -19,7 +19,10 @@
    if(r&&azione==='indicazioni')window.Messaggi.mostra({titolo:'La casa di Beatrice',testo:r.partita.indicazioni_ricevute.casa_galluzzi.testo,pulsante:'Continua'});
   }finally{busy=false;aggiorna()}
  }
- function azioniLuogo(dest,vista){if(disponibile()&&!m().attiva&&!vista?.in_combattimento&&!vista?.ha_mappa&&!api.dati.indicazioni_ricevute?.casa_galluzzi)dest.append(b('Chiedi dove abita Beatrice dei Galluzzi',()=>invia('indicazioni')))}
+ function aggiungiIndicazioniPassante(dest,vista,destinazioni){
+  if(!disponibile()||m().attiva||vista?.in_combattimento||vista?.ha_mappa||api.dati.indicazioni_ricevute?.casa_galluzzi||destinazioni.some(l=>l.id==='casa_galluzzi'))return;
+  dest.append(b('Come raggiungo la casa di Beatrice dei Galluzzi?',()=>invia('indicazioni')));
+ }
  function aggiorna(){
   const d=api.dati,s=m(),attiva=!!s.attiva&&!d?.morto;
   main.classList.toggle('missione-guardia-attiva',attiva);area.hidden=!attiva;area.replaceChildren();
@@ -44,5 +47,5 @@
   if(window.BorsaNuova.errore)area.append(p(window.BorsaNuova.errore));
  }
  ritira.addEventListener('click',()=>invia('ritira'));
- window.MissioneGuardia={aggiorna,azioniLuogo,disponibile};api.onChange(aggiorna);api.ready.then(aggiorna);
+ window.MissioneGuardia={aggiorna,aggiungiIndicazioniPassante,disponibile};api.onChange(aggiorna);api.ready.then(aggiorna);
 })();
