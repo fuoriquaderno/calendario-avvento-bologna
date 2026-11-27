@@ -294,3 +294,14 @@ body button:not(.azione-header):disabled {
   body button:not(.azione-header) { transition: none !important; }
 }
 
+#spisotti-supabase-consent .spisotti-consent-placeholder,
+#spisotti-supabase-consent .spisotti-consent-service {
+  background: transparent !important;
+  border: 0;
+  color: inherit;
+}
+
+#spisotti-supabase-consent .spisotti-consent-placeholder {
+  min-height: 0;
+  padding: 0;
+}
