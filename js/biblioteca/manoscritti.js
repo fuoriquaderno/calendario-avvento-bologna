@@ -42,7 +42,7 @@
    area.append(p('Qui non ci sono soltanto libri: fascicoli, registri e fogli ripiegati occupano gli scaffali. Alcuni recano annotazioni di mani diverse, aggiunte a distanza di anni.'),p('Su un leggio trovi un catalogo antico. Una catena lo lega al mobile: qualcuno ha preferito non affidarsi alla buona memoria dei lettori. Puoi sfogliarlo, ma non portarlo via.'));
    const elenco=document.createElement('ul');elenco.className='documenti-manoscritti';
    for(const d of vista.documenti){const li=document.createElement('li'),e=b(d.titolo,()=>invia('documento',d.id));e.dataset.documento=d.id;li.append(e);if(vista.stato.letti?.[d.id]){const s=document.createElement('span');s.textContent='Letto';li.append(s)}elenco.append(li)}
-   area.append(elenco,b('Imbocca il corridoio dei servizi',()=>invia('corridoio')),b('Torna alla sala di lettura',()=>invia('lettura')));
+   const menu=window.MenuPergamena("san-domenico-manoscritti","Libri e manoscritti",{libri:true});menu.append(elenco);area.append(menu,b('Imbocca il corridoio dei servizi',()=>invia('corridoio')),b('Torna alla sala di lettura',()=>invia('lettura')));
   }
   if(window.BorsaNuova.errore)area.append(p(window.BorsaNuova.errore));
  }

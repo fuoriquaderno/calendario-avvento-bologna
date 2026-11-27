@@ -137,7 +137,7 @@
   }
   const extra=dati.luoghi.filter(l=>l.mappa_x==null||l.mappa_y==null);
   $('altri-luoghi-mappa').replaceChildren();
-  if(extra.length){const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Altri luoghi conosciuti';details.append(summary);for(const l of extra)details.append(b(l.nome,()=>schedaLuogo(l)));$('altri-luoghi-mappa').append(details)}
+  if(extra.length){const details=window.MenuPergamena("mappa-altri-luoghi",'Altri luoghi conosciuti');;for(const l of extra)details.append(b(l.nome,()=>schedaLuogo(l)));$('altri-luoghi-mappa').append(details)}
   const validi=dati.luoghi.filter(l=>selezionati.includes(l.id));
   if(validi.length===1)schedaLuogo(validi[0]);else if(validi.length>1)scegliGruppo(validi);else{selezionati=[];scheda.replaceChildren(p('Tocca un punto per leggere il nome e scegliere se raggiungerlo.'))}
   const azioni=$('azioni-mappa');azioni.replaceChildren();

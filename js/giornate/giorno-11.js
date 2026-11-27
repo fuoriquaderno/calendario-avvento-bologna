@@ -47,7 +47,7 @@
    }
    if(id==='euclide'&&g.appunti_visibili){box.append(b('Esamina il libricino rimasto dietro il volume',()=>invia('appunti')));if(g.appunti_letti&&!g.pagina_presa)box.append(b('Prendi la pagina di Alano — peso 0',()=>invia('prendi_pagina')))}
    elenco.append(box);
-  }area.append(elenco);
+  }const menu=window.MenuPergamena("collegio-di-spagna-libri","I libri della biblioteca",{libri:true});menu.append(elenco);area.append(menu);
   if(g.pagina_presa)area.append(p('Hai conservato la pagina di Alano nella Borsa.'),b('Termina il racconto di oggi',()=>invia('fine')));
  }
  function disegna(){

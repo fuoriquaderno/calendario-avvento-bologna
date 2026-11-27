@@ -27,10 +27,10 @@
   area.append(p('Un vecchio frate è chino su un volume aperto. Intorno a lui, i libri occupano scaffali e tavoli. Quando ti avvicini, solleva lo sguardo.'),p('«Se cerchi un libro, parla piano. Se devi restituirlo, parla ancora più piano: potrei ricordarmi da quanto tempo manca.»'),h('Parla con il bibliotecario'));
   const dialoghi=document.createElement('div');dialoghi.className='dialoghi-bibliotecario';
   for(const q of vista.dialoghi){const visto=vista.stato.dialoghi?.[q.id];const e=b(q.domanda+(visto?' · Già chiesto':''),()=>invia('dialogo',q.id));e.dataset.dialogo=q.id;dialoghi.append(e)}
-  area.append(dialoghi,h('I libri della sala'));
+  area.append(dialoghi);
   const elenco=document.createElement('ul');elenco.className='tomi-sala-lettura';
   for(const libro of [...vista.tomi].sort((a,b)=>a.titolo.localeCompare(b.titolo,'it'))){const letto=!!vista.stato.libri?.[libro.id];const li=document.createElement('li');const e=b(libro.titolo,()=>invia('libro',libro.id));e.dataset.libro=libro.id;li.append(e);if(letto){const s=document.createElement('span');s.className='tomo-letto';s.textContent='Letto';li.append(s)}elenco.append(li)}
-  area.append(elenco,b('Vai alla sala dei manoscritti',()=>invia('manoscritti')));
+  const menu=window.MenuPergamena("san-domenico-sala-lettura","I libri della sala",{libri:true});menu.append(elenco);area.append(menu,b('Vai alla sala dei manoscritti',()=>invia('manoscritti')));
   if(window.BorsaNuova.errore)area.append(p(window.BorsaNuova.errore));
  }
  async function aggiorna(){

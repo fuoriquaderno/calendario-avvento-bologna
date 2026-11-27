@@ -163,7 +163,7 @@
     for(const [id,t] of volumi){const li=document.createElement('li');li.append(id==='verbali'?b(t+(letto('occultamento')?' · Letto':''),()=>cambiaVista(true)):libro(id,t));if(id==='consiglio'&&letto(id)){
      const link=document.createElement('a');link.href=api.risorsa('images/torredemetrio.png');link.textContent='Osserva l’illustrazione di Demetrio';link.style.cssText='display:block;margin:8px 0 16px';
      link.addEventListener('click',e=>{e.preventDefault();apriRitratto()});li.append(link);
-    }elenco.append(li)}area.append(elenco);
+    }elenco.append(li)}const menu=window.MenuPergamena("san-domenico-tomi-consiglio","Consulta i tomi",{libri:true});menu.append(elenco);area.append(menu);
     if(letto('luce'))area.append(s.pergamena_presa?p('Hai riposto la pergamena della luce vigile nella Borsa.'):b('Prendi la pergamena della luce vigile — peso 1',()=>invia('pergamena')));
     if(letto('occultamento')&&letto('consiglio')&&d.interazioni?.illustrazione_demetrio_vista)area.append(b('Hai trovato la conferma: concludi l’esplorazione',()=>invia('concludi')));else if(letto('occultamento'))area.append(p('Prima di andare via, osserva anche l’illustrazione accanto al ritratto di Demetrio.'));
     area.append(b('Torna davanti agli scaffali',()=>invia('scaffali')));

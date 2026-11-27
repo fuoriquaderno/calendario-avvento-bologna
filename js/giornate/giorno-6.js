@@ -30,7 +30,7 @@
   form.addEventListener('submit',e=>{e.preventDefault();if(!busy&&input.value.trim())invia(azione,input.value.trim())});area.append(form);
  }
  function appunti(g){
-  const details=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Rileggi ciò che hai raccolto';details.append(summary,b('Rileggi il passo del diario',()=>invia('diario')));
+  const details=window.MenuPergamena("giorno6-letture",'Rileggi ciò che hai raccolto');details.append(b('Rileggi il passo del diario',()=>invia('diario')));
   if(g.nomi)details.append(b('Rileggi i nomi dei maestri',()=>invia('rileggi_nomi')));
   if(g.passante)details.append(link('Consulta il Grande Indice fuori dal gioco','https://www.google.com/'));
   area.append(details);

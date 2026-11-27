@@ -3,6 +3,24 @@
  'use strict';
  const $=id=>document.getElementById(id),mobile=()=>document.documentElement.clientWidth<=600;
  const osservati=new WeakSet();
+ const menuPergamena=new Map();
+ let tentativoMenu;
+ window.MenuPergamena=(chiave,titolo,{aperto=false,libri=false}={})=>{
+  const tentativo=window.Partita?.dati?.tentativo;
+  if(tentativo!==tentativoMenu){menuPergamena.clear();tentativoMenu=tentativo}
+  let menu=menuPergamena.get(chiave);
+  if(!menu){
+   menu=document.createElement('details');
+   menu.className=libri?'menu-pergamena menu-pergamena-libri':'menu-pergamena';
+   menu.open=aperto;
+   menu.append(document.createElement('summary'));
+   menuPergamena.set(chiave,menu);
+  }
+  const sommario=menu.firstElementChild;
+  sommario.textContent=titolo;
+  menu.replaceChildren(sommario);
+  return menu;
+ };
  function aggiornaCornice(dialogo){
  const altezza=dialogo.getBoundingClientRect().height;if(!altezza)return;
  const valore=altezza.toFixed(2)+'px';if(dialogo.style.getPropertyValue('--altezza-messaggio')!==valore)dialogo.style.setProperty('--altezza-messaggio',valore);

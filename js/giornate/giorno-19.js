@@ -14,7 +14,7 @@
  function puoUsare(id){const d=api.dati,g=d?.stato_partita?.g19||{},f=d?.stato_partita?.fase;if(d?.giorno_corrente!==19||d.morto||d.giornata_completata||busy)return false;return id==='boccetta_giosue'?f==='g19_fessura'&&!g.boccetta_consumata:id==='boccetta_misura_g19'&&g.taglia==='piccolo'&&['g19_camera','g19_boccette','g19_sepolcro_piccolo'].includes(f)}
  async function usaOggetto(id){if(!puoUsare(id))return;if(!await window.ConfermaPergamena('Vuoi bere il contenuto della boccetta?',{titolo:'La boccetta',conferma:'Bevi',annulla:'Annulla'}))return;$('inventario')?.close();await invia('bevi',id)}
  function figura(nome,alt){const f=document.createElement('figure');f.className='immagine-schermata';const i=document.createElement('img');i.src=api.risorsa('images/'+nome);i.alt=alt;i.decoding='async';i.addEventListener('error',()=>f.hidden=true);f.append(i);area.append(f)}
- function testi(){const d=document.createElement('details'),s=document.createElement('summary');s.textContent='Leggi i quattro testi incisi';d.append(s);for(const [id,nome]of nomi)d.append(b('Il racconto di '+nome,()=>invia('testo',id)));area.append(d)}
+ function testi(){const d=window.MenuPergamena("giorno19-testi",'Leggi i quattro testi incisi');;for(const [id,nome]of nomi)d.append(b('Il racconto di '+nome,()=>invia('testo',id)));area.append(d)}
  function schedeEvangelisti(g){
  if(g.evangelisti_risolti){area.append(p('Gli evangelisti si sono spostati ai lati del sepolcro. L’ingresso è libero.'),b('Entra nel sepolcro',()=>invia('entra_sepolcro')),b('Torna a esplorare la chiesa',()=>invia('torna')));return}
  if(!g.incavi_esaminati){
@@ -35,7 +35,7 @@
  function ripiano(g){
  area.append(p('Sei ancora minuscolo. Sul ripiano trovi sei boccette: ogni etichetta porta una lettera e poche parole.'));
  const elenco=document.createElement('div');elenco.className='boccette-giosue19';
- for(const [id,frase]of boccette){const d=document.createElement('details'),titolo=document.createElement('summary');titolo.textContent='Boccetta '+id;d.append(titolo,p('«'+frase+'»'));
+ for(const [id,frase]of boccette){const d=window.MenuPergamena("giorno19-boccetta-"+id,'Boccetta '+id);d.append(p('«'+frase+'»'));
  const raccolta=id==='B'?g.media_presa:id==='D'?g.misura_presa||g.misura_bevuta:false;
  if(g.bevute?.[id]||id==='D'&&g.misura_bevuta)d.append(p('La boccetta è vuota.'));
  else if(raccolta)d.append(p('Hai già raccolto questa boccetta.'));
@@ -62,7 +62,7 @@
  if(f==='g19_fessura'){
  area.append(p('Vicino al pavimento distingui una fessura con la forma di una porta. È troppo piccola per attraversarla.'),b('Rovista nella Borsa',async()=>{const r=await invia('cerca','borsa');if(r)$('apri-borsa')?.click()}));
  if((g.tentativi_fessura||0)>=3)area.append(b('Chiedi un indizio',()=>invia('aiuto_fessura')));
- if(g.aiuto_fessura){area.append(p('Forse non devi cambiare la porta. Ripensa a ciò che hai raccolto cercando Giosuè.'));const dettagli=document.createElement('details'),sum=document.createElement('summary');sum.textContent='Gli aiuti degli Spisotti';dettagli.append(sum,p('Sulle pagine social degli Spisotti trovi la soluzione della giornata 19.'));for(const [t,u]of [['Facebook','https://www.facebook.com/profile.php?id=61594558125926'],['Instagram','https://www.instagram.com/glispisotti/']]){const a=document.createElement('a');a.textContent=t;a.href=u;a.target='_blank';a.rel='noopener noreferrer';dettagli.append(a)}area.append(dettagli)}
+ if(g.aiuto_fessura){area.append(p('Forse non devi cambiare la porta. Ripensa a ciò che hai raccolto cercando Giosuè.'));const dettagli=window.MenuPergamena("giorno19-aiuti",'Gli aiuti degli Spisotti');dettagli.append(p('Sulle pagine social degli Spisotti trovi la soluzione della giornata 19.'));for(const [t,u]of [['Facebook','https://www.facebook.com/profile.php?id=61594558125926'],['Instagram','https://www.instagram.com/glispisotti/']]){const a=document.createElement('a');a.textContent=t;a.href=u;a.target='_blank';a.rel='noopener noreferrer';dettagli.append(a)}area.append(dettagli)}
  }
  area.append(b('Torna nella chiesa',()=>invia('torna')));
  }else if(f==='g19_sepolcro_piccolo'){
